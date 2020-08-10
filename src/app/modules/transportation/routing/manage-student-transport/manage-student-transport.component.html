@@ -1,0 +1,237 @@
+<div class="content px-sm-40 py-sm-20">
+  <div class="mat-elevation-z2 simple-table-container radius-t-20 mb-20">
+    <div fxLayout="row" fxLayoutAlign="start center" class="p-20">
+      <div fxlayout="column" fxLayoutAlign="start center" fxFlex="100">
+        <div class="h3 secondary-text" translate>STUDENT INFORMATION</div>
+      </div>
+      <button mat-raised-button color="primary" class="text-uppercase" translate (click)="onCancel()">{{'Back' | translate}}</button>
+      <button mat-button (click)="getHelpText('Student Transport')">
+        <mat-icon class="grey-600-fg">info</mat-icon>
+      </button>
+    </div>
+    <mat-divider></mat-divider>
+    <div fxLayout="row" fxLayoutAlign="start center" class="ml-24 py-20">
+      <div fxLayout="column" fxFlex="50">
+        <div class="font-size-18 primary-900-fg-custom mb-16">{{getFormatedName(studentInfo?.studentDetails)}}</div>
+        <div fxLayout="row" fxLayoutAlign="start center">
+          <div class="w-140 py-4 primary-300-fg" translate>mobilenumber</div> : <div class="ml-24">
+            {{studentInfo?.studentDetails?.mobileTel ? studentInfo?.studentDetails?.mobileTel : "-"}}</div>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="start center">
+          <div class="w-140 py-4 primary-300-fg" translate>email</div> : <div class="ml-24">
+            {{studentInfo?.studentDetails?.email1 ? studentInfo?.studentDetails?.email1 : "-"}}</div>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="start center">
+          <div class="w-140 py-4 primary-300-fg" translate>Class</div> : <div class="ml-24">
+            {{studentInfo?.className ? studentInfo?.className : "-"}}</div>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="start center">
+          <div class="w-140 py-4 primary-300-fg" translate>status</div> : <div class="ml-24">
+            {{ studentInfo?.statusName ? studentInfo?.statusName  : "-"}}</div>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="start center">
+          <div class="w-140 py-4 primary-300-fg" translate>dateofbirth</div> : <div class="ml-24">
+            {{ studentInfo?.studentDetails.dateOfBirth ? getFormattedDateBySchoolDateFormat(studentInfo.studentDetails.dateOfBirth)  : "-"}}</div>
+        </div>
+      </div>
+
+
+      <div fxLayout="column" fxFlex="50">
+        <div fxLayout="row" fxLayoutAlign="start center">
+          <div class="w-140 py-4 primary-300-fg" translate>admissionNumber</div> : <div class="ml-24">
+            {{studentInfo?.admissionNumber ? studentInfo?.admissionNumber : "-"}}</div>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="start center">
+          <div class="w-140 py-4 primary-300-fg" translate>Father Name</div> : <div class="ml-24">
+            {{studentInfo?.fatherDetails ? getFormatedName(studentInfo?.fatherDetails) : "-"}}</div>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="start center">
+          <div class="w-140 py-4 primary-300-fg" translate>Mother Name</div> : <div class="ml-24">
+            {{studentInfo?.motherDetails ? getFormatedName(studentInfo?.motherDetails) : "-"}}</div>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="start center">
+          <div class="w-140 py-4 primary-300-fg" translate>Guardian Name</div> : <div class="ml-24">
+            {{studentInfo?.guardianDetails ? getFormatedName(studentInfo?.guardianDetails) : "-"}}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mat-elevation-z2 simple-table-container radius-t-20 my-20">
+    <form [formGroup]="studentTransport" #manualForm="ngForm" class="p-24">
+      <div fxLayout="row" class="pt-12">
+        <div fxLayout="column" fxFlex="50" class="pr-20">
+          <mat-form-field appearance="outline">
+            <mat-label #picUpLocationLabel translate>Requested Pick-up Location</mat-label>
+            <input #picUpLocation formControlName="requestedPickupAddress" matInput
+              (blur)="trimTextBoxSpaces('studentTransport','requestedPickupAddress')">
+            <mat-error>
+              <app-validation [labelName]='picUpLocationLabel.innerText'
+                [validationControl]="studentTransport.controls.requestedPickupAddress" [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div fxLayout="column" fxFlex="50">
+          <mat-form-field appearance="outline">
+            <mat-label  #dropOffLocationLabel translate>Requested Drop-off Location</mat-label>
+            <input  #dropOffLocation formControlName="requestedDropoffAddress" matInput
+              (blur)="trimTextBoxSpaces('studentTransport','requestedDropoffAddress')">
+            <mat-error>
+              <app-validation [labelName]='dropOffLocationLabel.innerText'
+                [validationControl]="studentTransport.controls.requestedDropoffAddress" [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+    </form>
+  </div>
+
+
+  <div class="mat-elevation-z2 simple-table-container radius-t-20 ">
+    <div fxLayout="row" class="p-20" fxLayoutAlign="space-between center">
+        <div class="h3 secondary-text">
+          <strong translate>Route & Schedule Assignment</strong>
+        </div> 
+      <div fxLayout="row" *ngIf="getTotalDistance()">
+        <div fxLayout="row" fxLayoutAlign="center center"  *ngIf="getTotalDuration()">
+          <mat-icon class="mr-4 grey-600-fg">access_time</mat-icon>
+          <div fxLayout="column">
+            <span class="grey-500-fg" translate>Estimated Travel Time</span>
+            <span>{{getTotalDuration()}}</span>
+          </div>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="center center" class="px-24" *ngIf="getTotalDistance()">
+            <mat-icon class="mr-4 grey-600-fg">place</mat-icon>
+            <div fxLayout="column">
+              <span class="grey-500-fg" translate>Estimated Total Distance</span>
+              <span>{{getTotalDistance()}} km</span>
+            </div>
+          </div>
+      </div>
+    </div>
+ 
+    <mat-divider></mat-divider>
+      <!-- <div class="h5 p-12 secondary-text">
+        <strong>Pick-up Location</strong>
+      </div>  -->
+      <div class="pt-24 px-24 font-size-18" translate>Pick-up Location</div>
+    <form [formGroup]="pickupPoint" #pickUpForm="ngForm" fxLayout="row">
+      <div fxLayout="column" class="px-24" fxLayout.gt-sm="row" fxFlex="100">
+        <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="30">
+          <mat-label translate #scheduleId>Schedule</mat-label>
+          <mat-select (selectionChange)="clearFormData('schedule');getTransportRoutes($event.value)"
+            formControlName="transportScheduleId">
+            <mat-option [style.display]="schedule.code == 'I' ? 'block': 'none'" *ngFor="let schedule of schedulesList"
+              [value]="schedule.id">
+              {{schedule.name}}</mat-option>
+          </mat-select>
+          <mat-error>
+            <app-validation [labelName]='scheduleId.innerText'
+              [validationControl]="pickupPoint.controls.transportScheduleId" [doValidate]="validate">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="30" class="px-sm-20">
+          <mat-label translate #routeId>Route</mat-label>
+          <mat-select (selectionChange)="clearFormData('route')" formControlName="transportRouteId">
+            <mat-option *ngFor="let inbound of inBoundroutesList" [value]="inbound.transportRouteId">
+              {{inbound.name}}</mat-option>
+          </mat-select>
+          <mat-error>
+            <app-validation [labelName]='routeId.innerText' [validationControl]="pickupPoint.controls.transportRouteId"
+              [doValidate]="validate">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="30">
+          <mat-label #pickUp translate>Pick-up Location</mat-label>
+          <input readonly matInput formControlName="pointAddres"
+            (blur)="trimTextBoxSpaces('pickupPoint','pointAddres')">
+          <mat-error>
+            <app-validation [labelName]='pickUp.innerText' [validationControl]="pickupPoint.controls.pointAddres"
+              [doValidate]="validate">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+        <div fxLayout="column" class="pt-12 px-20">
+          <button class mat-raised-button (click)="onSelectRoute()" type="submit" color="accent">
+            {{'Select' | translate}}
+          </button>       
+        </div>
+        <div fxLayout="column" *ngIf="pickupPoint.value.transportScheduleId" fxLayout="column" class="pt-12">
+          <button class mat-raised-button (click)="onClear()" type="reset" color="primary">
+            {{'Clear' | translate}}
+          </button>
+        </div>
+      </div>
+    </form>
+    <div class="px-24 font-size-18" translate>Drop-off Location</div>
+    <form [formGroup]="dropoffPoint" #dropOffForm="ngForm" fxLayout="row">
+      <div fxLayout="column" class="px-24" fxLayout.gt-sm="row" fxFlex="100">
+        <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="30">
+          <mat-label translate #scheduleOutId>Schedule</mat-label>
+          <mat-select (selectionChange)="clearFormData('schedule',false);getTransportRoutes($event.value, false)"
+            formControlName="transportScheduleId">
+            <mat-option [style.display]="schedule.code == 'O' ? 'block': 'none'" *ngFor="let schedule of schedulesList"
+              [value]="schedule.id">
+              {{schedule.name}}</mat-option>
+          </mat-select>
+          <mat-error>
+            <app-validation [labelName]='scheduleOutId.innerText'
+              [validationControl]="dropoffPoint.controls.transportScheduleId" [doValidate]="validate">
+            </app-validation>
+            <button *ngIf="0" class mat-raised-button id="resetForm" type="reset" color="accent">
+              {{'reset' | translate}}
+            </button>
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="30" class="px-sm-20">
+          <mat-label translate #transportRouteId>Route</mat-label>
+          <mat-select (selectionChange)="clearFormData('route',false)" formControlName="transportRouteId">
+            <mat-option *ngFor="let outbound of outBoundroutesList" [value]="outbound.transportRouteId">
+              {{outbound.name}}</mat-option>
+          </mat-select>
+          <mat-error>
+            <app-validation [labelName]='transportRouteId.innerText'
+              [validationControl]="dropoffPoint.controls.transportRouteId" [doValidate]="validate">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="30">
+          <mat-label translate #dropOff>Drop-off Location</mat-label>
+          <input readonly matInput formControlName="pointAddres"
+            (blur)="trimTextBoxSpaces('dropoffPoint','pointAddres')">
+          <mat-error>
+            <app-validation [labelName]='dropOff.innerText' [validationControl]="dropoffPoint.controls.pointAddres"
+              [doValidate]="validate">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+        <div fxLayout="column" class="pt-12 px-20">
+          <button class mat-raised-button (click)="onSelectRoute(false)" type="submit" color="accent">
+            {{'Select' | translate}}
+          </button>
+        </div>
+        <div *ngIf="dropoffPoint.value.transportScheduleId" fxLayout="column" class="pt-12">
+          <button class mat-raised-button (click)="onClear(false)" type="reset" color="primary">
+            {{'Clear' | translate}}
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+
+  <div fxLayout="row" fxLayoutAlign="end center" class="mt-32 pr-32">
+    <button (click)="submitRoute(false)" mat-raised-button type="button" class="text-uppercase mr-12">{{'cancel' | translate}}</button>
+    <button mat-raised-button type="submit" class="text-uppercase" color="accent" (click)="submitRoute(true)">
+       {{(studentTransportAssignmentInfo ? 'update' : 'submit') | translate}}
+    </button>
+  </div>
+</div>
+<ng-template #popupMap>
+  <app-view-common-route [inBound]="inBound" [requestedPoint]="inBound ? requestedPoint.inBound : requestedPoint.outBound" [selectedPoint]="inBound ? pickupPoint.value : dropoffPoint.value" (onSelectLocation)="onSelectFromPopUp($event)" [routePoints]="routePoints">
+  </app-view-common-route>
+</ng-template>

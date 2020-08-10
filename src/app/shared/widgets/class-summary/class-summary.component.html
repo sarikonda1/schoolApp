@@ -1,0 +1,46 @@
+
+<div fxLayout="row" fxFlx="100" fxLayoutAlign="center center"
+     *ngIf="classStudentSummery !== undefined && classStudentSummery.length > 0 && !isLoading">
+        <ngx-charts-bar-vertical *ngIf="!displayDrilldown" class="scroll-over"
+                [view]="view"
+                [results]="classStudentSummery"
+                [gradient]="gradient"
+                [xAxis]="showXAxis"
+                [yAxis]="showYAxis"
+                [legend]="showLegend"
+                [showXAxisLabel]="showXAxisLabel"
+                [showYAxisLabel]="showYAxisLabel"
+                [xAxisLabel]="xAxisLabel | translate"
+                [yAxisLabel]="yAxisLabel  | translate"
+                [legendTitle]="'Class' | translate"
+                [showDataLabel]="true"
+                (select)="onSelect($event)">
+        </ngx-charts-bar-vertical>
+        <ngx-charts-bar-vertical *ngIf="displayDrilldown"
+                [view]="view"
+                [results]="sectionStudentSummery"
+                [gradient]="gradient"
+                [xAxis]="showXAxis"
+                [yAxis]="showYAxis"
+                [legend]="showLegend"
+                [showXAxisLabel]="showXAxisLabel"
+                [showYAxisLabel]="showYAxisLabel"
+                [xAxisLabel]="xAxisSectionLabel | translate"
+                [yAxisLabel]="yAxisLabel | translate"
+                [legendTitle]="'Section' | translate"
+                [showDataLabel]="true">
+        </ngx-charts-bar-vertical>
+        <div fxLayout="row" fxFlx="100" fxLayoutAlign="end center" *ngIf="displayDrilldown" class="absolute">
+                <button mat-raised-button color="primary"
+                        (click)="displayDrilldown = false; sectionStudentSummery=[];"><span translate>Back</span></button>
+        </div>
+</div>
+
+<div *ngIf="!(classStudentSummery !== undefined && classStudentSummery.length > 0) && !isLoading">
+        <p class="text-center text-uppercase font-size-16 secondary-text" translate>No Data To Display</p>
+</div>
+
+<div *ngIf="isLoading" fxFlexFill fxLayoutAlign="center center">
+        <app-af-loader></app-af-loader>
+</div>
+

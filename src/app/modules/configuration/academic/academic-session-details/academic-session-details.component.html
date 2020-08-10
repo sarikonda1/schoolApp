@@ -1,0 +1,83 @@
+<div fxLayout="column" class="info-relative mt-28">
+  <div fxLayout="row" fxLayoutAlign="end center" class="edit-info">
+    <button mat-button type="submit" *ngIf="academicSessionDetails?.acdStatusCode == acdNewStatusCode"
+      class="text-uppercase" (click)="onEditButtonClick()">
+      <mat-icon>edit</mat-icon>
+    </button>
+    <button mat-raised-button type="submit" color="primary" class="text-uppercase"
+      (click)="back()">{{'Back' | translate}}</button>
+  </div>
+</div>
+
+<mat-tab-group class="manage-institue">
+  <mat-tab translate label="Basic Info">
+    <div class="px-sm-40 pb-20">
+      <div class="mat-elevation-z3 simple-table-container radius-t-20 mt-4" fxLayout="column">
+        <mat-list fxLayout.gt-xs="row wrap" fxLayout.lt-sm="column" class="pt-0 confirm-table">
+          <mat-list-item fxLayout="column" fxFlex.gt-xs="50">
+            <div fxLayout="row" fxFlex="50"><strong><span translate>Name</span></strong></div>
+            <div fxLayout="row" fxFlex="50"><span class="px-4">:</span>{{academicSessionDetails?.name}}
+            </div>
+          </mat-list-item>
+          <mat-list-item fxLayout="column" fxFlex.gt-xs="50">
+            <div fxLayout="row" fxFlex="50"><strong><span translate>Code</span></strong></div>
+            <div fxLayout="row" fxFlex="50"><span class="px-4">:</span>{{academicSessionDetails?.code}}
+            </div>
+          </mat-list-item>
+          <mat-list-item fxLayout="column" fxFlex.gt-xs="50">
+            <div fxLayout="row" fxFlex="50"><strong><span translate>Start Date</span></strong></div>
+            <div fxLayout="row" fxFlex="50"><span class="px-4">:</span>{{academicSessionDetails?.startDate}}
+            </div>
+          </mat-list-item>
+          <mat-list-item fxLayout="column" fxFlex.gt-xs="50">
+            <div fxLayout="row" fxFlex="50"><strong><span translate>End Date</span></strong></div>
+            <div fxLayout="row" fxFlex="50"><span class="px-4">:</span>{{academicSessionDetails?.endDate}}
+            </div>
+          </mat-list-item>
+          <mat-list-item fxLayout="column" fxFlex.gt-xs="50">
+            <div fxLayout="row" fxFlex="50"><strong><span translate>Online Application Start Date</span></strong></div>
+            <div fxLayout="row" fxFlex="50"><span
+                class="px-4">:</span>{{academicSessionDetails?.onlineApplicationStartDate?academicSessionDetails?.onlineApplicationStartDate:"-"}}
+            </div>
+          </mat-list-item>
+          <mat-list-item fxLayout="column" fxFlex.gt-xs="50">
+            <div fxLayout="row" fxFlex="50"><strong><span translate>Online Application End Date</span></strong></div>
+            <div fxLayout="row" fxFlex="50"><span
+                class="px-4">:</span>{{academicSessionDetails?.onlineApplicationEndDate?academicSessionDetails?.onlineApplicationEndDate:"-"}}
+            </div>
+          </mat-list-item>
+          <mat-list-item fxLayout="column" fxFlex.gt-xs="50">
+            <div fxLayout="row" fxFlex="50"><strong><span translate>Online Application Fee</span></strong></div>
+            <div fxLayout="row" fxFlex="50"><span class="px-4">:</span>
+              {{isNumberr(academicSessionDetails?.onlineApplicationFee)? academicSessionDetails?.currencySymbol+academicSessionDetails?.onlineApplicationFee : "-"}}
+
+              <!-- academicSessionDetails?.onlineApplicationFee!==null?{{academicSessionDetails?.currencySymbol+academicSessionDetails?.onlineApplicationFee }}:null -->
+            </div>
+          </mat-list-item>
+
+          <mat-list-item *ngIf="onlineApplicationURL" fxLayout="column" fxFlex.gt-xs="50">
+            <div fxLayout="row" fxFlex="50"><strong><span translate>Online Application URL</span></strong></div>
+            <div fxLayout="row" fxFlex="50"><span
+                class="px-4">:</span> <button mat-raised-button type="button" color="accent" class="text-uppercase"
+                (click)="copy()">Click Here to Copy Link</button>
+            </div>
+          </mat-list-item>
+        </mat-list>
+      </div>
+    </div>
+  </mat-tab>
+
+  <mat-tab translate label="Classes Offered">
+    <div class="mat-elevation-z3 mx-40 mb-20 mt-4 radius-t-20">
+      <app-table [settings]="classTableSettings">
+      </app-table>
+    </div>
+  </mat-tab>
+
+  <mat-tab translate label="Course Requirements">
+    <div class="mat-elevation-z3 mx-40 mb-20 mt-4 radius-t-20">
+      <app-table [settings]="courseTableSettings">
+      </app-table>
+    </div>
+  </mat-tab>
+</mat-tab-group>

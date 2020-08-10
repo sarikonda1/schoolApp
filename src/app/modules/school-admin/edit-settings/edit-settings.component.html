@@ -1,0 +1,94 @@
+<div class="content px-sm-40 pb-20 allTable-grid">
+  <div class="w-100-p mat-elevation-z8 simple-table-container radius-20" fxLayout="column">
+    <div fxLayout="row" fxLayoutAlign="start center" class="p-20 border-bottom gridHeader">
+      <div fxLayout="column" fxFlex="40">
+        <div class="font-size-16 text-uppercase" translate>School Settings</div>
+      </div>
+      <div class="text-right gridRightBtn" fxLayout="column" fxFlex="60" fxLayoutAlign="end">
+        <div class="example-button-row" fxLayout="row" fxLayoutAlign="end center">
+          <!-- <button mat-raised-button color="accent" translate class="text-uppercase"><span translate>edit</span></button> -->
+          <button mat-button>
+            <mat-icon class="font-size-28 grey-600-fg" (click)="getHelpText('School Settings')">info</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+    <form [formGroup]="schoolSettingsForm" (ngSubmit)="updateSchoolSetting(schoolSettingsForm)">
+      <mat-list fxFlex="100" fxLayout="column" class="pt-0 confirm-table edit-settings">
+        <mat-list-item fxLayout="row" class="border-bottom">
+          <div fxLayout="column" fxFlex="50"><span translate>Moderate Parent Teacher Messages</span></div>
+          <div fxLayout="column" fxFlex="50" fxLayoutAlign="center center">
+            <mat-slide-toggle formControlName="moderateCommunication"></mat-slide-toggle>
+          </div>
+        </mat-list-item>
+
+        <mat-list-item fxLayout="row">
+          <div fxLayout="column" fxFlex="50"><span translate>Moderate Student Health Records Update</span></div>
+          <div fxLayout="column" fxFlex="50" fxLayoutAlign="center center">
+            <mat-slide-toggle formControlName="moderateStudentRecordUpdates"></mat-slide-toggle>
+          </div>
+        </mat-list-item>
+
+        <mat-list-item fxLayout="row">
+          <div fxLayout="column" fxFlex="50"><span translate>Moderate Test Schedule Notifications</span></div>
+          <div fxLayout="column" fxFlex="50" fxLayoutAlign="center center">
+            <mat-slide-toggle formControlName="moderateTestNotifications"></mat-slide-toggle>
+          </div>
+        </mat-list-item>
+
+        <mat-list-item fxLayout="row">
+          <div fxLayout="column" fxFlex="50"><span translate>Moderate Event Posting Notifications</span></div>
+          <div fxLayout="column" fxFlex="50" fxLayoutAlign="center center">
+            <mat-slide-toggle formControlName="moderateEventNotifications"></mat-slide-toggle>
+          </div>
+        </mat-list-item>
+
+        <mat-list-item fxLayout="row">
+          <div fxLayout="column" fxFlex="50"><span translate>Moderate Assignment Notifications</span></div>
+          <div fxLayout="column" fxFlex="50" fxLayoutAlign="center center">
+            <mat-slide-toggle formControlName="moderateAssignmentNotifications"></mat-slide-toggle>
+          </div>
+        </mat-list-item>
+
+        <mat-list-item fxLayout="row">
+          <div fxLayout="column" fxFlex="50"><span translate>Online Student Applications</span></div>
+          <div fxLayout="column" fxFlex="50" fxLayoutAlign="center center">
+            <mat-slide-toggle formControlName="allowOnlineStudentApplications"></mat-slide-toggle>
+          </div>
+        </mat-list-item>
+
+        <mat-list-item fxLayout="row">
+          <div fxLayout="column" fxFlex="50"><span translate>Date Format</span></div>
+          <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="50" class="pt-16">
+            <mat-label #feeTypeId translate>Date Format</mat-label>
+            <mat-select formControlName="dateFormatTypeId" required>
+              <mat-option *ngFor="let dateDetails of dateFormateDetails" [value]="dateDetails.id">
+                {{dateDetails.name}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </mat-list-item>
+
+        <mat-list-item fxLayout="row">
+          <div fxLayout="column" fxFlex="50"><span translate>Name Format</span></div>
+          <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="50" class="pt-16">
+            <mat-label #feeTypeId translate>Name Format</mat-label>
+            <mat-select formControlName="personNameFormatTypeId" required>
+              <mat-option *ngFor="let nameDetails of nameFormateDetails" [value]="nameDetails.id">
+                {{nameDetails.name}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </mat-list-item>
+
+        <mat-divider></mat-divider>
+        <div fxLayout="row" fxLayoutAlign="end center" class="m-16 py-24">
+        <button class="mr-12 text-uppercase" color="primary" type="button" mat-raised-button (click)="cancelSchoolSettings()">
+        {{'Reset' | translate}}</button>
+        <button mat-raised-button type="submit" class="text-uppercase" color="accent">
+          {{'Update' | translate}}</button>
+        </div>
+      </mat-list>
+    </form>
+  </div>
+</div>

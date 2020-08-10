@@ -1,0 +1,101 @@
+<app-table [settings]="tabSettings" (getTableData)='tableData($event)' (openAddForm)="addForm()"
+  [closeRowForm]='closeAddPanel' [templateRef]="addStudentLeaveRequest" (rowBasedAction)="rowWiseActions($event)" (radioSection)='onApproveReject($event)'></app-table>
+
+<ng-template #addStudentLeaveRequest>
+  <form [formGroup]="searchForm" (ngSubmit)="onSubmitDetails()" #searchDetailsForm="ngForm">
+    <div fxFlexFill fxLayout="row" class="pt-24" fxLayoutAlign="center center">
+      <mat-form-field appearance="outline" fxLayout="column" fxFlex.gt-xs="50" fxFlex="100">
+        <mat-label #studentId translate>Search Student Name / Admission Number</mat-label>
+        <input matInput formControlName="studentId" aria-label="studentId" matInput [matAutocomplete]="auto" [required]="studentDetails.name==null">
+        <mat-icon class="grey-400-fg" matSuffix>search</mat-icon>
+        <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn"
+          (optionSelected)='getSelectedStudent($event.option.value)'>
+          <mat-option *ngFor="let option of filterdStudents" [value]="option">
+            {{option.name}}
+            <span class="grey-400-fg"> {{option.currentClass}} {{option.currentSection}} {{option.admissionNumber}} </span>
+          </mat-option>
+        </mat-autocomplete>
+        <mat-error>
+          <app-validation [labelName]='studentId.innerText' [validationControl]="searchForm.controls.studentId"
+            [doValidate]="searchFormDetails">
+          </app-validation>
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div *ngIf="isSubmit == false" fxLayout="column" fxLayout.gt-sm="row" fxFlexFill fxLayoutAlign="center start">
+      <div fxLayout="column" fxFlex.gt-sm="30" fxFlex="100" class="pb-20">
+        <mat-list fxLayout="row wrap" fxFlex="100" class="pt-0 border confirm-table">
+          <mat-list-item fxLayout="column" fxFlex="100" fxFlex.gt-sm="50"><span translate>Student Name</span></mat-list-item>
+          <mat-list-item fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">{{studentDetails.name}}</mat-list-item>
+          <mat-list-item fxLayout="column" fxFlex="100" fxFlex.gt-sm="50"><span translate>Class</span></mat-list-item>
+          <mat-list-item fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">{{studentDetails.currentClass}}</mat-list-item>
+          <mat-list-item fxLayout="column" fxFlex="100" fxFlex.gt-sm="50"><span translate>Section</span></mat-list-item>
+          <mat-list-item fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">{{studentDetails.currentSection}}</mat-list-item>
+          <mat-list-item fxLayout="column" fxFlex="100" fxFlex.gt-sm="50"><span translate>admissionNumber</span></mat-list-item>
+          <mat-list-item fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">{{studentDetails.admissionNumber}}
+          </mat-list-item>
+          <mat-list-item fxLayout="column" fxFlex="100" fxFlex.gt-sm="50"><span translate>RollNumber</span></mat-list-item>
+          <mat-list-item fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">{{studentDetails.rollNumber}}</mat-list-item>
+        </mat-list>
+      </div>
+      <div fxLayout="column" fxFlex.gt-sm="25" fxFlex="100" class="px-sm-20 pb-20">
+        <mat-form-field appearance="outline" class="mr-sm-20 icon-center" fxFlexFill fxFlex="100" fxLayout="column">
+          <mat-label #fromDate translate>From Date</mat-label>
+          <input matInput (keyup)="forceValidation('fromDate',searchForm)" [matDatepicker]="fromDatePicker" formControlName="fromDate" [min]="academicSession?.startDate" [max]="academicSession?.endDate"
+          required>
+          <mat-datepicker-toggle matSuffix [for]="fromDatePicker"></mat-datepicker-toggle>
+          <mat-datepicker #fromDatePicker></mat-datepicker>
+          <mat-error>
+            <app-validation [labelName]='fromDate.innerText' [validationControl]="searchForm.controls.fromDate"
+              [doValidate]="searchFormDetails">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>       
+        <mat-form-field appearance="outline" class="mr-sm-20 py-12 icon-center" fxLayout="column" fxFlexFill fxFlex="100">
+          <mat-label #toDate translate>To Date</mat-label>
+          <input matInput (keyup)="forceValidation('toDate',searchForm)" [matDatepicker]="toDatePicker" formControlName="toDate"
+            [min]="searchForm.controls.fromDate.value" [max]="academicSession.endDate" required>
+          <mat-datepicker-toggle matSuffix [for]="toDatePicker"></mat-datepicker-toggle>
+          <mat-datepicker #toDatePicker [startAt]="searchForm.value.fromDate"></mat-datepicker>
+          <mat-error>
+            <app-validation [labelName]='toDate.innerText' [validationControl]="searchForm.controls.toDate"
+              [doValidate]="searchFormDetails">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+
+        <div fxLayout="row">
+          <button mat-raised-button type="button" (click)="logoImgInput.value='';logoImgInput.click()">
+            <mat-icon class="mr-8">attachment</mat-icon><span translate>Attach Letter</span>
+          </button>
+          <button *ngIf="uploadFiles.value.studentFileNameWithExtension" mat-icon-button type="button">
+            <mat-icon class="mb-4 grey-600-fg" (click)="logoImgInput.value='';clearImages(true)">highlight_off</mat-icon>
+          </button>
+
+          <input [accept]="'.doc,.docx,image/jpeg,image/jpg,image/png,application/pdf,image/*'" id="logoImgInput"
+            (change)="imgChanged(logoImgInput.files)" fxHide type="file" #logoImgInput>
+        </div>
+        <div class="pt-8 logo-name break-word" [style.visibility]="uploadFiles?.value?.studentFileNameWithExtension ? 'visible' : 'hidden'">
+          {{uploadFiles?.value?.studentFileNameWithExtension}}</div>
+      </div>
+      <div fxLayout="column" fxFlex.gt-sm="45" fxFlex="100">
+        <mat-form-field appearance="outline">
+          <mat-label #reason translate>Reason</mat-label>
+          <textarea matInput formControlName="reason" (keyup)="preventSpace($event,'searchForm','reason')"
+            (blur)="trimTextBoxSpaces('searchForm','reason')" required></textarea>
+          <mat-error>
+            <app-validation [labelName]='reason.innerText' [validationControl]="searchForm.controls.reason"
+              [doValidate]="searchFormDetails">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+      </div>
+    </div>
+    <div fxLayout="row" fxLayoutAlign="center center" fxLayoutAlign.gt-xs="end center" class="pt-16">
+      <button class="mr-12 text-uppercase" mat-raised-button type="button" (click)="cancel()" translate>{{'Cancel' | translate}}</button>
+      <button class="text-uppercase" mat-raised-button mat-button type="submit" [disabled]="isSubmit" color="accent" translate>{{'Submit' | translate}}</button>
+    </div>
+  </form>
+
+</ng-template>

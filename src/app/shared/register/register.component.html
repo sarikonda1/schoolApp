@@ -1,0 +1,118 @@
+<div id="login" fxLayout="column">
+
+  <div id="login-form-wrapper" fxLayout="column" fxLayoutAlign="center center">
+
+      <div id="login-form" [@animate]="{value:'*',params:{duration:'300ms',y:'100px'}}" class="fuse-white">
+
+          <div class="logo">
+              <img src="assets/images/logos/name-logo.png">
+          </div>
+
+          <div *ngIf = "!isParent && !isStaff" fxLayout="column">
+          <h1> I am a</h1>
+          <button type="click" (click)="parentClick()" mat-raised-button color="accent" aria-label="LOG IN"
+               >
+                  PARENT
+              </button>
+              <button type="click" (click)="staffClick()" mat-raised-button class="my-12"  aria-label="LOG IN"
+               >
+                  STAFF
+              </button>
+              <button [routerLink]="'/login'" mat-button class="accent-fg">Login</button>
+        </div>
+          <div *ngIf = "isParent || isStaff">
+          <div class="title">REGISTRATION</div>
+
+          <form name="registrationForm" [formGroup]="registrationForm" novalidate #registerForm="ngForm">
+            <div *ngIf="!showDetails">
+              <mat-form-field appearance="outline">
+                <mat-label #code translate>School Code</mat-label>
+                <input id="schoolCode" matInput formControlName="schoolCode" autocomplete="off" required>
+                <mat-error>
+                    <app-validation [labelName]="code.innerText"
+                        [validationControl]="registrationForm.controls.schoolCode" [doValidate] = true>
+                    </app-validation>
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field *ngIf="isParent" appearance="outline">
+              <mat-label #admissionNumber translate>Admission number</mat-label>
+              <input matInput formControlName="admissionNumber" autocomplete="off" required>
+              <mat-error>
+                  <app-validation [labelName]="admissionNumber.innerText"
+                      [validationControl]="registrationForm.controls.admissionNumber" [doValidate]= true>
+                  </app-validation>
+              </mat-error>
+          </mat-form-field>
+
+          <mat-form-field *ngIf="isStaff" appearance="outline">
+            <mat-label #staffCode translate>Staff Code</mat-label>
+            <input matInput formControlName="staffCode" autocomplete="off" required>
+            <mat-error>
+                <app-validation [labelName]="staffCode.innerText"
+                    [validationControl]="registrationForm.controls.staffCode" [doValidate]= true>
+                </app-validation>
+            </mat-error>
+        </mat-form-field>
+
+          <mat-form-field class="coutline" appearance="outline">
+            <mat-label #number translate>Mobile Number</mat-label>
+            <input matInput formControlName="mobileNumber" ng2TelInput (hasError)="onError($event,'mobileNumber')"
+            [ng2TelInputOptions]="telOptions" (ng2TelOutput)="getNumber($event,'mobileNumber')" 
+            (countryChange)="onCountryChangeMobile($event,'mobileNumber')" required>
+            <mat-error>
+                <app-validation [labelName]="number.innerText"
+                    [validationControl]="registrationForm.controls.mobileNumber" [doValidate]= true>
+                </app-validation>
+            </mat-error>
+        </mat-form-field>
+    </div>
+
+    <div *ngIf="isMobileOtp">{{resultMessage}}</div>
+        <mat-form-field *ngIf="isMobileOtp" appearance="outline">
+            <mat-label #otp translate>Please Enter Mobile Otp</mat-label>
+            <input matInput formControlName="mobileOtp" autocomplete="off" required>
+            <mat-error>
+                    <app-validation [labelName]="'otp'"
+                        [validationControl]="registrationForm.controls.mobileOtp" [doValidate]= true>
+                    </app-validation>
+                </mat-error>
+        </mat-form-field>
+
+        <div *ngIf="isEmailOtp">{{resultMessage}}</div>
+        <mat-form-field *ngIf="isEmailOtp" appearance="outline">
+            <mat-label #otp translate>Please Enter Email Otp</mat-label>
+            <input matInput formControlName="emailOtp" autocomplete="off" required>
+            <mat-error>
+                    <app-validation [labelName]="'otp'"
+                        [validationControl]="registrationForm.controls.emailOtp" [doValidate]= true>
+                    </app-validation>
+                </mat-error>
+        </mat-form-field>
+
+              <button *ngIf="!isEmailOtp" type="submit" mat-raised-button color="accent" class="submit-button" aria-label="LOG IN" (click)="onregistrationFormSubmit(registrationForm)"
+              [disabled]="registrationForm.invalid" >
+                  NEXT
+              </button>
+
+              <button *ngIf="isEmailOtp" type="submit" mat-raised-button (click)="onRegisterClick(registrationForm.controls.emailOtp)" color="accent" class="submit-button" aria-label="LOG IN"
+              [disabled]="registrationForm.invalid" >
+                  REGISTER
+              </button>
+            
+                  <div *ngIf="isMobileOtp || isEmailOtp" fxLayoutAlign="center center"> 
+                      <button mat-button disabled *ngIf="counter !== 0" style="height:36px;"><mat-icon >access_time</mat-icon>{{countDown | async  }}</button>
+                        <button *ngIf="counter === 0" mat-button  color="accent" (click)="reSendOtp()" [disabled]="counter !== 0">Resend Otp</button>
+                  </div>
+                  <div class="register" fxLayout="column" fxLayoutAlign="center center">
+                      <span class="text">Already have an account?</span><a class="link" [routerLink]="'/login'">Login</a></div>
+                
+          </form>
+        </div>
+
+
+      </div>
+
+  </div>
+
+</div>

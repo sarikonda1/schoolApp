@@ -1,0 +1,52 @@
+<div fxLayout="column" class="info-relative mt-12 pt-40">
+  <div fxLayout="row" fxLayoutAlign="end center" class="edit-info">
+    <button mat-raised-button translate type="submit" color="primary" class="text-uppercase mr-4" (click)="back()">
+      Back
+    </button>
+  </div>
+</div>
+
+<mat-tab-group class="manage-institue">
+  <mat-tab translate label="{{'Grading Term Details' | translate}}">
+
+    <div class="mx-40 mb-20" fxLayout="column">
+      <mat-list fxLayout.gt-xs="row wrap" fxFlex="100" fxLayout.lt-sm="column"
+        class="institution-details pt-0 confirm-table border mat-elevation-z3 simple-table-container radius-t-20">
+
+        <ng-container *ngFor="let column of dataConfiguration | keys">
+          <mat-list-item fxLayout="column" fxFlex.gt-xs="50" *ngIf="gradeTermConfigurationColumns[column.key]">
+            <div fxLayout="row" fxFlex="40"><strong>
+                {{gradeTermConfigurationColumns[column.key] | translate}}</strong></div>
+            <div fxLayout="row" fxFlex="60"><strong class="pr-4">:</strong>{{column['value']?column['value']:'--'}}
+            </div>
+          </mat-list-item>
+        </ng-container>
+
+      </mat-list>
+    </div>
+
+  </mat-tab>
+
+  <mat-tab translate label="{{'Applies to Class & Section' | translate}}">
+    <div class="mat-elevation-z3 simple-table-container radius-t-20 mx-40 mb-20">
+      <app-table [settings]="appliedClassSection">
+      </app-table>
+    </div>
+  </mat-tab>
+
+  <mat-tab translate label="{{'Tests & Contributions' | translate}}"
+    *ngIf="gradeTestContributionSettings?.rows?.length">
+    <div class="mat-elevation-z3 simple-table-container radius-t-20 mx-40 mb-20">
+      <app-table [settings]="gradeTestContributionSettings">
+      </app-table>
+    </div>
+  </mat-tab>
+
+  <mat-tab translate label="{{'Report Card Configurations' | translate}}" *ngIf="additionalColumnsRows?.length">
+    <div class="mat-elevation-z3 simple-table-container radius-t-20 mx-40 mb-20">
+      <app-table [settings]="additionalColumns">
+      </app-table>
+    </div>
+  </mat-tab>
+
+</mat-tab-group>

@@ -1,0 +1,114 @@
+<div class="px-sm-40 py-sm-20">
+  <div class="font-size-18 px-12 pb-4 text-uppercase">Syllabus Entry Details</div>
+  <div class="mat-elevation-z3 simple-table-container radius-t-20">
+    <div fxLayoutAlign="end center" class="py-12 px-20 border-bottom">    
+      <button mat-raised-button color="primary" (click)="onBackClick()" class="text-uppercase">Back</button>
+      <button mat-icon-button class="ml-4">
+        <mat-icon>info</mat-icon>
+      </button>
+    </div>
+   <form [formGroup]="syllabusEntryDetailsForm">
+    <div class="p-20">
+      <div fxLayout="column" fxLayout.gt-sm="row" class="pb-12">
+        <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="25" class="pr-sm-20">
+          <mat-label translate #className>Board</mat-label>
+          <input formControlName="board"  matInput readonly   >    
+        </mat-form-field>
+        <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="30" class="pr-sm-20">
+          <mat-label translate #className>Class</mat-label>
+          <input formControlName="className" matInput readonly   >    
+        </mat-form-field>
+        <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="25" class="pr-sm-20">
+          <mat-label translate #className>Section</mat-label>
+          <input formControlName="section" matInput readonly   >    
+        </mat-form-field>
+        <div *ngIf="syllabusDetails?.syllabusAttachment" fxLayout="column" fxFlex="100" fxFlex.gt-sm="20" fxLayoutAlign="center start">
+          <a target="_blank"  [href]="storeService.getFilePath(syllabusDetails?.syllabusAttachment)" class="pb-12 font-size-16">Attachment</a>
+        </div>
+      </div>
+      <div fxLayout="column" fxLayout.gt-sm="row" class="pb-12">
+        <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="25" class="pr-sm-20">
+          <mat-label translate #className>Course</mat-label>
+          <input formControlName="course" matInput readonly   >    
+        </mat-form-field>     
+        <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="55" class="pr-sm-20">
+          <mat-label translate #className>Teacher</mat-label>
+          <input formControlName="teacher" matInput readonly   >    
+        </mat-form-field>      
+      </div>
+      <ng-container *ngIf="syllabusEntryDetailsForm?.value?.checkpointName; else chapters">
+        <div fxLayout="column" fxLayout.gt-sm="row" class="pb-12">
+          <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="80" class="pr-sm-20">
+            <mat-label translate #className>Check Point Name</mat-label>
+            <input formControlName="checkpointName" matInput readonly   >    
+          </mat-form-field>
+        </div>
+        <div fxLayout="column" fxLayout.gt-sm="row" class="pb-12">
+          <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="80" class="pr-sm-20">
+            <mat-label translate #className>TestType</mat-label>
+            <input formControlName="testType" matInput readonly   >    
+          </mat-form-field>
+        </div>
+        <div fxLayout="column" fxLayout.gt-sm="row" class="pb-12">
+          <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="80" class="pr-sm-20">
+            <mat-label translate #className>Cumulative</mat-label>
+            <input matInput readonly  [value]="syllabusEntryDetailsForm?.value?.isCumulative? 'Yes' : 'No'" >    
+          </mat-form-field>
+        </div>
+      </ng-container>
+      <ng-template #chapters>
+        <div fxLayout="column" fxLayout.gt-sm="row" class="pb-12">
+          <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="80" class="pr-sm-20">
+            <mat-label translate #className>Chapter</mat-label>
+            <input formControlName="chapter" matInput readonly   >    
+          </mat-form-field>
+        
+          <div *ngIf="syllabusDetails?.chapterAttachment" fxLayout="column" fxFlex="100" fxFlex.gt-sm="20" fxLayoutAlign="center start">
+            <a target="_blank" [href]="storeService.getFilePath(syllabusDetails?.chapterAttachment)" class="pb-12 font-size-16">Attachment</a>
+          </div>
+        </div>
+        <div fxLayout="column" fxLayout.gt-sm="row" class="pb-12">
+          <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="80" class="pr-sm-20">
+            <mat-label translate #className>Topic</mat-label>
+            <input formControlName="topic" matInput readonly   >    
+          </mat-form-field>
+        
+          <div *ngIf="syllabusDetails?.topicAttachment" fxLayout="column" fxFlex="100" fxFlex.gt-sm="20" fxLayoutAlign="center start">
+            <a target="_blank" [href]="storeService.getFilePath(syllabusDetails?.topicAttachment)" class="pb-12 font-size-16">Attachment</a>
+          </div>
+        </div>
+        <div fxLayout="column" fxLayout.gt-sm="row" class="pb-12">
+          <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="80" class="pr-sm-20">
+            <mat-label translate #className>Sub Topic</mat-label>
+            <input formControlName="subTopic" matInput readonly   >    
+          </mat-form-field>
+        
+          <div *ngIf="syllabusDetails?.subTopicAttachment" fxLayout="column" fxFlex="100" fxFlex.gt-sm="20" fxLayoutAlign="center start">
+            <a target="_blank" [href]="storeService.getFilePath(syllabusDetails?.subTopicAttachment)" class="pb-12 font-size-16">Attachment</a>
+          </div>
+        </div>
+      </ng-template>
+      <div fxLayout="column" fxLayout.gt-sm="row" class="pb-12">
+        <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="25" class="pr-sm-20">
+          <mat-label translate #className>Scheduled Date</mat-label>
+          <input formControlName="scheduledCompletionDate" matInput readonly   >    
+        </mat-form-field>
+        <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="25" class="pr-sm-20">
+          <mat-label translate #className>status</mat-label>
+          <input formControlName="status" matInput readonly   >    
+        </mat-form-field>
+        <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="25" class="pr-sm-20">
+          <mat-label translate #className>Start Date</mat-label>
+          <input formControlName="startDate" matInput readonly   >    
+        </mat-form-field>
+        <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="25" class="pr-sm-20">
+          <mat-label translate #className>Completion Date</mat-label>
+          <input formControlName="actualCompletionDate" matInput readonly   >    
+        </mat-form-field>
+      </div>
+
+      <div class="secondary-text font-size-16">Last Modified by {{syllabusDetails?.lastModifiedUserName ? syllabusDetails?.lastModifiedUserName : '---'}} on {{syllabusEntryDetailsForm?.value?.lastModifiedDate}}</div>
+    </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,196 @@
+<div class="px-sm-40 pt-24">
+  <div class="py-8 px-20 font-size-18 text-uppercase" translate>{{isVisible? 'Fee Assignment':'Student Transport' | translate}}
+  </div>
+
+  <div class="mat-elevation-z3 simple-table-container radius-t-20">
+    <form [formGroup]="searchForm" (ngSubmit)="searchStudent(searchForm.value)" #searchFormm="ngForm">
+      <div fxLayout="column" fxLayout.gt-sm="row" class="p-24">
+        <div fxLayout="column" fxFlex="100" fxLayoutAlign="center center">
+        <div class="serch-db border px-16">
+          <input #studentName matInput placeholder="{{'Search Students' | translate }}" formControlName="studentNames"
+            onkeydown="return(event.keyCode!=13);" aria-label="StudentName" matInput
+            [matAutocomplete]="studentNameSearch">
+
+          <mat-autocomplete #studentNameSearch="matAutocomplete" [displayWith]="displayFn"
+            (optionSelected)='getSelectedStudent($event.option.value)'>
+            <mat-option *ngFor="let option of filterdStudents" [value]="option">
+              {{option.name}}
+              <span class="grey-400-fg"> {{option.currentClass}} {{option.currentSection}}</span>
+            </mat-option>
+          </mat-autocomplete>
+        </div>
+        </div>
+          <button mat-button (click)="getHelpText(isVisible ?  'Fee Assignment' : 'Student Transport')">
+            <mat-icon class="grey-600-fg">info</mat-icon>
+          </button>
+      </div>
+      <div fxLayout="row" fxLayoutAlign="center center" class="after position-relative">
+        <small class="position-absolute custom-white">(OR)</small> 
+       </div>
+
+      <mat-divider></mat-divider>
+      <div class="p-20">
+        <div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign="start center">
+          <mat-form-field appearance="outline" class="pr-sm-20" fxLayout="column" fxFlex="100" fxFlex.gt-sm="20"
+            fxFlexFill>
+            <mat-label #schoolBoardId translate>School Board</mat-label>
+            <mat-select formControlName="boardIds" (selectionChange)="onSelectSchoolBoard($event)" [required]="isRequired || isVisible">
+              <mat-option *ngIf="availableSchoolBoards?.length"></mat-option>
+              <mat-option *ngFor="let schoolBoard of availableSchoolBoards" [value]="schoolBoard.value">
+                {{schoolBoard.label}}
+              </mat-option>
+            </mat-select>
+            <mat-error>
+              <app-validation [labelName]='schoolBoardId.innerText' [validationControl]="searchForm.controls.boardIds" [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="pr-sm-20" fxLayout="column" fxFlex="100" fxFlex.gt-sm="20"
+            fxFlexFill>
+            <mat-label #class translate>Class</mat-label>
+            <mat-select formControlName="classIds" (selectionChange)="onClassChange($event.value)">
+              <mat-option *ngIf="availableClasses?.length"></mat-option>
+              <mat-option *ngFor="let availableClasse of availableClasses" [value]="availableClasse.value">
+                {{availableClasse.label}}
+              </mat-option>
+            </mat-select>
+            <mat-error>
+              <app-validation [labelName]='class.innerText' [validationControl]="searchForm.controls.classIds"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="pr-sm-20" fxLayout="column" fxFlex="100" fxFlex.gt-sm="20"
+            fxFlexFill>
+            <mat-label #section translate>Section</mat-label>
+            <mat-select formControlName="sectionIds" (selectionChange)="onSelectSection()">
+              <mat-option *ngIf="availableSections?.length"></mat-option>
+              <mat-option *ngFor="let availableSection of availableSections" [value]="availableSection.value">
+                {{availableSection.label}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field *ngIf="isVisible == false" appearance="outline" class="pr-sm-20" fxLayout="column"
+            fxFlex="100" fxFlex.gt-sm="20" fxFlexFill>
+            <mat-label #routeTypes translate>Route Type</mat-label>
+            <mat-select formControlName="routeTypeIds" (selectionChange)="getRoutesDetails($event)">
+              <mat-option *ngIf="routeTypes?.length"></mat-option>
+              <mat-option *ngFor="let routeType of routeTypess" [value]="routeType.value">
+                {{routeType.label}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field *ngIf="isVisible == false" appearance="outline" fxLayout="column" fxFlex="100"
+            fxFlex.gt-sm="20" fxFlexFill>
+            <mat-label #route translate>Route</mat-label>
+            <mat-select formControlName="routeIds">
+              <mat-option *ngIf="routes?.length"></mat-option>
+              <mat-option *ngFor="let route of routes" [value]="route.value">
+                {{route.label}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+        </div>
+
+        <div fxLayout="row" fxLayoutAlign="end center" class="mt-12">
+          <button mat-raised-button type="reset" class="text-uppercase mr-12" (click)="onClear()">
+            {{'Reset' | translate}}
+          </button>
+          <button mat-raised-button type="submit" color="accent" class="text-uppercase">
+            {{'Search' | translate}}
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<app-table *ngIf="rows.length" [settings]='tableSettings' (getTableData)='tableData($event)'
+  (rowBasedAction)='actions($event)' (resetFilter)='onClear()' [massActionTemplateRef]="massActions"
+  (additionalButtonClick)="markAssignFeeComplete($event)" (selectedRows)="selectAllData($event)"
+  [templateRef]="myTemplate">
+
+</app-table>
+<app-custom-card *ngIf="!rows.length" [title]=customCardDetails.title [inputMessage]=customCardDetails.message>
+</app-custom-card>
+
+<ng-template #massActions>
+  <div>
+    <form [formGroup]="searchForm" (ngSubmit)="massActionsApply()">
+      <button type="submit" mat-raised-button translate color="accent" class="mx-12 my-20 text-uppercase">
+        {{'Assign Fee' | translate}}
+      </button>
+    </form>
+  </div>
+</ng-template>
+
+<ng-template #myTemplate>
+  <form [formGroup]="feeAssignmentForm" (ngSubmit)="onSubmitFee(feeAssignmentForm.value)" fxLayout="column">
+    <div fxLayout="row" class="pt-20">
+      <mat-form-field appearance="outline" class="pr-20" fxFlex="50" fxLayout="column">
+        <mat-label translate #feeTypeId>Fee Type</mat-label>
+        <mat-select required placeholder="Fee Type" formControlName="feeTypeId"
+          (selectionChange)="fetchFeeTypeDetails($event)">
+          <mat-option *ngFor="let feeType of feeTypes" [value]="feeType.value">
+            {{feeType.label}}
+          </mat-option>
+        </mat-select>
+        <mat-error>
+          <app-validation [labelName]="feeTypeId.innerText" [validationControl]="feeAssignmentForm.controls.feeTypeId"
+            [doValidate]="doValidate">
+          </app-validation>
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlexFill fxFlex="50">
+        <mat-label #amount translate>Amount</mat-label>
+        <input (keyup)="preventSpace($event,'feeAssignmentForm','amount')" matInput autocomplete="off"
+          formControlName="amount" required>
+        <mat-error>
+          <app-validation [labelName]="amount.innerText" [validationControl]="feeAssignmentForm.controls.amount"
+            [doValidate]="doValidate">
+          </app-validation>
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div fxLayout="row" fxLayoutAlign="start center">
+      <div fxFlex="100" fxLayout="column" fxLayoutAlign="end">
+        <div fxLayout="row" fxLayoutAlign="end center">
+          <button type="button" mat-raised-button class="mr-16 text-uppercase" type="button"
+            (click)="closeDialog()">{{'Cancel' | translate}}</button>
+          <button type="submit" mat-raised-button color="accent" class="text-uppercase" type="submit"
+            translate>{{'submit' | translate}}</button>
+        </div>
+      </div>
+    </div>
+    <div class="simple-table-container" *ngIf="feeAmountDetails?.length>0">
+      <div class="font-size-20 p-20 border-bottom" translate>Fee Structure</div>
+      <table class="simple">
+        <thead>
+          <tr>
+            <th translate>Class</th>
+            <th translate *ngIf="feeAmountDetails[0].feeTypeTranchesId!=null">Fee Tranche</th>
+            <th translate>Fee Term</th>
+            <th translate>Fee Amount</th>
+            <th translate>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let route of feeAmountDetails; let i = index">
+            <td>{{route.className}}</td>
+            <td *ngIf="route.feeTypeTranchesId!=null">{{route.feeTrancheName}}</td>
+            <td>{{route.feeTermName}}</td>
+            <td>{{route.feeAmount}}</td>
+            <td><button type="button" (click)="amountAssign(route.feeAmount)" color="accent"
+                mat-raised-button>{{'Select' | translate}}</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </form>
+</ng-template>

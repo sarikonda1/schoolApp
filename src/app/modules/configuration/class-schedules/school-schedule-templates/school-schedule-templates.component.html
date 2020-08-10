@@ -1,0 +1,121 @@
+<app-table [settings]="tabSettings" id="school-schedule-template" (getTableData)='getSchoolScheduleTempGridDetails($event)'
+   (rowBasedAction)="rowWiseActions($event)" (openAddForm)="onAddFormClick()"
+  [closeRowForm]='closeAddPanel' [templateRef]="addTemplateRef">
+</app-table>
+
+<ng-template #addTemplateRef>
+  <form [formGroup]="schoolScheduleForm" #schoolScheduleTempForm="ngForm">
+    <div fxFlexFill fxLayoutAlign="start center" fxLayout="column" fxLayout.gt-sm="row" class="pt-28" id="tempName">
+      <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+        <mat-label #tempName translate>Template Name</mat-label>
+        <input (keyup)="preventSpace($event,'schoolScheduleForm','templateName')" matInput formControlName="templateName"
+          (blur)="trimTextBoxSpaces('schoolScheduleForm','templateName')" required>
+        <mat-error>
+          <app-validation [labelName]='tempName.innerText'
+            [validationControl]="schoolScheduleForm.controls.templateName" [doValidate]="schoolScheduleFormDetails">
+          </app-validation>
+        </mat-error>
+      </mat-form-field>
+      <app-custom-dropdown *ngIf="weekdaysDropdown" fxFlexFill appearance="outline" fxLayout="column" fxFlex="100"
+        fxFlex.gt-sm="50" class="pl-sm-20" [dropDownConf]="weekdaysDropdown" formControlName="weekDayId"
+        [errorCheck]="schoolScheduleForm.controls.weekDayId" (selectedData)="onSelect($event)" ngDefaultControl [disable]="isUpdateDayPeriods">
+      </app-custom-dropdown>
+    </div>
+    <div fxFlexFill fxLayoutAlign="end center" fxLayout="row" class="py-12">
+      <button class="mr-12 text-uppercase" *ngIf="isCancel" mat-raised-button type="button"
+        (click)="cancel()">{{'Cancel' | translate}}</button>
+      <button *ngIf="!isUpdateDayPeriods" mat-raised-button type="submit" class="text-uppercase" color="accent"
+        (click)="schedulePeriods()" [disabled]="isPeriodsTemp">{{'Set Periods' | translate}}</button>
+    </div>
+  </form>
+  <div *ngIf="isPeriodsTemp">
+    <mat-divider class="pb-16"></mat-divider>
+    <form [formGroup]="periodLists" (ngSubmit)="updateSelectedSchoolScheduleTemplates()">
+      <div formArrayName="periodListsView"  *ngFor="let itemrow of addNewRowSchoolScheduleform.controls; let i=index">
+        <div [formGroupName]="i" fxFlexFill fxLayout="column" fxLayoutAlign="start center" fxLayout.gt-xs="row"
+          class="pt-16">
+          <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-xs="45">
+            <mat-label #periodname translate>Period Name</mat-label>
+            <input #myInput (keyup)="preventSpaceForArray($event,itemrow.controls.name);"
+              (blur)="trimSpaces(itemrow,'name');" formControlName="name" matInput
+              required>
+            <mat-error>
+              <app-validation [labelName]='periodname.innerText' [validationControl]="itemrow.controls.name"
+                [doValidate]="true">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+
+          <div fxLayout="column" fxFlex="100" fxFlex.gt-xs="45" class="px-sm-20">
+            <app-custom-timepicker  [rangeMode]="true" [label]="'Time'" appearance="outline" formControlName="periodTime"
+                                   [is24HoursFormat]="true" [showLabel]="true" [isRequired]="true" [errorClass]="'pt-20'"
+                                   [requiredValidator]="true" [timeValidator] = "true"></app-custom-timepicker>
+          </div>
+
+         <!-- <div fxLayout="column" fxFlex="100" fxFlex.gt-xs="25" class="px-sm-20">
+            <app-custom-timepicker  [label]="'End Time'" appearance="outline" formControlName="endTime"
+                                   [is24HoursFormat]="true" [showLabel]="true" [isRequired]="true" [errorClass]="'pt-20'"
+                                   [requiredValidator]="true" [timeValidator] = "true"></app-custom-timepicker>
+          </div>-->
+
+          <button *ngIf="itemrow.value.isRemoveVisible" mat-icon-button type="button" class="mb-16 red-400-fg"
+            (click)="deleteRow(i)">
+            <mat-icon>delete</mat-icon>
+          </button>
+          <button *ngIf="itemrow.value.isAddVisible" mat-mini-fab class="mb-16" type="button" (click)="addNewRow(itemrow)"
+            [disabled]="isDisabled">
+            <mat-icon>add</mat-icon>
+          </button>
+
+        </div>
+        <div *ngIf="periodErrorMessages[i] !== undefined && periodErrorMessages[i] !== ''" class="red-fg">
+          {{periodErrorMessages[i]}}
+        </div>
+      </div>
+      <!--<div *ngIf="isDisabled" class="red-fg">{{errorMsg}}</div>-->
+      <div fxLayout="row" fxLayoutAlign="end center" class="pt-16">
+        <button class="mr-12 text-uppercase" mat-raised-button type="button"
+          (click)="cancelPeriods()">{{'Cancel' | translate}}</button>
+        <button mat-raised-button type="submit" class="text-uppercase" color="accent"
+          [disabled]="isDisabled">{{'Select' | translate}}</button>
+      </div>
+    </form>
+  </div>
+  <mat-divider class="pb-28 mt-12" *ngIf="filterSchoolScheduleTempList.length >0"></mat-divider>
+  <div class="border school-period" *ngIf="filterSchoolScheduleTempList.length >0">
+    <div fxLayout="row inline" *ngFor="let item of filterSchoolScheduleTempList; let ind = index" class="mw-100-p">
+      <div fxLayout="column" fxFlex="20"
+        class="border-right border-bottom py-20 pl-12 pr-4 w-144 weekDay custom-white break-word accent-fg font-weight-600 text-uppercase">
+        <div fxLayout="row" fxLayoutAlign="space-between center" translate>{{item.name}}
+          <button mat-icon-button color="primary" *ngIf="item.name!='Day'" [matMenuTriggerFor]="menuEdit">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+        </div>
+      </div>
+      <mat-menu #menuEdit="matMenu">
+        <button mat-menu-item (click)="editPeriods(item)">
+          <mat-icon class="mr-8">edit</mat-icon>{{'Change' | translate}}
+        </button>
+        <button mat-menu-item (click)="deletePeriods(item.name)">
+          <mat-icon class="mr-8">delete</mat-icon>{{'Delete' | translate}}
+        </button>
+      </mat-menu>
+      <div fxLayout="column" fxFlex="20" fxLayoutAlign="center start"
+      [ngClass]="item.value?.length > filterSchoolScheduleTempList[ind-1]?.value?.length ? (i > ( filterSchoolScheduleTempList[ind-1]?.value?.length-1) && ind  ? 'border-top': '') : ''" class="border-right border-bottom w-140 px-12"
+        *ngFor="let child of item.value;let i=index">
+        <div fxLayout="row" *ngIf="child.periodNames == 'PERIOD'" class="text-uppercase break-word" translate>
+          {{child.periodNames}}<span></span>&nbsp;{{i+1}}</div>
+        <div fxLayout="row" class="break-word">{{child.periodName}}</div>
+        <div fxLayout="row" class="grey-500-fg break-word" *ngIf="child.startTime!= null">{{child.startTime | slice:0:5}} to
+          {{child.endTime | slice:0:5}}
+        </div>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="filterSchoolScheduleTempList.length >0" fxLayout="row" fxLayoutAlign="end center" class="pt-16">
+    <button class="mr-12 text-uppercase" mat-raised-button type="button"
+      (click)="cancel()">{{'Cancel' | translate}}</button>
+    <button mat-raised-button type="submit" [disabled]="isDisabled" class="text-uppercase" color="accent"
+      (click)="onSubmitSchooolScheduleTemp()">{{(isUpdateData ? 'Update':'Create') | translate}}</button>
+  </div>
+</ng-template>

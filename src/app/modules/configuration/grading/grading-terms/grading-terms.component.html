@@ -1,0 +1,605 @@
+<app-table [settings]="tabSettings" id="app-table-grading-terms" (selectedRows)="selectAllData($event)"
+  [templateRef]="gradingTerm" [templateRef]="gradingTerm" (getTableData)='gradingTermTableData($event)'
+  (rowSelect)='onTableRowSelect($event)' (rowBasedAction)='rowActions($event)' [closeRowForm]='closeAddPanel'
+  (openAddForm)="openForm()" [showSelectAll]="isDeleteAllRequired" (rowUnselect)='onTableRowUnSelect($event)'>
+</app-table>
+
+<ng-template #gradingTerm>
+
+  <div *ngIf="cloneEnable" class="p-24" id="clone-form">
+    <div class="h3 pb-12" id="customExpansion" translate>Clone Grading Term</div>
+    <mat-accordion class="tabs-table-padding0">
+      <mat-expansion-panel [expanded]="true" class="mb-16">
+        <mat-expansion-panel-header class="border-bottom">
+          <mat-panel-title class="h3" translate>Selected Grading Term Details</mat-panel-title>
+        </mat-expansion-panel-header>
+        <mat-list fxLayout.gt-sm="row wrap" fxFlex="100" fxLayout="column"
+          class="institution-details pt-0 confirm-table border m-24" *ngIf="termConfigurationData">
+          <mat-list-item fxLayout="column" fxFlex.gt-sm="50" *ngFor="let column of cloneGradeDetails">
+            <div fxLayout="row" fxFlex="45" translate> {{column.header}}</div>
+            <div fxLayout="row" fxFlex="55">:<span class="pl-8">{{termConfigurationData[column.field]?termConfigurationData[column.field]:'--'}}</span></div>
+          </mat-list-item>
+        </mat-list>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel (opened)="panelOpenState = true;onOpenTests()" (closed)="panelOpenState = false">
+        <mat-expansion-panel-header class="border-bottom">
+          <mat-panel-title class="h3" translate>
+            Selected Grading Term's Test and Contributions
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-table [settings]="cloneGradingTermContributionSettings">
+        </app-table>
+      </mat-expansion-panel>
+    </mat-accordion>
+
+    <form fxLayout="column" (ngSubmit)="clonePost(cloneFormGroup.value)" [formGroup]="cloneFormGroup"
+      #cloneGradingTermForm="ngForm">
+      <div class="h3 pt-24" translate> Clone to Class and Sections</div>
+      <div fxLayout="column" class="pt-8" fxLayout.gt-sm="row" fxFlex="100" fxLayoutAlign="start center">
+        <mat-form-field *ngIf="termConfigurationData && cloneClasses.length" appearance="outline" fxFlexFill
+          fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+          <mat-label translate #cloneClassId>Class</mat-label>
+          <mat-select required name="cloneClassId" formControlName="cloneClassId"
+            (selectionChange)="onClassSelect($event)">
+            <mat-option *ngFor="let cloneClass of cloneClasses" [value]="cloneClass.value">
+              {{cloneClass.label}}
+            </mat-option>
+          </mat-select>
+          <mat-error>
+            <app-validation [labelName]="cloneClassId.innerText"
+              [validationControl]="cloneFormGroup.controls.cloneClassId" [doValidate]="validate">
+            </app-validation>
+          </mat-error>
+          <div #gradesexeed translate class="subCat" translate>{{gradingTermsExceeded}}</div>
+        </mat-form-field>
+        <div *ngIf="termConfigurationData && !cloneClasses?.length" class="message-box error">
+          No class is available for board, to clone grading term.
+        </div>
+        <div *ngIf="cloneSections" class="px-sm-24" fxLayout="column" fxFlex="100" fxFlexFill>
+          <app-custom-dropdown formControlName="cloneSectionId" appearance="outline" fxFlexFill fxLayout="column"
+            fxFlex="100" fxFlex.gt-sm="18" [dropDownConf]="cloneSections" [disabled]=disableCloneSection
+            [errorCheck]="cloneFormGroup.controls.cloneSectionId" ngDefaultControl>
+          </app-custom-dropdown>
+        </div>
+      </div>
+      <div fxLayout="row" fxLayoutAlign="end center" class="mt-20">
+        <button mat-raised-button class="mr-12 text-uppercase" type="reset"
+          (click)="onCloneCancel()">{{'Cancel' | translate}}</button>
+        <button *ngIf="termConfigurationData && cloneClasses?.length" mat-raised-button type="submit" color="accent"
+          [disabled]="cloneDisable" class="text-uppercase">
+          {{'Clone' | translate}}
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <div *ngIf="!cloneEnable">
+    <mat-vertical-stepper [linear]="true" #stepper (selectionChange)="OnSelectionChange($event)"
+      (animationDone)="onStepperAnimationDone(stepper.selectedIndex)">
+      <mat-step [stepControl]="ClassSectionFormGroup">
+        <form fxLayout="column" (ngSubmit)="saveClassSection(ClassSectionFormGroup.value)"
+          [formGroup]="ClassSectionFormGroup" #classSectionForm="ngForm">
+          <ng-template matStepLabel>{{'Applies to Class & Section' | translate}}</ng-template>
+          <div *ngIf="classSectionDisable" fxFlexFill fxLayout="column" class="pt-24" fxLayout.gt-sm="row">
+            <mat-form-field appearance="outline" *ngIf="isSchoolBoards" fxFlexFill fxLayout="column" fxFlex="100"
+              fxFlex.gt-sm="50">
+              <mat-label translate #board>Board</mat-label>
+              <mat-select required name="boardId" formControlName="boardId"
+                (selectionChange)="onSchoolBoardSelect($event)">
+                <mat-option *ngFor="let board of schoolBoards" [value]="board.value">
+                  {{board.label}}
+                </mat-option>
+              </mat-select>
+              <mat-error>
+                <app-validation [labelName]="board.innerText"
+                  [validationControl]="ClassSectionFormGroup.controls.boardId" [doValidate]="validate">
+                </app-validation>
+              </mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="pl-sm-20" fxFlexFill fxLayout="column" fxFlex="100"
+              fxFlex.gt-sm="50">
+              <mat-label translate #class>Class</mat-label>
+              <mat-select required name="classId" formControlName="classId" (selectionChange)="onSelectClass($event)"
+                [disabled]=classDisabled>
+                <mat-option *ngFor="let class of classNames" [value]="class.value">
+                  {{class.label}}
+                </mat-option>
+              </mat-select>
+              <mat-error>
+                <app-validation [labelName]="class.innerText"
+                  [validationControl]="ClassSectionFormGroup.controls.classId" [doValidate]="validate">
+                </app-validation>
+              </mat-error>
+            </mat-form-field>
+            <div *ngIf="sectionNames" class="pl-sm-20" fxLayout="column" fxFlex="100" fxFlexFill>
+              <app-custom-dropdown formControlName="sectionsId" appearance="outline" fxFlexFill fxLayout="column"
+                fxFlex="100" fxFlex.gt-sm="18" [dropDownConf]="sectionNames" [disabled]=sectionDisabled
+                (selectedData)="onSelectSection($event)" [errorCheck]="ClassSectionFormGroup.controls.sectionsId"
+                ngDefaultControl>
+              </app-custom-dropdown>
+            </div>
+          </div>
+          <div
+            *ngIf="(gridData) && (isUpdateData|| gradeClassSectionViewModel && gradeClassSectionViewModel.sectionId != 0)"
+            class="pb-20">
+            <app-table [settings]="appliedClassSection" (rowBasedAction)='deleteClassMember($event)'>
+            </app-table>
+          </div>
+          <div fxLayout="row" fxLayoutAlign="center center" class="mt-20">
+            <button mat-raised-button translate class="mr-12 text-uppercase" type="reset" #formCancel id="formCancel"
+              (click)="onCancel()"> <span translate>Cancel</span> </button>
+            <button mat-raised-button matStepperNext translate type="submit" color="accent" class="text-uppercase"><span
+                translate>Next</span>
+            </button>
+          </div>
+        </form>
+      </mat-step>
+      <mat-step [stepControl]="gradingTermForm">
+        <form fxLayout="column" (ngSubmit)="saveGradingTermDetails(gradingTermForm.value)" [formGroup]="gradingTermForm"
+          #gradeTermDetailsForm="ngForm">
+          <ng-template translate matStepLabel>{{'Grading Term Details' | translate}}</ng-template>
+          <div fxFlexFill fxLayout="column" class="pt-24" fxLayout.gt-sm="row">
+            <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+              <mat-label translate #name>Name</mat-label>
+              <input (blur)="trimTextBoxSpaces('gradingTermForm','termName')" (keyup)="preventSpace($event,'gradingTermForm','termName')" matInput
+                required name="termName" formControlName="termName">
+              <mat-error>
+                <app-validation [labelName]="name.innerText" [validationControl]="gradingTermForm.controls.termName"
+                  [doValidate]="validate">
+                </app-validation>
+              </mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50"
+              class="pl-sm-20">
+              <mat-label translate #displayname>Display Name</mat-label>
+              <input (keyup)="preventSpace($event,'gradingTermForm','displayName')" matInput name="displayName" formControlName="displayName"
+                (blur)="trimTextBoxSpaces('gradingTermForm','displayName')">
+              <mat-error>
+                <app-validation [labelName]="displayname.innerText"
+                  [validationControl]="gradingTermForm.controls.displayName" [doValidate]="validate">
+                </app-validation>
+              </mat-error>
+            </mat-form-field>
+          </div>
+          <div fxLayout="column" class="pt-12" fxFlexFill fxLayout.gt-sm="row">
+            <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100">
+              <mat-label translate #description>Description</mat-label>
+              <input (keyup)="preventSpace($event,'gradingTermForm','description')" matInput name="description" formControlName="description"
+                (blur)="trimTextBoxSpaces('gradingTermForm','description')">
+              <mat-error>
+                <app-validation [labelName]="description.innerText"
+                  [validationControl]="gradingTermForm.controls.description" [doValidate]="validate">
+                </app-validation>
+              </mat-error>
+            </mat-form-field>
+          </div>
+          <div fxFlexFill class="pt-12" fxLayout="column" fxLayout.gt-sm="row">
+            <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="32">
+              <mat-label translate #code>Code</mat-label>
+              <input (keyup)="preventSpace($event,'gradingTermForm','termCode')" matInput name="termCode" formControlName="termCode"
+                (blur)="trimTextBoxSpaces('gradingTermForm','termCode')">
+              <mat-error>
+                <app-validation [labelName]="code.innerText" [validationControl]="gradingTermForm.controls.termCode"
+                  [doValidate]="validate">
+                </app-validation>
+              </mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="outline" fxFlexFill fxFlex="100" fxFlex.gt-sm="36" class="px-sm-20 icon-center"
+              fxLayout="column">
+              <mat-label #startDate translate>Term Start Date</mat-label>
+              <input matInput (keyup)="forceValidation('termStartDate',gradingTermForm)" required
+                [matDatepicker]="picker" formControlName="termStartDate" [min]="academicSessionMinDate"
+                [max]="academicSessionMaxDate">
+              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+              <mat-error>
+                <app-validation [labelName]="startDate.innerText"
+                  [validationControl]="gradingTermForm.controls.termStartDate" [doValidate]="validate">
+                </app-validation>
+              </mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="outline" fxFlexFill fxFlex="100" fxLayout="column" fxFlex.gt-sm="32"
+              class="icon-center">
+              <mat-label #endDate translate>Term End Date</mat-label>
+              <input matInput (keyup)="forceValidation('termEndDate',gradingTermForm)" required
+                [matDatepicker]="picker1" [min]="gradingTermForm.controls.termStartDate.value"
+                [max]="academicSessionMaxDate" formControlName="termEndDate">
+              <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+              <mat-datepicker #picker1></mat-datepicker>
+              <mat-error>
+                <app-validation [labelName]="endDate.innerText"
+                  [validationControl]="gradingTermForm.controls.termEndDate" [doValidate]="validate">
+                </app-validation>
+              </mat-error>
+            </mat-form-field>
+          </div>
+          <div fxFlexFill fxLayout="column" fxLayout.gt-sm="row" class="pt-12">
+            <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+              <mat-label translate #greport>Generate Report Card</mat-label>
+              <mat-select required name="generateReportCard" formControlName="generateReportCard">
+                <mat-option *ngFor="let yesAndNo of filterYesNo" [value]="yesAndNo.value">
+                  {{yesAndNo.label}}
+                </mat-option>
+              </mat-select>
+              <mat-error>
+                <app-validation [labelName]="greport.innerText"
+                  [validationControl]="gradingTermForm.controls.generateReportCard" [doValidate]="validate">
+                </app-validation>
+              </mat-error>
+            </mat-form-field>
+          </div>
+          <div fxLayout="row" fxLayoutAlign="center center" class="mt-20">
+            <button translate mat-raised-button matStepperPrevious type="button" class="text-uppercase mr-12">
+              <span translate>Previous</span>
+            </button>
+            <button translate mat-raised-button matStepperNext type="submit" color="accent" class="text-uppercase">
+              <span translate>Next</span>
+            </button>
+          </div>
+        </form>
+      </mat-step>
+      <mat-step [stepControl]="TestsFormGroup" [completed]="getTestOptional()" [optional]="getTestOptional()"
+        *ngIf="gradingTermForm.value.generateReportCard === 1">
+        <form fxLayout="column" (ngSubmit)="onSelect(TestsFormGroup.value)" [formGroup]="TestsFormGroup"
+          #testsForm="ngForm" [doValidate]="validate">
+          <ng-template translate matStepLabel>{{'Test Contributions/Considerations' | translate}}</ng-template>
+
+          <div fxLayoutAlign="center center" fxFlex.gt-sm="50" fxLayout="column" class="pt-12">
+            <div translate fxLayout="row">ConsiderationMessage</div>
+            <div fxLayout="row" class="pt-8">
+              <mat-radio-group name="opList" [(ngModel)]="radioOptions" [ngModelOptions]="{standalone: true}"
+                (change)="onChangeContribution($event.value)">
+                <mat-radio-button *ngFor="let op of contributionOptions" class="mr-20" [value]="op.id" name="opList">
+                  <span translate>{{ op.name}}</span></mat-radio-button>
+              </mat-radio-group>
+            </div>
+          </div>
+          <div fxFlexFill fxLayout="column" class="pt-24" fxLayout.gt-sm="row">
+            <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+              <mat-label translate #othergradingterm>Prior Grading Term</mat-label>
+              <mat-select name="otherGradingTermId" formControlName="otherGradingTermId">
+                <mat-option *ngIf="priorGradingTerms?.length" [value]="null"></mat-option>
+                <mat-option [style.display]="(termId == gradingTerm?.value) ? 'none' : 'block'"
+                  *ngFor="let gradingTerm of priorGradingTerms" [value]="gradingTerm.value">
+                  {{gradingTerm.label}}
+                </mat-option>
+              </mat-select>
+              <mat-error>
+                <app-validation [labelName]="othergradingterm.innerText"
+                  [validationControl]="TestsFormGroup.controls.otherGradingTermId" [doValidate]="validate">
+                </app-validation>
+              </mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50"
+              class="pl-sm-20">
+              <mat-label translate #testtype>Test Type</mat-label>
+              <mat-select required name="testTypeId" formControlName="testTypeId">
+                <mat-option *ngFor="let testTypes of testTypes" [value]="testTypes.value">
+                  {{testTypes.label}}
+                </mat-option>
+              </mat-select>
+              <mat-error>
+                <app-validation [labelName]="testtype.innerText"
+                  [validationControl]="TestsFormGroup.controls.testTypeId" [doValidate]="validate">
+                </app-validation>
+              </mat-error>
+            </mat-form-field>
+          </div>
+          <div fxFlexFill fxLayout="column" fxLayout.gt-sm="row" class="pt-12">
+            <mat-form-field *ngIf="isContribution" appearance="outline" fxFlexFill fxLayout="column" fxFlex="100"
+              fxFlex.gt-sm="50">
+              <mat-label translate #contribution>Contribution to Subject Grade</mat-label>
+              <input matInput required name="contribution" (keyup)="preventSpace($event,'TestsFormGroup','contribution')" formControlName="contribution"
+                (blur)="trimTextBoxSpaces('TestsFormGroup','contribution')" placeholder="%">
+              <mat-error>
+                <app-validation [labelName]="contribution.innerText"
+                  [validationControl]="TestsFormGroup.controls.contribution" [doValidate]="validate">
+                </app-validation>
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field *ngIf="!isContribution" appearance="outline" fxFlexFill fxLayout="column" fxFlex="100"
+              fxFlex.gt-sm="50">
+              <mat-label translate #consideration>Consideration For Subject Grade</mat-label>
+              <input (keyup)="preventSpace($event,'TestsFormGroup','consideration')"  matInput required name="consideration"
+                formControlName="consideration" (blur)="trimTextBoxSpaces('TestsFormGroup','consideration')"
+                placeholder="%">
+              <mat-error>
+                <app-validation [labelName]="consideration.innerText"
+                  [validationControl]="TestsFormGroup.controls.consideration" [doValidate]="validate">
+                </app-validation>
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50"
+              class="pl-sm-20">
+              <mat-label translate #displayOption>Display Option</mat-label>
+              <mat-select required name="displayOption" formControlName="displayOption">
+                <mat-option *ngFor="let evaluationType of evaluationTypes" [value]="evaluationType.value">
+                  {{evaluationType.label}}
+                </mat-option>
+              </mat-select>
+              <mat-error>
+                <app-validation [labelName]="displayOption.innerText"
+                  [validationControl]="TestsFormGroup.controls.displayOption" [doValidate]="validate">
+                </app-validation>
+              </mat-error>
+            </mat-form-field>
+          </div>
+          <div fxFlexFill fxLayout="column" fxLayout.gt-sm="row" class="pt-12">
+            <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+              <mat-label translate #groupingcriteria>Marks Group Criteria</mat-label>
+              <mat-select (selectionChange)="onSelectMarksGroupCriteria($event)" required name="marksGroupCriteriaId"
+                formControlName="marksGroupCriteriaId">
+                <mat-option *ngFor="let criteria of marksGroupCriteria" [value]="criteria.value">
+                  {{criteria.label}}
+                </mat-option>
+              </mat-select>
+              <mat-error>
+                <app-validation [labelName]="groupingcriteria.innerText"
+                  [validationControl]="TestsFormGroup.controls.marksGroupCriteriaId" [doValidate]="validate">
+                </app-validation>
+              </mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50"
+              class="pl-sm-20">
+              <mat-label translate #criteriacount>Marks Group Criteria Count</mat-label>
+              <input [required]="markGroupRequired" (keyup)="preventSpace($event,'TestsFormGroup','marksGroupCriteriaCount')" matInput
+                [readonly]="+TestsFormGroup.value.marksGroupCriteriaId != 1" name="marksGroupCriteriaCount"
+                (blur)="trimTextBoxSpaces('TestsFormGroup','marksGroupCriteriaCount')"
+                formControlName="marksGroupCriteriaCount" numbersOnly>
+              <mat-error>
+                <app-validation [labelName]="criteriacount.innerText"
+                  [validationControl]="TestsFormGroup.controls.marksGroupCriteriaCount" [doValidate]="validate">
+                </app-validation>
+              </mat-error>
+            </mat-form-field>
+          </div>
+          <div fxFlexFill fxLayout="column" fxLayout.gt-sm="row" class="pt-12">
+            <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+              <mat-label translate #displayedoncard>Displayed On Report Card</mat-label>
+              <mat-select required name="isDisplayOnreportCard" formControlName="isDisplayOnreportCard">
+                <mat-option *ngFor="let yesAndNo of filterYesNo" [value]="yesAndNo.value">
+                  {{yesAndNo.label}}
+                </mat-option>
+              </mat-select>
+              <mat-error>
+                <app-validation [labelName]="displayedoncard.innerText"
+                  [validationControl]="TestsFormGroup.controls.isDisplayOnreportCard" [doValidate]="validate">
+                </app-validation>
+              </mat-error>
+            </mat-form-field>
+            <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" fxLayoutAlign="center start" class="pb-16 pl-24">
+              <div fxLayout="row" fxLayoutAlign="end center">
+                <button translate mat-raised-button type="submit" color="primary" class="text-uppercase"
+                  [disabled]="disableSelect">
+                  <span translate>{{'Select' | translate}}</span> 
+                </button>
+              </div>
+            </div>
+          </div>
+          <mat-error *ngIf="show && isContribution" translate #contibuteError>Total contribution should be 100%
+          </mat-error>
+          <div class="pb-20 pt-24">
+            <div fxLayout="column" class="w-100-p simple-table-container">
+              <app-table [sticky]="false" [settings]="gradingTermTestGridSettings"
+                (rowBasedAction)='deleteMember($event)'>
+              </app-table>
+            </div>
+          </div>
+
+          <div fxLayout="row" fxLayoutAlign="center center" class="mt-20">
+            <button translate mat-raised-button matStepperPrevious type="button" class="text-uppercase mr-12">
+              <span translate>Previous</span>
+            </button>
+            <button translate mat-raised-button matStepperNext type="button" color="accent" class="text-uppercase"
+              [disabled]="disableNext">
+              <span translate>Next</span>
+            </button>
+          </div>
+        </form>
+      </mat-step>
+      <mat-step [stepControl]="reportsForm" [completed]="getReportsIsOptional()" [optional]="getReportsIsOptional()"
+        *ngIf="gradingTermForm.value.generateReportCard === 1">
+        <form fxLayout="column" [formGroup]="reportsForm">
+          <ng-template translate matStepLabel>{{'Report Card Configuration' | translate}}</ng-template>
+          <div fxLayout="column" class="pt-12" fxLayout.gt-sm="row">
+            <div appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" translate>Please select the
+              Evaluation Type to be used in the Report Card for this Grading term ?</div>
+            <div class="pl-sm-20" appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" translate>Please
+              select the Report card Template to use for this Grading term ?</div>
+          </div>
+          <div fxFlexFill fxLayout="column" fxLayout.gt-sm="row">
+            <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+              <mat-label translate #evaluationtype>Evaluation Type</mat-label>
+              <mat-select required name="evaluationTypeId" formControlName="evaluationTypeId">
+                <mat-option *ngFor="let evaluationType of evaluationTypes" [value]="evaluationType.value">
+                  {{evaluationType.label}}
+                </mat-option>
+              </mat-select>
+              <mat-error>
+                <app-validation [labelName]="evaluationtype.innerText"
+                  [validationControl]="reportsForm.controls.evaluationTypeId" [doValidate]="validate">
+                </app-validation>
+              </mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50"
+              class="pl-sm-20">
+              <mat-label translate #reportID>Report Card Template</mat-label>
+              <mat-select required name="reportTemplateId" formControlName="reportTemplateId">
+                <mat-option *ngFor="let template of templates" [value]="template.id">
+                  {{template.name}}
+                </mat-option>
+              </mat-select>
+              <mat-error>
+                <app-validation [labelName]="reportID.innerText"
+                  [validationControl]="reportsForm.controls.reportTemplateId" [doValidate]="validate">
+                </app-validation>
+              </mat-error>
+            </mat-form-field>
+          </div>
+          <div translate class="pt-12">Do You Want To Generate an Overall Grade in the Report Card based on the Markes obtained in the
+            each course ?</div>
+          <div fxFlexFill fxLayout="column" fxLayout.gt-sm="row">
+            <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+              <mat-label translate #overallGrade>Generate Overall Grade</mat-label>
+              <mat-select required name="generateOverAllGrade" formControlName="generateOverAllGrade"
+                (selectionChange)="onChangeOverallGrade($event)">
+                <mat-option *ngFor="let yesAndNo of filterYesNo" [value]="yesAndNo.value">
+                  {{yesAndNo.label}}
+                </mat-option>
+              </mat-select>
+              <mat-error>
+                <app-validation [labelName]="overallGrade.innerText"
+                  [validationControl]="reportsForm.controls.generateOverAllGrade" [doValidate]="validate">
+                </app-validation>
+              </mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50"
+              class="pl-sm-20">
+              <mat-label translate #overallDisplay>Overall Grade Display Name</mat-label>
+              <input (keyup)="preventSpace($event,'reportsForm','overALLGradeDisplayName')" matInput name="overALLGradeDisplayName"
+                formControlName="overALLGradeDisplayName">
+              <mat-error>
+                <app-validation [labelName]="overallDisplay.innerText"
+                  [validationControl]="reportsForm.controls.overALLGradeDisplayName" [doValidate]="validate">
+                </app-validation>
+              </mat-error>
+            </mat-form-field>
+          </div>
+          <div translate class="pt-12">Do you want the Report Card to include additional columns based on the previous or current
+            Grading Term Data to calculate the overall Grade ?</div>
+          <div fxLayout="column" fxLayout.gt-sm="row">
+            <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+              <mat-label translate #additionalColumn>Additional Columns</mat-label>
+              <mat-select (selectionChange)="onAdditionalColumnSelect($event)" required name="additionalColumns"
+                formControlName="additionalColumns">
+                <mat-option *ngFor="let yesAndNo of filterYesNo" [value]="yesAndNo.value">
+                  {{yesAndNo.label}}
+                </mat-option>
+              </mat-select>
+              <mat-error>
+                <app-validation [labelName]="additionalColumn.innerText"
+                  [validationControl]="reportsForm.controls.additionalColumns" [doValidate]="validate">
+                </app-validation>
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <fieldset *ngIf="totalContribution < 100 && reportsForm.value?.additionalColumns" class="border p-20">
+            <legend translate>Additional Columns</legend>
+            <div fxLayout="column" class="pt-12" fxLayout.gt-sm="row" fxLayoutAlign="start center">             
+              <mat-checkbox translate formControlName="isPresentGradingTerm" (change)="onChangeThisTerm($event)" class="mb-20">
+                {{'THIS GRADING TERM' | translate}}</mat-checkbox>
+                <small class="px-8 mb-20">(OR)</small>
+              <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="45">
+                <mat-label translate #othergradingterm>Prior Grading Term</mat-label>
+                <mat-select [required]="reportsForm.value?.additionalColumns ? true : false"
+                  [disabled]="reportsForm.value.isPresentGradingTerm" name="otherGradingTermId"
+                  formControlName="usingGradingTermId">
+                  <mat-option *ngIf="priorGradingTerms?.length"></mat-option>
+                  <mat-option [style.display]="(termId == gradingTerm?.value) ? 'none' : 'block'"
+                    *ngFor="let gradingTerm of priorGradingTerms" [value]="gradingTerm.value">
+                    {{gradingTerm.label}}
+                  </mat-option>
+                </mat-select>
+                <mat-error>
+                  <app-validation [labelName]="othergradingterm.innerText"
+                    [validationControl]="reportsForm.controls.usingGradingTermId" [doValidate]="validate">
+                  </app-validation>
+                </mat-error>
+              </mat-form-field>           
+              <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="45"
+                class="pl-sm-20">
+                <mat-label translate #overallDisplay>Contribution</mat-label>
+                <input [required]="reportsForm.value?.additionalColumns ? true : false" (keyup)="preventSpace($event,'reportsForm','contribution')"
+                  matInput required name="selectedContribution" placeholder="%" formControlName="contribution">
+                <mat-error>
+                  <app-validation [labelName]="overallDisplay.innerText"
+                    [validationControl]="reportsForm.controls.contribution" [doValidate]="validate">
+                  </app-validation>
+                </mat-error>
+              </mat-form-field>           
+            </div>
+            <div fxLayout="column" class="pt-12" fxLayout.gt-sm="row">
+              <mat-checkbox formControlName="isVisible" class="pr-sm-20 mb-20" fxLayoutAlign="start center">{{'Is this Column visible on the Report card' | translate}}
+              </mat-checkbox>
+              <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="40">
+                <mat-label translate #columnDisplay>Column Display Name</mat-label>
+                <input required (keyup)="preventSpace($event,'reportsForm','title')" matInput name="columnDisplayName" formControlName="title"
+                  (blur)="trimTextBoxSpaces('reportsForm','title')">
+                <mat-error>
+                  <app-validation [labelName]="columnDisplay.innerText" [validationControl]="reportsForm.controls.title"
+                    [doValidate]="validate">
+                  </app-validation>
+                </mat-error>
+              </mat-form-field>        
+            </div>
+
+            <div class="pl-sm-20 mt-12" fxLayout="row" fxLayoutAlign="end center">
+              <button translate mat-raised-button type="button" color="primary" class="text-uppercase mr-12"
+                (click)="onClear()">
+                <span translate>{{'Reset' | translate}}</span> 
+              </button>
+              <button translate mat-raised-button type="button" color="accent" class="text-uppercase"
+                (click)="onSelectAdditionColumns()">
+               <span translate>{{'Select' | translate}}</span> 
+              </button>
+            </div>
+          </fieldset>
+          <div *ngIf="reportsForm.value?.additionalColumns && additionalColumnData?.length"
+            class="simple-table-container mat-elevation-z3 my-20 radius-t-20 responsive-normal-table">
+            <table class="simple">
+              <thead>
+                <tr>
+                  <th translate>COLUMN NAME</th>
+                  <th translate>GRADING TERM</th>
+                  <th translate>CONTRIBUTION %</th>
+                  <th translate>ISVISIBLE</th>
+                  <th translate>ACTION</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let column of additionalColumnData; let i = index;">
+                  <td>{{column?.title ? column?.title : '-'}}</td>
+                  <td>
+                    {{column?.usingGradingTermId ? getLabelOfGradingTerms(column?.usingGradingTermId) : gradingTermForm.value?.termName }}
+                  </td>
+                  <td>{{column?.contribution}}</td>
+                  <td>{{column?.isVisible ? 'YES' : 'NO'}}</td>
+                  <td class="cursor-pointer" (click)="onDeleteAdditionalColumn(i)">
+                    <mat-icon class="red-400-fg">delete</mat-icon>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div fxLayout="row" fxLayoutAlign="center center" class="mt-20">
+            <button translate mat-raised-button matStepperPrevious type="button" class="text-uppercase mr-12">
+              <span translate>Previous</span>
+            </button>
+            <button translate mat-raised-button matStepperNext type="button" color="accent" class="text-uppercase"
+              (click)="onClickNext()">
+              <span translate>Next</span>
+            </button>
+          </div>
+        </form>
+      </mat-step>
+      <mat-step [stepControl]="SubmitForm">
+        <form fxLayout="column" (ngSubmit)="createOrUpdateGradingTerms()" [formGroup]="SubmitForm" #submitForm="ngForm">
+          <ng-template translate matStepLabel>{{'Done' | translate}}</ng-template>
+          <div fxFlex="80" class="text-center font-size-18 m-auto pb-20 pt-8" translate>Please verify the entered
+            information before your final submit</div>
+          <div fxLayout="row" fxLayoutAlign="center center" class="mt-32 pt-24">
+            <button mat-raised-button matStepperPrevious translate type="button" class="text-uppercase mr-12">
+              <span translate>Previous</span>
+            </button>
+            <button mat-raised-button type="submit" class="text-uppercase"
+              color="accent">{{(isUpdateData ? 'Update':'Submit') | translate}}</button>
+          </div>
+        </form>
+      </mat-step>
+    </mat-vertical-stepper>
+  </div>
+</ng-template>

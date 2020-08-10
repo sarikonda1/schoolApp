@@ -1,0 +1,249 @@
+<div class="content p-sm-24">
+  <div fxLayout="row" fxLayoutAlign="space-between center " class="pb-8 px-12">
+    <div class="text-uppercase font-size-18" translate>Syllabus Dashboard</div>
+    <div>
+      <button mat-raised-button color="primary" translate (click)="back()"
+        class="text-uppercase mr-4">{{'Back' | translate}}</button>
+        <button mat-button (click)="getHelpText('Syllabus Dashboards')">
+          <mat-icon>info</mat-icon>
+        </button>
+    </div>
+  </div>
+  <div class="mat-elevation-z3 simple-table-container radius-t-20 p-20" fxLayout="column">
+    <mat-tab-group  mat-stretch-tabs (selectedIndexChange)="onLoad=false;">
+      <mat-tab label="{{'Progress By Class & Section' | translate}}">
+          <form [formGroup]="classSectionProgressForm" fxLayout="column" fxFlex.gt-sm="100" fxFlex="100">
+            <div fxLayout.gt-sm="row" fxLayout="column" fxFlex="100" class="font-size-18 px-16 pt-20">
+              <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="32"
+                class="pr-sm-12">
+                <mat-label #board translate>Board</mat-label>
+                <mat-select formControlName="boardId" (selectionChange)="boardChanged($event)" >
+                  <mat-option *ngFor="let board of availableSchoolBoards" [value]="board.value">
+                    {{ board.label }}</mat-option>
+                </mat-select>
+                <mat-error>
+                  <app-validation [labelName]='board.innerText'
+                    [validationControl]="classSectionProgressForm.controls.sectionId" [doValidate]="validate">
+                  </app-validation>
+                </mat-error>
+              </mat-form-field>
+              <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="32"
+                class="pr-sm-12">
+                <mat-label #class translate>Class</mat-label>
+                <mat-select (selectionChange)="classChanged($event)" formControlName="classId" >
+                  <mat-option *ngFor="let class of availableClasses" [value]="class.value">
+                    {{ class.label }}</mat-option>
+                </mat-select>
+                <mat-error>
+                  <app-validation [labelName]='class.innerText'
+                    [validationControl]="classSectionProgressForm.controls.classId" [doValidate]="validate">
+                  </app-validation>
+                </mat-error>
+              </mat-form-field>
+              <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="36">
+                <mat-label #section translate>Section</mat-label>
+                <mat-select formControlName="sectionId" >
+                  <mat-option *ngFor="let section of availableSections" [value]="section.value">
+                    {{ section.label }}</mat-option>
+                </mat-select>
+                <mat-error>
+                  <app-validation [labelName]='section.innerText'
+                    [validationControl]="classSectionProgressForm.controls.sectionId" [doValidate]="validate">
+                  </app-validation>
+                </mat-error>
+              </mat-form-field>
+            </div>
+            <div fxLayoutAlign="end center" class="px-20 pb-20">
+              <button type="reset" mat-raised-button color="primary" class="text-uppercase mr-8" (click)="onClear(false)" >{{'Clear' | translate}}</button>
+              <button type="submit" mat-raised-button color="accent" class="text-uppercase"
+                (click)="onClickClassSection()" >{{'Search' | translate}}</button>
+            </div>
+          </form>
+      </mat-tab>
+      <mat-tab label="{{'Progress By Teacher' | translate}}">
+            <form fxLayout="column" fxLayoutAlign="center center" fxFlex="100">
+              <div fxLayout="row" fxFlexFill fxLayoutAlign="center center" class="font-size-18 px-16 pt-20">
+                <af-select appearance="outline" label="Teacher" [optionGroupRequired]="false" fxLayout="column" fxFlex="100" fxFlex.gt-sm="40" [required]="false"
+                  [formControl]="teachersControl" [options]="staffList | async" placeholder="Select Teacher">
+                </af-select>
+              </div>
+              <div fxLayoutAlign="end center" class="px-20 pb-20">
+                <button mat-raised-button type="reset" color="primary" class="text-uppercase mr-8" (click)="onClear()" >{{'Clear' | translate}}</button>
+                <button mat-raised-button type="submit" color="accent" (click)="onClickTeacher()"
+                  class="text-uppercase" >{{'Search' | translate}}</button>
+              </div>
+            </form>
+      </mat-tab>
+     </mat-tab-group>
+
+     <div *ngIf="onLoad && !syllabusData?.syllabusClassSectionView?.length && !teachersData?.teachersSyllabusProgresses?.length" class="errorMsg">
+      <p class="red-text text-center mb-0 font-weight-bold p-24" translate>No Syllabus Found</p>
+    </div>
+    <div *ngIf="onLoad && (teachersData?.teachersSyllabusProgresses?.length || syllabusData?.syllabusClassSectionView?.length)" fxLayout="column" fxLayout.gt-sm="row"  class="p-16 px-12">
+      <div appearance="outline" class="icon-center">Academic Session (Duration %)
+      </div>
+      <div appearance="outline" class="example-full-width" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" class="px-sm-20">
+        <progress-bar [progress]="teachersData?.academicSessionCompletedPercentage || syllabusData?.academicSessionCompletedPercentage" [color]="completedColor">
+        </progress-bar>
+      </div>
+    </div>
+
+    <mat-accordion multi class="mat-table border" *ngIf="onLoad && syllabusData?.syllabusClassSectionView?.length">
+      <section matSort class="mat-header-row border-bottom accent">
+        <span class="mat-header-cell" translate>Board</span>
+        <span class="mat-header-cell" translate>Class</span>
+        <span class="mat-header-cell" translate>Section</span>
+        <span class="mat-header-cell" translate>Overall Progress</span>
+      </section>
+      <mat-expansion-panel *ngFor="let item of syllabusData?.syllabusClassSectionView" [disabled]="!item?.classSectionProgressView?.length">
+        <mat-expansion-panel-header class="mat-row">
+          <span class="mat-cell text-truncate pr-4">{{item.schoolBoard}}</span>
+          <span class="mat-cell text-truncate pr-4">{{item.className}}</span>
+          <span class="mat-cell text-truncate pr-4">{{item.section}}</span>
+          <span class="mat-cell text-truncate pr-4">
+            <progress-bar [progress]="item?.completedPercentage" [color]="completedColor">
+            </progress-bar>
+          </span>
+        </mat-expansion-panel-header>
+        <!-- course details -->
+        <div class="border header-height">
+          <section matSort class="mat-header-row primary">
+            <span class="mat-header-cell" translate>Course</span>
+            <span class="mat-header-cell" translate>Teacher</span>
+            <span class="mat-header-cell" translate>Course Progress</span>
+          </section>
+
+          <mat-expansion-panel *ngFor="let teacher of item.classSectionProgressView">
+            <mat-expansion-panel-header class="mat-row">
+              <span class="mat-cell text-truncate pr-4">{{teacher.courseName}}</span>
+              <span class="mat-cell text-truncate pr-4">{{teacher.teacherName ? teacher.teacherName : '---'}}</span>
+              <span class="mat-cell text-truncate pr-4">
+                <progress-bar [progress]="teacher?.progress?.completedCount" [color]="completedColor">
+                </progress-bar>
+              </span>
+            </mat-expansion-panel-header>
+            <!-- chapter details -->
+            <div class="border">
+              <section matSort class="mat-header-row primary">
+                <span class="mat-header-cell" translate>Item</span>
+                <span class="mat-header-cell" translate>Completed</span>
+                <span class="mat-header-cell" translate>Pending</span>
+              </section>
+
+              <mat-expansion-panel *ngFor="let chapter of teacher?.syllabusSubView; let f = first" [disabled]="!f || !chapter?.syllabusSubProgressView?.length">
+                <mat-expansion-panel-header class="mat-row">
+                  <span class="mat-cell text-truncate pr-4">{{chapter.item}}</span>
+                  <span class="mat-cell text-truncate pr-4">{{chapter.completeCount}}</span>
+                  <span class="mat-cell text-truncate pr-4">{{chapter.pendingcount}}</span>
+                </mat-expansion-panel-header>
+                <!-- topics details -->
+                <div class="border">
+                  <section matSort class="mat-header-row">
+                    <span class="mat-header-cell" translate>Chapter</span>
+                    <span class="mat-header-cell" translate>Status</span>
+                    <span class="mat-header-cell" translate>Topics Completed</span>
+                    <span class="mat-header-cell" translate>Topics Pending</span>
+                  </section>
+                  <mat-expansion-panel *ngFor="let topics of chapter?.syllabusSubProgressView" disabled>
+                    <mat-expansion-panel-header class="mat-row">
+                      <span class="mat-cell text-truncate pr-4">{{topics.name}}</span>
+                      <span class="mat-cell text-truncate pr-4">{{topics.status}}</span>
+                      <span class="mat-cell text-truncate pr-4">{{topics.topicCompletedCount}}</span>
+                      <span class="mat-cell text-truncate pr-4">{{topics.topicPendingCount}}</span>
+                    </mat-expansion-panel-header>
+                    <!-- topics details -->
+                  </mat-expansion-panel>
+                </div>
+              </mat-expansion-panel>
+            </div>
+          </mat-expansion-panel>
+        </div>
+      </mat-expansion-panel>
+    </mat-accordion>
+
+
+    <mat-accordion multi class="mat-table border" *ngIf="onLoad && teachersData?.teachersSyllabusProgresses?.length">
+      <section matSort class="mat-header-row border-bottom accent">
+        <span class="mat-header-cell" translate>Teacher</span>
+        <span class="mat-header-cell" translate>Teacher Progress</span>
+      </section>
+    
+      <mat-expansion-panel *ngFor="let teacher of teachersData?.teachersSyllabusProgresses">
+        <mat-expansion-panel-header class="mat-row">
+          <span class="mat-cell text-truncate pr-4">{{teacher.teacherName}}</span>
+          <span class="mat-cell text-truncate pr-4">
+            <progress-bar [progress]="teacher?.completedPercentage" [color]="completedColor">
+            </progress-bar>
+          </span>
+        </mat-expansion-panel-header>
+        <!-- chapter details -->
+            <!-- chapter details -->
+            <div class="border header-height">
+              <section matSort class="mat-header-row primary">
+                <span class="mat-header-cell" translate>Board</span>
+                <span class="mat-header-cell" translate>Class</span>
+                <span class="mat-header-cell" translate>Section</span>
+                <span class="mat-header-cell" translate>Subject</span>
+                <span class="mat-header-cell" translate>Course Progress</span>
+              </section>
+              <mat-expansion-panel *ngFor="let chapter of teacher.syllabusDashboardList">
+                <mat-expansion-panel-header class="mat-row">
+                  <span class="mat-cell text-truncate pr-4">{{chapter.schoolBoard}}</span>
+                  <span class="mat-cell text-truncate pr-4">{{chapter.className}}</span>
+                  <span class="mat-cell text-truncate pr-4">{{chapter.section}}</span>
+                  <span class="mat-cell text-truncate pr-4">{{chapter.subject}}</span>
+                  <span class="mat-cell text-truncate pr-4">
+                    <progress-bar [progress]="chapter?.progress?.completedCount" [color]="completedColor">
+                    </progress-bar>
+                  </span>
+                </mat-expansion-panel-header>
+                <!-- topics details -->
+                <div class="border">
+                  <section matSort class="mat-header-row primary">
+                    <span class="mat-header-cell" translate>Item</span>
+                    <span class="mat-header-cell" translate>Completed</span>
+                    <span class="mat-header-cell" translate>Pending</span>
+                  </section>
+                  <mat-expansion-panel *ngFor="let topics of chapter?.syllabusSubView; let f = first" [disabled]="!f || !topics?.syllabusSubProgressView?.length" >
+                    <mat-expansion-panel-header class="mat-row">
+                      <span class="mat-cell text-truncate pr-4">{{topics.item}}</span>
+                      <span class="mat-cell text-truncate pr-4">{{topics.completeCount}}</span>
+                      <span class="mat-cell text-truncate pr-4">{{topics.pendingcount}}</span>
+                    </mat-expansion-panel-header>
+                    <div class="border">
+                      <section matSort class="mat-header-row primary">
+                        <span class="mat-header-cell" translate>Chapter</span>
+                        <span class="mat-header-cell" translate>Status</span>
+                        <span class="mat-header-cell" translate>Topics Completed</span>
+                        <span class="mat-header-cell" translate>Topics Pending</span>
+                      </section>
+                      <mat-expansion-panel *ngFor="let topic of topics?.syllabusSubProgressView" disabled>
+                        <mat-expansion-panel-header class="mat-row">
+                          <span class="mat-cell text-truncate pr-4">{{topic.name}}</span>
+                          <span class="mat-cell text-truncate pr-4">{{topic.status}}</span>
+                          <span class="mat-cell text-truncate pr-4">{{topic.topicCompletedCount}}</span>
+                          <span class="mat-cell text-truncate pr-4">{{topic.topicPendingCount}}</span>
+                        </mat-expansion-panel-header>
+                        <!-- topics details -->
+                      </mat-expansion-panel>
+                    </div>
+                  </mat-expansion-panel>
+                </div>
+              </mat-expansion-panel>
+            </div>
+      </mat-expansion-panel>
+    </mat-accordion>
+
+    <div *ngIf="onLoad && (teachersData?.teachersSyllabusProgresses?.length || syllabusData?.syllabusClassSectionView?.length)" fxlayout="row" fxLayoutAlign="center center" class="px-16 pt-12">
+      <div class="pr-28" fxLayoutAlign="center center">
+        <mat-icon class="green-fg green-bg mr-8 mat-elevation-z3 border-radius-2">crop_din</mat-icon> Completed
+      </div>
+  
+      <div fxLayoutAlign="cnter center">
+        <mat-icon class="grey-400-fg grey-400-bg mr-8 mat-elevation-z3 border-radius-2">crop_din</mat-icon> Pending
+      </div>
+    </div>
+  </div>
+</div>
+
+   

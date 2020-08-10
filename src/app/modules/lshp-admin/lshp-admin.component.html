@@ -1,0 +1,40 @@
+<div *ngIf="editShow" fxLayout="row" fxLayout.lt-sm="column" fxLayoutAlign.gt-sm="center center" class="px-sm-60 mt-32">
+    <div fxlayout="column" fxFlex="30" fxFlex.lt-sm="100" fxLayoutAlign.lt-sm="center" fxLayoutAlign="start center"
+        class="text-uppercase pb-20" translate>manageinstitution</div>
+    <div fxlayout="column" fxFlex="40" fxFlex.lt-sm="100" fxLayoutAlign.lt-sm="center" class="px-12"
+        fxLayoutAlign="center center">
+        <mat-form-field appearance="outline" class="w-100-p">
+            <mat-label #typeid translate>institute</mat-label>
+            <mat-select [(ngModel)]="instituteid" (selectionChange)="instituteNameDetails($event)">
+                <mat-option *ngFor="let instituteDetails of institutions" [value]="instituteDetails.id">
+                   {{instituteDetails.name}}-{{instituteDetails.code}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+    <div fxlayout="column" fxFlex="30" fxFlex.lt-sm="100" fxLayoutAlign.lt-sm="center" fxLayoutAlign="end center"
+        class="pb-20">
+        <button (click)="addInstitute()" mat-raised-button type="button" color="accent" class="text-uppercase"><span>{{'addinstitution' | translate}}</span>  
+        </button>
+    </div>
+</div>
+
+
+
+<mat-tab-group *ngIf="display" [selectedIndex]="index" (selectedIndexChange)="selected($event)" class="manage-institue pt-32">
+    <mat-tab label="{{'INSTITUTION DETAILS' | translate}}">
+        <div *ngIf="detailsShow">
+            <app-institute-details [data]="selectedChanged"></app-institute-details>
+        </div>
+    </mat-tab>
+    <mat-tab label="{{'INSTITUTION LICENSE' | translate}}">
+        <div *ngIf="liscenseShow">
+            <app-institute-license [data]="selectedChanged"></app-institute-license>
+        </div>
+    </mat-tab>
+    <mat-tab label="{{'MANAGE USERS' | translate}}" >
+        <div *ngIf="userShow">
+            <app-create-user-institute [data]="selectedChanged"></app-create-user-institute>
+        </div>
+    </mat-tab>
+</mat-tab-group>

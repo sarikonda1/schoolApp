@@ -1,0 +1,157 @@
+<div class="px-sm-40 pb-20">
+  <div class="w-100-p mat-elevation-z6 simple-table-container radius-t-20" fxLayout="column">
+    <div fxLayout="row" fxLayoutAlign="start center" class="p-20 border-bottom gridHeader">
+      <div class="text-right gridRightBtn" fxLayout="column" fxFlex="100" fxLayoutAlign="end">
+        <div class="example-button-row" fxLayout="row" fxLayoutAlign="end center">
+          <button (click)="editSchool()" mat-raised-button color="accent" translate class="text-uppercase">{{'edit' | translate}}</button>
+          <button mat-button>
+            <mat-icon class="font-size-28 grey-600-fg" (click)="getHelpText('School Details')">info</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+    <mat-list fxLayout.gt-xs="row wrap" fxFlex="100" fxLayout.lt-sm="column" class="institution-details pt-0 confirm-table">
+      <mat-list-item fxLayout="column" fxFlex.gt-sm="50" *ngIf="schoolDetails.name">
+        <div fxLayout="row" fxFlex="50"><strong><span translate>schoolname</span></strong></div>
+        <div fxLayout="row" fxFlex="50"><span class="pr-4">:</span>{{schoolDetails.name}}</div>
+      </mat-list-item>
+
+      <mat-list-item fxLayout="column" fxFlex.gt-sm="50" *ngIf="schoolDetails.schoolCode">
+          <div fxLayout="row" fxFlex="50"><strong><span translate>Code</span></strong></div>
+          <div fxLayout="row" fxFlex="50"><span class="pr-4">:</span>{{schoolDetails.schoolCode}}</div>
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex.gt-sm="50" *ngIf="schoolDetails.currencyName">
+          <div fxLayout="row" fxFlex="50"><strong><span translate>Currency</span></strong></div>
+          <div fxLayout="row" fxFlex="50"><span class="pr-4">:</span>{{schoolDetails.currencyName}}</div>
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex.gt-sm="50" *ngIf="schoolDetails.schoolRegCode">
+          <div fxLayout="row" fxFlex="50"><strong><span translate>School Registration Code</span></strong></div>
+          <div fxLayout="row" fxFlex="50"><span class="pr-4">:</span>{{schoolDetails.schoolRegCode}}</div>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex.gt-sm="50" *ngIf="schoolDetails.email1">
+          <div fxLayout="row" fxFlex="50"><strong><span translate>Email 1</span></strong></div>
+          <div fxLayout="row" fxflex="50"><span class="pr-4">:</span>{{schoolDetails.email1}}</div>
+        </mat-list-item>
+  
+        <mat-list-item fxLayout="column" fxFlex.gt-sm="50" *ngIf="schoolDetails.email2">
+          <div fxLayout="row" fxFlex="50"><strong><span translate>Email 2</span></strong></div>
+          <div fxLayout="row" fxflex="50"><span class="pr-4">:</span>{{schoolDetails.email2}}</div>
+        </mat-list-item>
+      <mat-list-item fxLayout="column" fxFlex.gt-sm="50" *ngIf="schoolDetails.website">
+        <div fxLayout="row" fxFlex="50"><strong><span translate>website</span></strong></div>
+        <div fxLayout="row" fxFlex="50"><span class="pr-4">:</span>{{schoolDetails?.website}}</div>
+      </mat-list-item>
+
+      <mat-list-item fxLayout="column" fxFlex.gt-sm="50">
+        <div fxLayout="row" fxFlexFill fxFlex="50" fxLayoutAlign="start"><strong><span translate>address</span></strong></div>
+        <div fxLayout="row" fxFlex="50"><span class="pr-4">:</span>{{schoolDetails.line1}}</div>
+      </mat-list-item>
+
+      <mat-list-item fxLayout="column" fxFlex.gt-sm="50" *ngIf="schoolDetails.city">
+        <div fxLayout="row" fxFlex="50"><strong><span translate>city</span></strong></div>
+        <div fxLayout="row" fxflex="50"><span class="pr-4">:</span>{{schoolDetails.city}}</div>
+      </mat-list-item>
+      <mat-list-item fxLayout="column" fxFlex.gt-sm="50" *ngIf="schoolDetails.state">
+        <div fxLayout="row" fxFlex="50"><strong><span translate>state</span></strong></div>
+        <div fxLayout="row" fxFlex="50"><span class="pr-4">:</span>{{schoolDetails.state}}</div>
+      </mat-list-item>
+      <mat-list-item fxLayout="column" fxFlex.gt-sm="50" *ngIf="schoolDetails.country">
+        <div fxLayout="row" fxFlex="50"><strong><span translate>country</span></strong></div>
+        <div fxLayout="row" fxFlex="50"><span class="pr-4">:</span>{{schoolDetails.country}}</div>
+      </mat-list-item>
+
+      <mat-list-item fxLayout="column" fxFlex.gt-sm="50" *ngIf="schoolDetails.pincode" class="border-bottom">
+        <div fxLayout="row" fxFlex="50"><strong><span translate>pincode</span></strong></div>
+        <div fxLayout="row" fxFlex="50"><span class="pr-4">:</span>{{schoolDetails.pincode}}</div>
+      </mat-list-item>
+      <!--Two fields-->
+      <mat-list-item fxLayout="column" fxFlex.gt-sm="50" class="two-rows">
+        <div fxLayout="row wrap" fxFlexFill fxFlex="100">
+          <mat-list-item fxLayout="column" fxFlex.gt-sm="100" class="px-16" *ngIf="schoolDetails.mobileTel">
+            <div fxLayout="row" fxFlex="50"><strong><span translate>mobilenumber</span></strong></div>
+            <div fxLayout="row" fxflex="50"><span class="pr-4">:</span>{{schoolDetails.mobileTel}}</div>
+          </mat-list-item>
+          <mat-list-item fxLayout="column" fxFlex.gt-sm="100" class="px-16 border-bottom" *ngIf="schoolDetails.otherTel">
+            <div fxLayout="row" fxFlex="50"><strong><span translate>alternatemobilenumber</span></strong></div>
+            <div fxLayout="row" fxflex="50"><span class="pr-4">:</span>{{schoolDetails.otherTel}}</div>
+          </mat-list-item>
+        </div>
+      </mat-list-item>
+
+      <mat-list-item fxLayout="column" fxFlex.gt-sm="50" *ngIf="schoolDetails.landTel">
+        <div fxLayout="row" fxFlex="50"><strong><span translate>landlinenumber</span></strong></div>
+        <div fxLayout="row" fxflex="50"><span class="pr-4">:</span>{{schoolDetails.landTel}}</div>
+      </mat-list-item>
+    </mat-list>
+
+    <mat-list fxLayout.gt-xs="row wrap" fxFlex="100" fxLayout.lt-sm="column" class="confirm-table" *ngIf="schoolDetails.schoolBoards">
+      <div fxLayout="column" fxFlex="100" class="border-bottom p-16 accent-fg font-size-18">
+        <div fxLayout="row" fxFlex="100"><strong><span translate>boarddetails</span></strong></div>
+      </div>
+    </mat-list>
+
+    <mat-list fxLayout.gt-xs="row wrap" fxFlex="100" fxLayout.lt-sm="column" class="confirm-table2 pt-0">
+      <ng-container *ngFor="let item of schoolDetails.schoolBoards; let board=index">
+        <mat-list-item *ngIf="schoolDetails.schoolBoards[board]" fxLayout="column" fxFlex.gt-sm="50" fxFlex="100">
+          <div fxLayout="row" fxFlex="50"><strong><span translate>boardname</span></strong></div>
+          <div class="text-truncate" fxLayout="row" fxFlex="50"><span class="pr-4">:</span>{{item.name}}{{item.code ? ' - ' + item.code : ''}}</div>
+        </mat-list-item>
+        <mat-list-item *ngIf="schoolDetails.schoolBoards[board]" fxLayout="column" fxFlex.gt-sm="50" fxFlex="100">
+          <div fxLayout="row" fxFlex="50"><strong><span translate>affiliationcode</span></strong></div>
+          <div fxLayout="row" fxFlex="50"><span class="pr-4">:</span>{{item.affiliationCode}}</div>
+        </mat-list-item>
+      </ng-container>
+    </mat-list>
+
+    <mat-list fxLayout.gt-xs="row wrap" fxFlex="100" fxLayout.lt-sm="column" class="confirm-table border-top border-bottom" *ngIf="schoolDetails.schoolBoards">
+      <div fxLayout="column" fxFlex="100" class="p-16 accent-fg font-size-18">
+        <div fxLayout="row" fxFlex="100"><strong><span translate>licencedetails</span></strong></div>
+      </div>
+    </mat-list>
+
+    <mat-list fxLayout.gt-xs="row wrap" fxFlex="100" fxLayout.lt-sm="column" class="confirm-table2 pt-0" *ngIf = "schoolDetails.institutionLicenseSchools">
+  
+    <mat-list-item fxLayout="column" fxFlex.gt-sm="50">
+      <div fxLayout="row" fxFlex="50"><strong><span translate>Billing Cycle</span></strong></div>
+      <div class="text"><span class="pr-4">:</span>{{schoolDetails.institutionLicenseSchools.licenseName}}</div>
+    </mat-list-item>
+      <mat-list-item fxLayout="column" fxFlex.gt-sm="50" >
+      <div fxLayout="row" fxFlex="50"><strong><span translate>numberofschools</span></strong></div>
+      <div class="text"><span class="pr-4">:</span>{{ schoolDetails.institutionLicenseSchools.numberOfSchools}}</div>
+    </mat-list-item>
+      <mat-list-item fxLayout="column" fxFlex.gt-sm="50" >
+      <div fxLayout="row" fxFlex="50"><strong><span translate>billingamount</span></strong></div>
+      <div class="text"><span class="pr-4">:</span>{{ schoolDetails.institutionLicenseSchools.billingAmount}}</div>
+    </mat-list-item>
+  </mat-list>
+ 
+
+
+    <mat-list fxLayout.gt-xs="row wrap" fxFlex="100" fxLayout.lt-sm="column" class="confirm-table border-bottom border-top">
+      <div fxLayout="column" fxFlex="100" class="p-16 accent-fg font-size-18">
+        <div fxLayout="row" fxFlex="100"><strong><span translate>Branding</span></strong></div>
+      </div>
+    </mat-list>
+
+    <mat-list fxLayout.gt-xs="row wrap" fxFlex="100" fxLayout.lt-sm="column" class="confirm-table2 pt-0">
+        <mat-list-item fxLayout="column" fxFlex.gt-sm="50" fxFlex="100" class="py-8">
+            <div fxLayout="row" fxFlex="50"><strong><span translate>symbollogo:</span></strong></div>
+            <div fxLayout="row" fxflex="50"><span class="pr-4"></span>
+              <img class="w-60 h-60 primary-bg mat-elevation-z3 radius-10 obj-fit-img" [src]="logoImgProp?.src" *ngIf="logoImgProp?.src" alt="Launchship" />
+            </div>
+          </mat-list-item>
+          <mat-list-item fxLayout="column" fxFlex.gt-sm="50" class="py-8">
+            <div fxLayout="row" fxFlex="50"><strong><span translate>namelogo:</span></strong></div>
+            <div fxLayout="row" fxflex="50"><span class="pr-4"></span>
+              <img class="primary-bg mat-elevation-z3 name-logo" [src]="nameImgProp?.src" *ngIf="nameImgProp?.src" alt="Launchship" />
+            </div>
+          </mat-list-item>
+          <mat-list-item fxLayout="column" fxFlex.gt-sm="50" >
+            <div fxLayout="row" fxFlex="50"><strong><span translate>UI Theme</span></strong></div>
+            <div class="text"><span class="pr-4">:</span>{{ schoolDetails.uiThemeName}}</div>
+          </mat-list-item>
+        </mat-list>
+  </div>
+</div>

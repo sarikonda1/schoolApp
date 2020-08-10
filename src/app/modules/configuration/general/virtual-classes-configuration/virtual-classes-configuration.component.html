@@ -1,0 +1,67 @@
+
+<app-table [settings]="tabSettings" (rowBasedAction)='rowActions($event)' (openAddForm)="addForm()"
+  [closeRowForm]='closeAddPanel' [templateRef]="virtualClassTemp" (getTableData)='getVirtualClasses($event)'>
+</app-table>
+
+
+<ng-template #virtualClassTemp>
+  <form [formGroup]="virtualForm" (ngSubmit)="addVisualClass(virtualForm)" #virtualClassNgForm="ngForm">
+    <div fxFlexFill fxLayout="column" fxLayout.gt-xs="row" class="pt-24" fxLayoutAlign="center center">
+      <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="25" class="pr-sm-16">
+        <mat-label #virtualClassConfigurationId translate>Virtual Class Configuration</mat-label>
+        <mat-select formControlName="virtualClassConfigurationId" required>
+          <mat-option *ngFor="let config of configTypes" [value]="config.value">
+            {{config.label}}
+          </mat-option>
+        </mat-select>
+        <mat-error>
+          <app-validation [labelName]="virtualClassConfigurationId.innerText" [validationControl]="virtualForm.controls.virtualClassConfigurationId"
+            [doValidate]=true>
+          </app-validation>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field fxFlex.gt-sm="25" appearance="outline" class="pr-sm-16" fxLayout="column" fxFlex="100">
+        <mat-label #classId translate>Class</mat-label>
+        <mat-select formControlName="classId" (selectionChange)="onSelectClass($event)" required>
+          <mat-option *ngFor="let class of classNames" [value]="class.value">
+            {{class.label}}
+          </mat-option>
+        </mat-select>
+        <mat-error>
+          <app-validation [labelName]="classId.innerText" [validationControl]="virtualForm.controls.classId"
+            [doValidate]=true>
+          </app-validation>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field fxFlex.gt-sm="25" appearance="outline" fxLayout="column" fxFlex="100" class="pr-sm-16">
+        <mat-label #sectionId translate>Section</mat-label>
+        <mat-select formControlName="sectionId" (selectionChange)="onSelectSection($event)">
+          <mat-option *ngIf="sectionNames?.length"></mat-option>
+          <mat-option *ngFor="let section of sectionNames" [value]="section.value">
+            {{section.label}}
+            <span *ngIf="section.boardName!=null">({{section.boardName}})</span>
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field fxFlex.gt-sm="25" appearance="outline" fxLayout="column" fxFlex="100" >
+        <mat-label #courseId translate>Course</mat-label>
+        <mat-select formControlName="courseId">
+          <mat-option *ngIf="courseList?.length"></mat-option>
+          <mat-option *ngFor="let course of courseList" [value]="course.value">
+            {{course.label}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div fxLayout="row" fxLayoutAlign="end center" class="pt-16 pb-8">
+      <button mat-raised-button type="button" class="text-uppercase mr-12"
+        (click)="onCancelClick()">{{'Cancel' | translate}}</button>
+      <button [disabled]="disbleSubmitBtn" mat-raised-button type="submit" color="accent" class="text-uppercase"
+        mat-button>{{this.buttonName | translate}}</button>
+    </div>
+  </form>
+</ng-template>

@@ -1,0 +1,15 @@
+.border-none  {
+border: none !important;
+}
+.mh-85vh{
+    max-height: 85vh;
+}
+.last-child{
+    div{
+       
+        &:last-child{
+            border-bottom: none;
+        }
+    }
+   
+}

@@ -1,0 +1,29 @@
+<div class="px-sm-40 pt-sm-40">
+  <div class="py-8 px-20 font-size-18 text-uppercase" translate>Vehicle Route Database</div>
+  <div class="mat-elevation-z3 simple-table-container radius-t-20">
+    <form [formGroup]="routeTypeForm">
+      <div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign="start center">
+        <div fxLayout="row" fxLayoutAlign="center center" fxFlex="100">         
+          <af-select class="pt-20 w-332" [required]="true" [options]="routeTypes" placeholder="Route Type"
+            label="Route Type" (selectionChange)="getTableDataDetails($event)" formControlName="routeTypeId"
+            appearance="outline" fxLayout="column" fxFlex="100"  [value]="selectedItem"></af-select>
+        </div>
+        <div class="pb-20" fxLayout="row">
+          <button mat-raised-button color="accent" type="button" class=" text-uppercase mr-12"
+            (click)="reDirect()">{{'new route' | translate}}
+          </button>
+          <button (click)="getHelpText('Routes')" mat-button type='button'>
+            <mat-icon  class="grey-600-fg">info</mat-icon>
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<app-table *ngIf="routeTypeForm.valid" [settings]="tableSettings" (getTableData)='tableData($event)'
+  (rowBasedAction)='actions($event)'></app-table>
+
+<app-custom-card *ngIf="!routeTypeForm.valid" [title]="'List Of Vehicle Routes'"
+  [inputMessage]="'Please Select Route Type'">
+</app-custom-card>

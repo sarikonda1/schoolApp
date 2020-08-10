@@ -1,0 +1,219 @@
+<div class="px-sm-40 py-sm-12" [@animate]="{value:'*',params:{delay:'100ms',y:'-55px'}}">
+  <div class="mat-elevation-z2 simple-table-container radius-t-20"
+    [ngClass]="{'remove-overlay' : showOverLay == 'show'}">
+    <form [formGroup]="paymentForm" (ngSubmit)="submit()" fxLayout="column" class="p-24" #paymentsForm="ngForm">
+      <div fxLayoutAlign="end center">
+        <button mat-icon-button type="button" (click)="close()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      <div fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="100" class="pt-12">
+
+        <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="25"
+          class="pr-sm-16 icon-center pb-12">
+          <mat-label #recepDate translate>Payment Date</mat-label>
+          <input autofocus #correction matInput [matDatepicker]="fromDatePicker"
+            (keyup)="forceValidation('paymentDate', paymentForm)" required formControlName="paymentDate" />
+          <mat-datepicker-toggle matSuffix [for]="fromDatePicker"></mat-datepicker-toggle>
+          <mat-datepicker #fromDatePicker></mat-datepicker>
+          <mat-error>
+            <app-validation [labelName]="recepDate.innerText" [validationControl]="paymentForm.controls.paymentDate"
+              [doValidate]="true">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="25"
+          class="pr-sm-16 pb-12">
+          <mat-label #paymentTypeId translate>Payment Type</mat-label>
+          <mat-select formControlName="typeCode" required (selectionChange)="paymentTypeSelection($event.value)">
+            <mat-option *ngFor="let paymentTypes of paymentTypesList" [value]="paymentTypes.code">
+              {{ paymentTypes.name }}
+            </mat-option>
+          </mat-select>
+          <mat-error>
+            <app-validation [labelName]="paymentTypeId.innerText" [validationControl]="paymentForm.controls.typeCode"
+              [doValidate]="true">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field fxFlexFill appearance="outline" class="pr-sm-16 pb-12" fxLayout="column" fxFlex.gt-sm="25"
+          fxFlex="100">
+          <mat-label #amount translate>Amount</mat-label>
+          <input (keyup)="preventSpace($event,'paymentForm','amount')" required matInput formControlName="amount"
+            autocomplete="off" (blur)="trimTextBoxSpaces('paymentForm','amount')" />
+          <mat-error>
+            <app-validation [labelName]="amount.innerText" [validationControl]="paymentForm.controls.amount"
+              [doValidate]="validate">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field *ngIf="isRefNumberRequired && showReferenceNumber(paymentForm.value?.typeCode)" fxFlexFill
+          appearance="outline" fxLayout="column" fxFlex.gt-sm="25" fxFlex="100" class="pb-12">
+          <mat-label #referenceNumber translate>Reference Number</mat-label>
+          <input (keyup)="preventSpace($event,'paymentForm','referenceNumber')" matInput
+            formControlName="referenceNumber" autocomplete="off"
+            (blur)="trimTextBoxSpaces('paymentForm','referenceNumber')" />
+          <mat-error>
+            <app-validation [labelName]="referenceNumber.innerText"
+              [validationControl]="paymentForm.controls.referenceNumber" [doValidate]="validate">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="25"
+          class="pr-sm-16 pb-12">
+          <mat-label #feeAccountId translate>Fee Account</mat-label>
+          <mat-select formControlName="feeAccountId" required>
+            <mat-option *ngFor="let feeAccounts of feeAccountList" [value]="feeAccounts.id">
+              {{ feeAccounts.name }}
+            </mat-option>
+          </mat-select>
+          <mat-error>
+            <app-validation [labelName]="feeAccountId.innerText" [validationControl]="paymentForm.controls.feeAccountId"
+              [doValidate]="true">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+        <ng-container *ngIf="chequeView">
+          <!-- <div fxLayout="column" fxLayout.gt-sm="row" fxFlex="100" class="pt-12" [@animate]="{value:'*',params:{delay:'100ms',y:'-25px'}}"> -->
+          <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="25"
+            class="pr-sm-16 icon-center pb-12">
+            <mat-label #chequeDate translate>chequeDate</mat-label>
+            <input matInput [matDatepicker]="chequeDatePicker" (keyup)="forceValidation('chequeDate', paymentForm)"
+              required formControlName="chequeDate" />
+            <mat-datepicker-toggle matSuffix [for]="chequeDatePicker"></mat-datepicker-toggle>
+            <mat-datepicker #chequeDatePicker></mat-datepicker>
+            <mat-error>
+              <app-validation [labelName]="chequeDate.innerText" [validationControl]="paymentForm.controls.chequeDate"
+                [doValidate]="true">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field fxFlexFill appearance="outline" class="pr-sm-16 pb-12" fxLayout="column" fxFlex.gt-sm="25"
+            fxFlex="100">
+            <mat-label #chequeNumber translate>chequeNumber</mat-label>
+            <input (keyup)="preventSpace($event,'paymentForm','chequeNumber')" required matInput
+              formControlName="chequeNumber" (blur)="trimTextBoxSpaces('paymentForm','chequeNumber')"
+              autocomplete="off" />
+            <mat-error>
+              <app-validation [labelName]="chequeNumber.innerText"
+                [validationControl]="paymentForm.controls.chequeNumber" [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex.gt-sm="25" fxFlex="100" class="pb-12">
+            <mat-label #ifscCode translate>Bank IFSC Code</mat-label>
+            <input (keyup)="preventSpace($event,'paymentForm','checkIssueBankIFSC')" required matInput
+              formControlName="checkIssueBankIFSC" autocomplete="off"
+              (blur)="trimTextBoxSpaces('paymentForm','checkIssueBankIFSC')" />
+            <mat-error>
+              <app-validation [labelName]="ifscCode.innerText"
+                [validationControl]="paymentForm.controls.checkIssueBankIFSC" [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <!-- </div>
+          <div fxLayout="column" fxLayout.gt-sm="row" fxFlex="100" class="pt-12" [@animate]="{value:'*',params:{delay:'100ms',y:'-25px'}}"> -->
+          <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex.gt-sm="50" fxFlex="100"
+            class="pr-sm-16 pb-12">
+            <mat-label #bankName translate>bankName</mat-label>
+            <input (keyup)="preventSpace($event,'paymentForm','chequeIssueBankName')" required matInput
+              formControlName="chequeIssueBankName" autocomplete="off"
+              (blur)="trimTextBoxSpaces('paymentForm','chequeIssueBankName')" />
+            <mat-error>
+              <app-validation [labelName]="bankName.innerText"
+                [validationControl]="paymentForm.controls.chequeIssueBankName" [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex.gt-sm="50" fxFlex="100" class="pb-12">
+            <mat-label #bankBranch translate>branchName</mat-label>
+            <input (keyup)="preventSpace($event,'paymentForm','chequeIssueBankBranch')" required matInput
+              formControlName="chequeIssueBankBranch" autocomplete="off"
+              (blur)="trimTextBoxSpaces('paymentForm','chequeIssueBankBranch')" />
+            <mat-error>
+              <app-validation [labelName]="bankBranch.innerText"
+                [validationControl]="paymentForm.controls.chequeIssueBankBranch" [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <!-- </div> -->
+        </ng-container>
+        <ng-container *ngIf="cardView">
+          <!-- <div fxLayout="column" fxLayout.gt-sm="row" fxFlex="100" class="pt-12" [@animate]="{value:'*',params:{delay:'100ms',y:'-25px'}}"> -->
+          <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="25"
+            class="pr-sm-16 pb-12">
+            <mat-label #cardTypeId translate>Card Type</mat-label>
+            <mat-select formControlName="cardTypeId" required>
+              <mat-option *ngFor="let cardTypes of cardTypesList" [value]="cardTypes.id">
+                {{ cardTypes.name }}
+              </mat-option>
+            </mat-select>
+            <mat-error>
+              <app-validation [labelName]="cardTypeId.innerText" [validationControl]="paymentForm.controls.cardTypeId"
+                [doValidate]="true">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field fxFlexFill appearance="outline" class="pr-sm-16 pb-12" fxLayout="column" fxFlex.gt-sm="25"
+            fxFlex="100">
+            <mat-label #cardNumber translate>Card Last 4 Digits</mat-label>
+            <input (keyup)="preventSpace($event,'paymentForm','cardNumber')" required matInput
+              formControlName="cardNumber" autocomplete="off" (blur)="trimTextBoxSpaces('paymentForm','cardNumber')" />
+            <mat-error>
+              <app-validation [labelName]="cardNumber.innerText" [validationControl]="paymentForm.controls.cardNumber"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex.gt-sm="25" fxFlex="100" class="pb-12">
+            <mat-label #authorizationCode translate>Authorization Code</mat-label>
+            <input (keyup)="preventSpace($event,'paymentForm','authorizationCode')" required matInput
+              formControlName="authorizationCode" autocomplete="off"
+              (blur)="trimTextBoxSpaces('paymentForm','authorizationCode')" />
+            <mat-error>
+              <app-validation [labelName]="authorizationCode.innerText"
+                [validationControl]="paymentForm.controls.authorizationCode" [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex.gt-sm="25" fxFlex="100" class="pb-12 pr-sm-16">
+            <mat-label #transactionId translate>Transaction ID</mat-label>
+            <input (keyup)="preventSpace($event,'paymentForm','transactionNumber')" required matInput
+              formControlName="transactionNumber" autocomplete="off"
+              (blur)="trimTextBoxSpaces('paymentForm','transactionNumber')" />
+            <mat-error>
+              <app-validation [labelName]="transactionId.innerText"
+                [validationControl]="paymentForm.controls.transactionNumber" [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <!-- </div> -->
+        </ng-container>
+      </div>
+
+
+
+
+      <div class=" font-size-16" *ngIf="paymentMessage"><strong>Note </strong>: {{paymentMessage}}</div>
+
+      <div fxLayout="row" fxLayoutAlign="end center" class="pt-16">
+        <button (click)="clear()" class="mr-12 text-uppercase" mat-raised-button type="reset">
+          {{'Clear' | translate}}
+        </button>
+        <button mat-raised-button type="submit" class="text-uppercase" color="accent">{{buttonName | translate}}
+        </button>
+        <!-- <button (click)="close()" class="mr-12 text-uppercase" mat-raised-button>
+            <span translate>Close</span>
+          </button> -->
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,41 @@
+<div class="p-sm-32">
+  <div class="py-8 px-20 font-size-18 text-uppercase" translate>Select Report</div>
+  <div class="mat-elevation-z8 simple-table-container radius-t-20 pb-20">
+    <div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign="start center">
+      <div fxLayout="row" fxLayoutAlign="center center" fxFlex="100">
+        <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="60"
+          class="pt-sm-20">
+          <mat-label translate #reports>Reports</mat-label>
+          <mat-select required (selectionChange)="onSelectReport($event)">
+            <mat-option *ngFor="let report of reportLists" [value]="report.code">
+              {{ report.name }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div fxLayout="row" fxLayoutAlign="center end" class="mr-8">
+        <button mat-button type='button' (click)="getHelpText('Staff Attendance')">
+          <mat-icon class="grey-600-fg">info</mat-icon>
+        </button>
+      </div>
+    </div>
+    <mat-divider *ngIf="slectedReportGeneration?.value"></mat-divider>
+    <app-adm-app-summary-report *ngIf="slectedReportGeneration?.value == 'ADM_APP_SM'"></app-adm-app-summary-report>
+    <app-pre-addm-std-application-report *ngIf="slectedReportGeneration?.value == 'PRE_ADM_STD_APP'">
+    </app-pre-addm-std-application-report>
+    <app-inactive-std-applications-report *ngIf="slectedReportGeneration?.value == 'IN_STD_SM'">
+    </app-inactive-std-applications-report>
+    <app-students-strength *ngIf="slectedReportGeneration?.value == 'STD_STR'"></app-students-strength>
+    <app-students-attendance-report *ngIf="slectedReportGeneration?.value == 'STD_ATD'">
+    </app-students-attendance-report>
+    <app-concession-std-report *ngIf="slectedReportGeneration?.value == 'FEE_CON_STD'"></app-concession-std-report>
+    <app-payment-correction-report *ngIf="slectedReportGeneration?.value == 'PMT_COR'"></app-payment-correction-report>
+    <app-staff-attnd-report *ngIf="slectedReportGeneration?.value == 'STF_ATD'"></app-staff-attnd-report>
+    <app-adm-std-report *ngIf="slectedReportGeneration?.value == 'ADM_STD_RPT'"></app-adm-std-report>
+    <app-failed-payment-report *ngIf="slectedReportGeneration?.value == 'FAIL_PMT_RPT'"></app-failed-payment-report>
+    <app-payment-due-report *ngIf="slectedReportGeneration?.value == 'PMT_DUE_RPT'"></app-payment-due-report>
+    <app-fee-collection-report *ngIf="slectedReportGeneration?.value == 'FEE_COL_RPT'"></app-fee-collection-report>
+    <app-examination-schedule-report *ngIf="slectedReportGeneration?.value == 'EXE_SCH_RPT'"></app-examination-schedule-report>
+    <app-student-fee-receipt *ngIf="slectedReportGeneration?.value == 'STD_RCPT_RPT'"></app-student-fee-receipt>
+    <app-marks-entry-report *ngIf="slectedReportGeneration?.value == 'MARKS_ENTRY_RPT'"></app-marks-entry-report>
+  </div>
+</div>

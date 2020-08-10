@@ -1,0 +1,99 @@
+<div class="px-sm-40 pt-sm-32">
+    <div class="px-16 font-size-18 text-uppercase"><span translate>Roll Number Management</span></div>
+  <div class="mat-elevation-z3 simple-table-container radius-t-20">
+    <div fxLayout="row" fxLayoutAlign="end center" class="p-20">
+
+      <button class="text-uppercase pr-sm-20" mat-raised-button color="accent" (click)=" assignRollNumber()"
+        [disabled]="isValid">{{'Assign RollNumber' | translate}}</button>
+      <button mat-button type='button' (click)="getHelpText('Roll Number Management')">
+        <mat-icon class="grey-600-fg">info</mat-icon>
+      </button>
+    </div>
+    <mat-divider></mat-divider>
+    <form [formGroup]="studentRollFormGroup" fxLayout="column" name="form" (ngSubmit)="assignRollNumber()"
+      autocomplete="off" #form="ngForm" class="p-20">
+      <div fxLayout.gt-sm="row" fxLayout="column" fxLayoutAlign="start center">
+
+        <mat-form-field  *ngIf="isSchoolBoard" appearance="outline" class="pr-sm-20" fxLayout="column" fxFlex="100" fxFlex.gt-sm="30"
+        fxFlexFil>
+          <mat-label #board translate>Board</mat-label>
+          <mat-select formControlName="boardId" (selectionChange)="onBoardSelect($event)" required>
+            <mat-option *ngFor="let board of schoolBoardsList" [value]="board.value">
+              {{board.label}}
+            </mat-option>
+          </mat-select>
+          <mat-error>
+              <app-validation [labelName]="board.innerText" [validationControl]="studentRollFormGroup.controls.boardId"
+                [doValidate]="doValidate">
+              </app-validation>
+            </mat-error>
+        </mat-form-field>
+
+
+        <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="30" class="pr-sm-20">
+          <mat-label translate #class>Class</mat-label>
+          <mat-select required name="classId" formControlName="classId" (selectionChange)="onSelectClass($event)" [disabled]=classDisabled>
+            <mat-option *ngFor="let class of classNames" [value]="class.value">
+              {{class.label}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field *ngIf="studentRollFormGroup.value.boardId && studentRollFormGroup.value.classId" appearance="outline" class="pr-sm-20" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="30">
+          <mat-label translate #section>Section</mat-label>
+          <mat-select required name="sectionId" formControlName="sectionId" (selectionChange)="onSelectSection($event)">
+            <mat-option *ngFor="let section of sectionNames" [value]="section.value">
+              {{section.label}}
+            </mat-option>
+          </mat-select>
+
+        </mat-form-field>
+        <mat-checkbox  (change)="show($event)" [disabled]="isCheck" [checked] ="isDisable" class="pb-20"><span translate>Sorting Options</span></mat-checkbox>
+      </div>
+      <mat-label *ngIf="sort"  class="text-center"  translate>Sort Order Fields</mat-label>
+    </form>
+    <!-- <div>
+      
+    </div> -->
+    <div cdkDropList cdkDropListOrientation="horizontal" *ngIf="isSortOrderFields" class="pb-24 h-drag" fxLayout="row"
+      fxLayoutAlign="center center" (cdkDropListDropped)="drop($event)">
+      <div class="p-16 mx-12 primary-50-bg radius-5 fuse-black-fg cursor-move" fxLayoutAlign="center center"
+        *ngFor="let sortOrder of sortOrderFields" cdkDrag>
+        <mat-icon class="mr-8">drag_indicator</mat-icon><span translate>{{sortOrder.header}}</span>
+      </div>
+    </div>
+
+    <!-- Coustom Dialog for Roll Number -->
+    <ng-template #rollNumberTemplate>
+      <form [formGroup]="RollNumberForm" (ngSubmit)="rollNumberAssign(RollNumberForm)" #RollNumber="ngForm"
+        fxLayout="column">
+        <mat-form-field appearance="outline" fxLayout="column" fxFlex="100">
+          <mat-label #RollNumber translate>Roll Number Start From</mat-label>
+          <input autocomplete="off" matInput formControlName="RollNumber" [(ngModel)]="rollNumberSeq" required
+          (keyup)="preventSpace($event,'RollNumberForm','RollNumber')">
+
+          <mat-error>
+            <app-validation [labelName]="RollNumber.innerText" [validationControl]="RollNumberForm.controls.RollNumber"
+              class="error-msg messages text-left text-danger" [doValidate]="validateForm">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+
+        <div fxLayout="row" fxLayoutAlign="end center" class="pt-16">
+          <button class="mr-12 text-uppercase" mat-raised-button type="button" (click)="onCancel()" matDialogClose>{{'Cancel' | translate}}</button>
+          <button mat-raised-button type="submit" class="text-uppercase" color="accent">{{'Submit' | translate}}</button>
+        </div>
+      </form>
+    </ng-template>
+    <!-- End Coustom Dialog -->
+
+
+    <mat-divider></mat-divider>
+
+  
+  </div>
+</div>
+<app-table *ngIf="studentRollFormGroup.valid" [settings]="tabSettings" (getTableData)='loadStudents()'>
+</app-table>
+<app-custom-card *ngIf="!studentRollFormGroup.valid" [title]="'Student Roll Number Details'" [inputMessage]="'Please Select Board Class And Section'">
+</app-custom-card>

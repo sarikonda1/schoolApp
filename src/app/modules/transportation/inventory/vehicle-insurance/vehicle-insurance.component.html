@@ -1,0 +1,91 @@
+<app-table [settings]="tabSettings" [templateRef]="insuranceTemplate" (getTableData)='insuranceData($event)'
+  (rowBasedAction)='rowActions($event)' [closeRowForm]='closeAddPanel' (openAddForm)="openForm()">
+</app-table>
+
+<ng-template #insuranceTemplate>
+  <form fxLayout="column" (ngSubmit)="insurancePost(insuranceFormGroup.value)" [formGroup]="insuranceFormGroup" autocomplete="off"
+    #insuranceForm="ngForm">
+    <div fxFlexFill fxLayout.lt-sm="column" class="pt-24" fxLayout.gt-xs="row" fxFlex="100">
+      <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="32">
+        <mat-label translate #policyNumber>policyNumber</mat-label>
+        <input matInput required name="policyNumber" formControlName="policyNumber" (keyup)="preventSpace($event,'insuranceFormGroup','policyNumber')" (blur)="trimTextBoxSpaces('insuranceFormGroup','policyNumber')">
+        <mat-error>
+          <app-validation [labelName]="policyNumber.innerText"
+            [validationControl]="insuranceFormGroup.controls.policyNumber" [doValidate]="doValidate">
+          </app-validation>
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="px-sm-20 icon-center" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="36">
+        <mat-label translate #issueDate>Issue Date</mat-label>
+        <input matInput (keyup)="forceValidation('issueDate',insuranceFormGroup)" required [matDatepicker]="picker"
+          formControlName="issueDate">
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+        <mat-error>
+          <app-validation [labelName]="issueDate.innerText" [validationControl]="insuranceFormGroup.controls.issueDate"
+            [doValidate]="doValidate">
+          </app-validation>
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="32">
+        <mat-label translate #companyName>companyName</mat-label>
+        <input matInput required name="companyName" formControlName="companyName" (keyup)="preventSpace($event,'insuranceFormGroup','companyName')" (blur)="trimTextBoxSpaces('insuranceFormGroup','companyName')">
+        <mat-error>
+          <app-validation [labelName]="companyName.innerText"
+            [validationControl]="insuranceFormGroup.controls.companyName" [doValidate]="doValidate">
+          </app-validation>
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div fxFlexFill fxLayout.lt-sm="column" class="pt-sm-12" fxLayout.gt-xs="row" fxFlex="100">
+
+      <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="32">
+        <mat-label translate #premiumAmount>premiumAmount</mat-label>
+        <input matInput required name="premiumAmount" formControlName="premiumAmount" (keyup)="preventSpace($event,'insuranceFormGroup','premiumAmount')" (blur)="trimTextBoxSpaces('insuranceFormGroup','premiumAmount')">
+        <mat-error>
+          <app-validation [labelName]="premiumAmount.innerText"
+            [validationControl]="insuranceFormGroup.controls.premiumAmount" [doValidate]="doValidate">
+          </app-validation>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="px-sm-20 icon-center" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="36">
+        <mat-label translate #expiryDate>expiryDate</mat-label>
+        <input matInput (keyup)="forceValidation('expiryDate',insuranceFormGroup)" required
+        [matDatepicker]="expiryPicker" [min]="insuranceFormGroup.controls.issueDate.value" formControlName="expiryDate">
+        <mat-datepicker-toggle matSuffix [for]="expiryPicker"></mat-datepicker-toggle>
+        <mat-datepicker #expiryPicker></mat-datepicker>
+        <mat-error>
+          <app-validation [labelName]="expiryDate.innerText"
+            [validationControl]="insuranceFormGroup.controls.expiryDate" [doValidate]="doValidate">
+          </app-validation>
+        </mat-error>
+      </mat-form-field>
+
+      <div fxLayout="column" class="pt-sm-12" fxFlex="100" fxFlex.gt-sm="32">
+        <div fxLayout="row">
+          <button mat-raised-button type="button" color="primary" (click)="logoImgInput.value='';logoImgInput.click()">
+            <mat-icon class="mr-8">attach_file</mat-icon>{{'Upload Image' | translate}}
+          </button>
+          <button mat-icon-button type="button" [style.display]="logoImgProp?.src ? 'block' : 'none'">
+            <mat-icon class="mb-4 grey-600-fg" 
+              (click)="logoImgInput.value='';clearImages(true)">highlight_off</mat-icon>
+          </button>
+        </div>
+        <input [accept]="'.doc,.docx,image/jpeg,image/jpg,image/png,application/pdf,image/*'" id="logoImgInput"
+          (change)="imgChanged(logoImgInput.files)" fxHide type="file" #logoImgInput>
+        <div class="pt-8 logo-name break-word" [style.visibility]="uploadFiles?.value?.insuranceFileNameWithExtension ? 'visible' : 'hidden'" [style.display]="logoImgProp?.src ? 'block' : 'none'">
+          {{uploadFiles?.value?.insuranceFileNameWithExtension}}</div>
+      </div>
+    </div>
+
+    <div fxLayout="row" fxLayoutAlign="end center" class="my-20">
+      <button mat-raised-button translate class="mr-12 text-uppercase" type="reset" #formCancel id="formCancel"
+        (click)="onCancel()"> {{'Cancel' | translate}}</button>
+      <button mat-raised-button translate type="submit" color="accent" class="text-uppercase">{{(isUpdateData ? 'Update':'Submit') | translate}}
+      </button>
+    </div>
+
+  </form>
+</ng-template>

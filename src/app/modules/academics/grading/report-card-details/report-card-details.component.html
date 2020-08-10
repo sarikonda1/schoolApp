@@ -1,0 +1,104 @@
+<app-af-details [keyValues]="studentDetails" [title]="'Student Information'" [header]=" 'REPORT CARD DATA' "
+  [isBackButtonRequired]=true [infoKey]="'Report Cards Search'">
+</app-af-details>
+
+<div class="px-sm-40 py-12">
+  <div class="mat-elevation-z2 simple-table-container radius-t-20 pt-12" fxLayout="column">
+    <div fxLayoutAlign="end center" class="icon-position">
+      <button mat-mini-fab color="accent" aria-label="More" [matMenuTriggerFor]="menu">
+        <mat-icon>more_vert</mat-icon>
+      </button>
+    </div>
+    <mat-tab-group>
+      <mat-tab label="{{'GRADING TERM INFORMATION' | translate}}">
+        <app-af-details [keyValues]="gradingTermInfo" [isElevation]="true" [isBackButtonRequired]=false>
+        </app-af-details>
+      </mat-tab>
+      <mat-tab label="{{'TESTS AND CONTRIBUTION' | translate }}">
+        <app-table [settings]="testContributionsSettings"></app-table>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+</div>
+<div class="px-sm-40 py-12" *ngIf="reportCradDetails">
+  <div class="mat-elevation-z2 simple-table-container radius-t-20 pt-12 position-relative" fxLayout="column">
+    <div fxLayout="row" class="position-absolute" *ngIf="showButton"
+      [@animate]="{value:'*',params:{delay:'100ms',x:'-40px'}}">
+      <button mat-raised-button class="mr-20" color="accent" *ngIf="isRouteToAssessments === true"
+        (click)="closeAssessmentForm()"><span translate>Done</span></button>
+      <button mat-raised-button color="primary"
+        *ngIf="isRouteToAssessments === false && studentAssessmentDeatils?.rows?.length"
+        (click)="navAssessmentGrades()"> <span translate>Edit Assessment Grades</span></button>
+    </div>
+    <mat-tab-group (selectedTabChange)="onTabChange($event)">
+      <mat-tab label="{{'COURSE SCORES & GRADES' | translate}}">
+        <table *ngIf="rowGroupingColumns?.length > 0;else no_data" class="w-100-p tableBar groupTable" mat-table
+          [dataSource]="tableData" matSort matSortDisable>
+          <ng-container *ngFor="let column of cols; let i = index" matColumnDef="{{column.field}}">
+            <th mat-header-cell *matHeaderCellDef>
+              <div class="headerTitle" disableClear>
+                <strong class="mb-0 title mat-subheading-1 pl-4" translate>{{column.header}}</strong>
+              </div>
+            </th>
+            <div *ngFor="let rowGroupingColumn of rowGroupingColumns; let k = index">
+              <div *ngIf="column.field == rowGroupingColumn">
+                <td mat-cell *matCellDef="let row; let j=index" [attr.rowspan]="getRowSpan(rowGroupingColumn, j)"
+                  [style.display]="getRowSpan(rowGroupingColumn, j) ? '' : 'none'"
+                  [ngClass]="tdGroupingClass[rowGroupingColumn]">
+
+                  <mdt-table-cell [row]="row" [column]="column">
+                    <p matTooltipClass="matTool-tip" matTooltipPosition="above" [matTooltip]="row[column.field]"
+                      class="text-truncate pl-4">
+                      {{row[column.field]}}
+                    </p>
+                  </mdt-table-cell>
+                </td>
+              </div>
+            </div>
+            <td mat-cell *matCellDef="let row;let l = index">
+              <mdt-table-cell [row]="row" [column]="column">
+                <p matTooltipClass="matTool-tip" matTooltipPosition="above" [matTooltip]="row[column.field]"
+                  class="text-truncate pl-4 ">
+                  {{row[column.field]}}
+                </p>
+              </mdt-table-cell>
+            </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns; let even = even;"
+            [ngClass]="{'even-blue-bg': row.isCheck, 'even-grey-bg': (even && !row.isCheck), 'custom-total': row.testType == 'Total'}">
+          </tr>
+        </table>
+      </mat-tab>
+      <mat-tab label="{{'ASSESSEMENT GRADES'| translate}}">
+        <app-class-assessment-grades *ngIf="isRouteToAssessments; else student_assessments"
+          [studentData]="studentAssessmentData" [@animate]="{value:'*',params:{delay:'100ms',x:'-40px'}}">
+        </app-class-assessment-grades>
+
+        <ng-template #student_assessments>
+          <app-table *ngIf="studentAssessmentDeatils?.rows?.length && isRouteToAssessments === false;else no_data "
+            [settings]="studentAssessmentDeatils">
+          </app-table>
+        </ng-template>
+      </mat-tab>
+      <!-- <mat-tab label=" Go To ASSESSEMENT GRADES">
+        <button (click)="navAssessmentGrades()"> Go To Assessment Grades</button>
+        <button (click)="closeAssessmentForm()"> Close</button>
+      </mat-tab> -->
+    </mat-tab-group>
+  </div>
+</div>
+
+<ng-template #no_data>
+  <div class="errorMsg">
+    <p class="red-text text-center mb-0 font-weight-bold p-24" translate>No Data Found</p>
+  </div>
+</ng-template>
+
+<mat-menu #menu="matMenu">
+  <ng-container *ngFor="let item of operations">
+    <button mat-menu-item (click)="onSelectAction(item)">
+      <mat-icon>{{item.icon}}</mat-icon>{{item.name | translate}}
+    </button>
+  </ng-container>
+</mat-menu>

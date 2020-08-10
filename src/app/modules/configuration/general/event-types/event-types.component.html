@@ -1,0 +1,41 @@
+<app-table [settings]="settingTableData" (getTableData)='tableData($event)'
+   (rowBasedAction)='onRowActions($event)' (openAddForm)='openEventTypeForm()' [closeRowForm]='isEventTypeFormClosed'
+   [templateRef]="newTemplate">
+</app-table>
+
+<ng-template #newTemplate>
+   <form [formGroup]="eventTypesForm"
+      (ngSubmit)="createOrUpdateEventType(eventTypesForm.value)" #eventType="ngForm">
+      <div fxFlexFill fxLayout="row" class="pt-24" fxLayoutAlign="center center">
+         <mat-form-field appearance="outline" class="example-full-width" fxLayout="column" fxFlex.gt-xs="50"
+            fxFlex="100">
+            <mat-label #eventTypeName translate>Name</mat-label>
+            <input (keyup)="preventSpace($event,'eventTypesForm','name')" matInput formControlName="name" autocomplete="off" (blur)="trimTextBoxSpaces('eventTypesForm','name')" required>
+            <mat-error>
+               <app-validation [labelName]="eventTypeName.innerText"
+                  [validationControl]="eventTypesForm.controls.name" [doValidate]="eventTypeFormSubmitted">
+               </app-validation>
+            </mat-error>
+         </mat-form-field>
+
+      </div>
+      <div fxFlexFill fxLayout="column" class="pt-16">
+         <div fxFlexFill fxLayout="row" fxLayoutAlign="center center" class="mb-12
+         " #isCompetition translate>Is this Event Type a Competition</div>
+         <mat-radio-group class="grey-500-fg text-semibold" aria-label="Select an option" fxFlexFill fxLayout="row"
+            fxLayoutAlign="center center" formControlName="isCompetition">
+            <mat-radio-button class="ml-24" *ngFor="let radio of YesOrNo" [value]="radio.value">{{radio.label | translate}}</mat-radio-button>
+         </mat-radio-group>
+         <mat-error fxFlexFill fxLayout="row" fxLayoutAlign="center center">
+            <app-validation [labelName]="isCompetition.innerText"
+               [validationControl]="eventTypesForm.controls.isCompetition"
+               [doValidate]="eventTypeFormSubmitted">
+            </app-validation>
+         </mat-error>
+      </div>
+      <div fxLayout="row" fxLayoutAlign="center center" fxLayoutAlign.gt-xs="end center" class="pt-24 pb-8">
+         <button class="mr-12 text-uppercase" mat-raised-button type="button" (click)="closeForm()">{{'Cancel' | translate}}</button>
+            <button class="text-uppercase" mat-raised-button type="submit" color="accent" [disabled] = "disbleSubmitBtn"><span translate>{{isSubmitButtonEnabled ? 'Create':'Update'}}</span></button>
+      </div>
+   </form>
+</ng-template>

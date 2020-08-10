@@ -1,0 +1,99 @@
+<app-table [settings]="tabSettings" (getTableData)='staffLeaveRequestData($event)' (rowBasedAction)='rowActions($event)'
+    [closeRowForm]='closeAddPanel' (openAddForm)="openForm()" [templateRef]="addStaffLeaveRequest">
+</app-table>
+
+<ng-template #addStaffLeaveRequest>
+    <form [formGroup]="leaveRequestForm" (ngSubmit)="createOrUpdateLeaveRequest()" #staffLeaveRequestForm="ngForm">
+
+        <div fxFlexFill fxLayout.lt-sm="column" class="pt-24" fxLayout.gt-xs="row">
+
+            <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-xs="32">
+                <mat-label translate #stafftype>Select Staff Type</mat-label>
+                <mat-select formControlName="staffTypeId" required
+                    (selectionChange)="getStaffs($event)">
+                    <mat-option *ngFor="let staffType of staffTypes" [value]="staffType.code">
+                        {{ staffType.label }}</mat-option>
+                </mat-select>
+                <mat-error>
+                    <app-validation [labelName]="stafftype.innerText"
+                        [validationControl]="leaveRequestForm.controls.staffTypeId" [doValidate]="isFormSubmitted">
+                    </app-validation>
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field fxFlexFill appearance="outline" class="px-sm-20" fxLayout="column" fxFlexFill fxFlex="100"
+                fxFlex.gt-xs="36">
+                <mat-label translate #staff>Select Staff</mat-label>
+                <mat-select formControlName="staffId" required>
+                    <mat-option *ngFor="let staff of staffs" [value]="staff.value">
+                        {{ staff.label }}</mat-option>
+                </mat-select>
+                <mat-error>
+                    <app-validation [labelName]="staff.innerText"
+                        [validationControl]="leaveRequestForm.controls.staffId" [doValidate]="isFormSubmitted">
+                    </app-validation>
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-xs="32">
+                <mat-label translate #reason>Reason</mat-label>
+                <input (keyup)="preventSpace($event,'leaveRequestForm','reason')" required matInput formControlName="reason" (blur)="trimTextBoxSpaces('leaveRequestForm','reason')">
+                <mat-error>
+                    <app-validation [labelName]="reason.innerText"
+                        [validationControl]="leaveRequestForm.controls.reason" [doValidate]="isFormSubmitted">
+                    </app-validation>
+                </mat-error>
+            </mat-form-field>
+        </div>
+        <div fxFlexFill fxLayout.lt-sm="column" fxLayout.gt-xs="row" class="pt-sm-12">
+            <mat-form-field appearance="outline" fxLayout="column" fxFlexFill fxFlex="100" fxFlex.gt-xs="32" class="icon-center">
+                <mat-label #fromDate translate>From Date</mat-label>
+                <input matInput (keyup)="forceValidation('fromDate',leaveRequestForm)" [matDatepicker]="fromDatePicker"
+                    formControlName="fromDate" [min]="minDate" required>
+                <mat-datepicker-toggle matSuffix [for]="fromDatePicker"></mat-datepicker-toggle>
+                <mat-datepicker #fromDatePicker></mat-datepicker>
+                <mat-error>
+                    <app-validation [labelName]='fromDate.innerText'
+                        [validationControl]="leaveRequestForm.controls.fromDate" [doValidate]="isFormSubmitted">
+                    </app-validation>
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="px-sm-24 icon-center" fxLayout="column" fxFlexFill fxFlex="100"
+                fxFlex.gt-xs="36">
+                <mat-label #toDate translate>To Date</mat-label>
+                <input matInput (keyup)="forceValidation('toDate',leaveRequestForm)" [matDatepicker]="toDatePicker"
+                    formControlName="toDate" [min]="leaveRequestForm.controls.fromDate.value" required>
+                <mat-datepicker-toggle matSuffix [for]="toDatePicker"></mat-datepicker-toggle>
+                <mat-datepicker #toDatePicker></mat-datepicker>
+                <mat-error>
+                    <app-validation [labelName]='toDate.innerText'
+                        [validationControl]="leaveRequestForm.controls.toDate" [doValidate]="isFormSubmitted">
+                    </app-validation>
+                </mat-error>
+            </mat-form-field>
+            <div fxLayout="column" class="mt-12">
+                <div fxLayout="row">
+                    <button mat-raised-button type="button" color="primary" (click)="logoImgInput.value='';logoImgInput.click()">
+                        <mat-icon class="mr-8">attachment</mat-icon>{{'Attach Leave Letter' | translate}}
+                    </button>
+                    <button mat-icon-button *ngIf="uploadFiles.value.staffFileNameWithExtension" type="button">
+                        <mat-icon class="mb-4 grey-600-fg" (click)="logoImgInput.value='';clearImages(true)">highlight_off</mat-icon>
+                    </button>
+                </div>
+                <input [accept]="'.doc,.docx,image/jpeg,image/jpg,image/png,application/pdf,image/*'" id="logoImgInput"
+                    (change)="imgChanged(logoImgInput.files)" fxHide type="file" #logoImgInput>
+                <div [style.visibility]="uploadFiles?.value?.staffFileNameWithExtension ? 'visible' : 'hidden'" class="pt-8 logo-name break-word">
+                    {{uploadFiles?.value?.staffFileNameWithExtension}}</div>
+            </div>
+
+        </div>
+
+        <div fxLayout="row" fxLayoutAlign="center center" fxLayoutAlign.gt-xs="end center" class="pt-16">
+            <button class="mr-12 text-uppercase" mat-raised-button type="button" (click)="cancel()">
+                {{'Cancel' | translate}}</button>
+            <button class="text-uppercase" mat-raised-button mat-button type="submit" [disabled]="isSubmit"
+                color="accent">{{'Submit' | translate}}</button>
+        </div>
+
+    </form>
+</ng-template>

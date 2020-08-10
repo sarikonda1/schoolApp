@@ -1,0 +1,14 @@
+<div class="px-10 scroll-table"><table class="attendance b table-border" id={{tableId}}>
+  <thead>
+    <tr>
+      <th class="space" style="text-transform:capitalize;" *ngFor="let column of columns">{{column.header}}</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let item of inputData; let l = last">
+      <td *ngFor="let column of columns">{{item[column.field]}} </td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<!-- [class]="l ? 'last-row-bg' : '' " -->

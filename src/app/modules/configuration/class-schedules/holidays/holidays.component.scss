@@ -1,0 +1,7 @@
+.radio-btn{
+    .mat-radio-group{
+        .mat-radio-button:not(:first-child){
+            padding-left: 20px;
+        }
+    }
+}

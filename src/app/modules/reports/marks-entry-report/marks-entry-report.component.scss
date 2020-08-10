@@ -1,0 +1,275 @@
+@media print{@page {size: landscape}}
+        body {
+            font-family: sans-serif;
+        }
+
+        .invoice-container {
+            padding: 0px 25px;
+            margin: 0px auto;
+            max-width: 1120px
+        }
+
+        .b {
+            border: 1px solid rgba(0, 0, 0, .30);
+            border-collapse: collapse;
+        }
+
+        .b-b {
+            border-bottom: 1px solid rgba(0, 0, 0, .30);
+            border-collapse: collapse;
+        }
+
+        .b-t {
+            border-top: 1px solid rgba(0, 0, 0, .30);
+            border-collapse: collapse;
+        }
+
+        .b-r {
+            border-right: 1px solid rgba(0, 0, 0, .30);
+            border-collapse: collapse
+        }
+
+        .flex {
+            display: flex;
+            display: -webkit-flex;
+        }
+
+        .flex-d-c {
+            flex-direction: -webkit-column;
+            flex-direction: column;
+        }
+
+        .flex-d-r {
+            flex-direction: row;
+        }
+
+        .flex-a {
+            -webkit-place-content: center center;
+            place-content: center center;
+            -webkit-align-items: center;
+            align-items: center;
+        }
+
+        .align-item-center {
+            align-items: center;
+        }
+
+        .w-50-p {
+            width: 50%;
+        }
+
+        .w-100-p {
+            width: 100%;
+        }
+
+        .p-20 {
+            padding: 20px;
+        }
+
+        .py-4 {
+            padding: 4px 0px;
+        }
+
+        .px-20 {
+            padding: 0px 20px;
+        }
+
+        .pt-30 {
+            padding-top: 30px;
+        }
+
+        .pt-20 {
+            padding-top: 20px;
+        }
+
+        .text-left {
+            text-align: left;
+        }
+
+        .text-right {
+            text-align: right !important;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-uppercase {
+            text-transform: uppercase;
+        }
+
+        .result-h {
+            font-size: 20px;
+            padding: 20px;
+            margin: 2px;
+        }
+
+        .result-h span {
+            width: 80px;
+            display: inline-block;
+        }
+
+        .h2-c {
+            font-size: 20px;
+        }
+
+        .pr-8 {
+            padding-right: 8px;
+        }
+
+        .pb-20 {
+            padding-bottom: 20px;
+            ;
+        }
+
+        .mb-20 {
+            margin-bottom: 20px;
+        }
+
+        .p-10 {
+            padding: 10px;
+        }
+
+        .pr-4rem {
+            padding-right: 4rem;
+        }
+
+        .right-align {
+            float: right;
+        }
+
+        .left-align {
+            float: left;
+        }
+
+        .logo-img {
+            max-width: 200px;
+            max-height: 100px
+        }
+
+        .text-lg {
+            font-size: 25px;
+        }
+
+        .top-space {
+            padding-top: 1.4rem;
+        }
+
+        .main-title {
+            background: #5f5f5f;
+            display: list-item;
+            color: #fff;
+        }
+
+
+        /* #########################Table related css ############### */
+        .attendance {
+            width: 100%;
+            border-spacing: 0;
+
+            border-collapse: collapse,
+        }
+
+        .attendance thead {
+            background: #5f5f5f;
+            color: #fff;
+        }
+
+        .attendance tr th,
+        .attendance tr td {
+            padding: 15px 5px;
+            text-align: center;
+            min-width: 130px;
+        }
+
+        .table-border.attendance tr th,
+        .table-border.attendance tr td {
+            border-right: 1px solid #808080;
+        }
+
+        .attendance tr td:not(:first-child) {
+            width: 20%;
+            word-break: break-all;
+        }
+
+        .attendance tr th:first-child {
+            min-width: 150px;
+            max-width: 150px;
+        }
+        .marks-table.attendance tr th:not(:first-child),
+        .marks-table.attendance tr td:not(:first-child){
+            min-width: 60px;
+        }
+        .marks-table.attendance tr th:first-child,
+        .marks-table.attendance tr td:first-child{
+            min-width: 165px;
+        }
+        .marks-table.attendance tr.header2 th:not(:first-child){
+            border-bottom: 1px solid #808080;
+        }  
+        .marks-table.attendance tr.header2 th:first-child{
+            background: white;
+            color: #565656;
+        }       
+        .text-right {
+            text-align: right !important;
+        }
+
+        .b-t {
+            border-top: 1px solid rgba(0, 0, 0, .30);
+            border-collapse: collapse;
+        }
+
+        .outer-line {
+            border: 1px solid rgba(0, 0, 0, .30);
+            margin: 5px 30px;
+        }
+        .outer-line .helper-table:first-child{
+            margin-top: 0px;
+            border-top: none;
+        }
+
+        .helper-table {
+            border-bottom: 1px solid rgba(0, 0, 0, .30);
+            margin-bottom: 0px;
+            margin-top: 20px;
+            padding: 9px;
+            width: 100%;
+            border-top: 1px solid rgba(0, 0, 0, .30);
+        }
+
+        .px-55 {
+            padding: 0px 13%;
+        }
+
+        .scroll-table {
+            overflow: auto;
+        }
+        .total-table{
+            width: 100%;
+            border-top: 1px solid rgba(0, 0, 0, .30); 
+            padding: 13px;
+            margin-top: 20px;  
+        }
+        .total-table th:first-child{
+            text-align: left;
+            padding-left: 20px;
+            max-width: 55px;
+        }
+        .total-table th:last-child{
+            text-align: right;
+            padding-right: 20px;
+        }
+        .px-10{
+            padding: 0px 20px;
+        }
+        .terms {
+            padding: 20px 13% 5px;
+        }
+        /* ######################### End Table related css ############### */
+        .clear-both{
+            clear: both;
+        }
+        .box-bg{
+            background: rgb(206, 206, 206);
+        }

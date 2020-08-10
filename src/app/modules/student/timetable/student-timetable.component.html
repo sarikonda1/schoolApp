@@ -1,0 +1,69 @@
+<div class="content p-40">
+  <div class="p-12 text-uppercase font-size-18"><span translate>{{isAddData ?('Timetable' | translate):title}}</span></div>
+  <!-- Get details of class section dropdowns-->
+  <div class="w-100-p mat-elevation-z8 simple-table-container radius-20" fxLayout="column">
+    <form *ngIf="!isHasTemp" [formGroup]="classTimetableForm" #ClassTimeTableForm="ngForm"
+      fxLayout="column">
+      <div *ngIf="classSectionInfo?.className" fxLayout.gt-sm="row" fxLayout="column" class="pt-36 px-24">
+
+        <!--  End -->
+        <div *ngIf="classSectionInfo?.className" appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="30">
+          <!-- <span class="border p-20 radius-5 mt-4">{{classSectionInfo?.className}}</span> -->
+          <mat-form-field appearance="outline" fxFlexFill fxFlex.gt-xs="33" fxFlex="100" fxLayout="column">
+            <mat-label translate>Class</mat-label>
+            <input matInput [value]="classSectionInfo?.className" readonly>
+          </mat-form-field>
+        </div>
+        <div *ngIf="classSectionInfo?.sectionName" appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="30" class="px-20">
+          <!-- <span class="border p-20 radius-5 mt-4">{{classSectionInfo?.sectionName}}</span> -->
+          <mat-form-field appearance="outline" fxFlexFill fxFlex.gt-xs="33" fxFlex="100" fxLayout="column">
+            <mat-label translate>Section</mat-label>
+            <input matInput  [value]="classSectionInfo?.sectionName" readonly>
+          </mat-form-field>
+        </div>
+        <ng-container *ngIf="isTemplateValid">
+          <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="40">
+            <mat-label #classTempId translate>Timetables</mat-label>
+            <mat-select (selectionChange)="onTemplateSelect($event)" formControlName="scheduleTemplateId">
+              <mat-option *ngFor="let classTemp of classTimetableTempList" [value]="classTemp.value">
+                {{classTemp.label}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </ng-container>
+      </div>
+  <!-- End -->
+
+      <!-- Get Details of schedule template based on class section and board after save-->
+      <mat-divider *ngIf="classSectionTempList.length >0" class="mt-20"></mat-divider>
+      <div *ngIf="classSectionTempList.length >0" class="m-20 border school-period">
+        <div fxLayout="row inline" *ngFor="let item of classSectionTempList" class="mw-100-p border-bottom">
+          <div fxLayout="column" fxFlex="20"
+            class="border-right p-20 w-120 weekDay custom-white accent-fg font-weight-600 text-uppercase" translate>
+            {{item.weekDayName}}</div>
+          <div fxLayout="column" fxFlex="20" fxLayoutAlign="center start" class="border-right w-200 p-12 break-word"
+            *ngFor="let child of item.periodsView;let i=index">
+            <div fxLayout="row">{{child.periodName}}</div>
+            <div fxLayout="row" class="grey-500-fg" *ngIf="child.startTime!= null">{{child.startTime | slice:0:5}} to
+              {{child.endTime | slice:0:5}}
+            </div>
+            <div fxLayout="row">{{child.periodTypeName}}</div>
+            <div fxLayout="row" *ngFor="let childs of child.courseAndStaffViewModel;"><span>{{childs.courseName}} <span *ngIf="childs.courseName && childs.staffName">-</span> {{childs.staffName}}</span></div>
+          </div>
+        </div>
+      </div>
+      <!-- End -->
+    </form>
+
+
+    <!-- Add options for Class Timetable -->
+    <div *ngIf="isHasTemp" class="text-center font-size-16 mt-48" translate>No Class Time Table Has Been
+      Defined For The
+      Selected Class And Section</div>
+
+
+    <mat-divider class="mb-20" *ngIf="isHasTemp"></mat-divider>
+    <!-- End -->
+  </div>
+</div>
+

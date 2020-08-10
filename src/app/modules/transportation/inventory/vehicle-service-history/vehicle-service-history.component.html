@@ -1,0 +1,109 @@
+<app-table [settings]="tabSettings" [closeRowForm]='closeAddPanel' (rowBasedAction)="rowActions($event)"
+  (getTableData)='getAllVehicleService($event)' [templateRef]="addServiceHistory" (openAddForm)="onAddFormClick()">
+</app-table>
+
+<ng-template #addServiceHistory>
+  <form class="p-20" [formGroup]="serviceHistoryForm" (ngSubmit)="onSubmit(serviceHistoryForm)" #serviceForm="ngForm" autocomplete="off">
+
+    <div fxLayout="column" fxLayout.gt-sm="row" class="pt-24">
+
+      <mat-form-field appearance="outline" fxFlexFill fxFlex.gt-sm="32" fxFlex="100" fxLayout="column"
+        class="icon-center">
+        <mat-label #serviceDate translate>Service Date</mat-label>
+        <input matInput (keyup)="forceValidation('serviceDate',serviceHistoryForm)" [matDatepicker]="serviceDatePicker"
+          formControlName="serviceDate" required>
+        <mat-datepicker-toggle matSuffix [for]="serviceDatePicker"></mat-datepicker-toggle>
+        <mat-datepicker #serviceDatePicker></mat-datepicker>
+        <mat-error>
+          <app-validation [labelName]='serviceDate.innerText'
+            [validationControl]="serviceHistoryForm.controls.serviceDate" [doValidate]="serviceValidate">
+          </app-validation>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" fxFlexFill fxFlex.gt-sm="36" fxFlex="100" fxLayout="column"
+        class="px-sm-20 icon-center">
+        <mat-label #nextServiceDate translate>Next Service Date</mat-label>
+        <input matInput (keyup)="forceValidation('nextServiceDate',serviceHistoryForm)"
+          [matDatepicker]="nextServiceDatePicker" [min]="serviceHistoryForm.controls.serviceDate.value"
+          formControlName="nextServiceDate" required>
+        <mat-datepicker-toggle matSuffix [for]="nextServiceDatePicker"></mat-datepicker-toggle>
+        <mat-datepicker #nextServiceDatePicker></mat-datepicker>
+        <mat-error>
+          <app-validation [labelName]='nextServiceDate.innerText'
+            [validationControl]="serviceHistoryForm.controls.nextServiceDate" [doValidate]="serviceValidate">
+          </app-validation>
+        </mat-error>
+      </mat-form-field>
+
+      <div fxLayout="column" class="mt-12" fxFlex.gt-xs="32" fxFlex="100">
+        <div fxLayout="row">
+          <button mat-raised-button type="button" color="primary" (click)="logoImgInput.value='';logoImgInput.click()">
+            <mat-icon class="mr-8">attach_file</mat-icon>{{'Upload Image' | translate}}
+          </button>
+          <button mat-icon-button type="button"  [style.display]="logoImgProp?.src ? 'block' : 'none'"  (click)="logoImgInput.value='';clearImages(true)">
+            <mat-icon class="mb-4 grey-600-fg"
+             >highlight_off</mat-icon>
+          </button>
+
+          <!-- <button mat-icon-button [style.display]="logoImgProp?.src ? 'block' : 'none'" (click)="logoImgInput.value='';clearImages(true)">
+            <mat-icon class="mb-4 grey-600-fg" >
+                highlight_off
+            </mat-icon>
+        </button> -->
+
+
+        </div>
+        <input [accept]="'.doc,.docx,image/jpeg,image/jpg,image/png,application/pdf,image/*'" id="logoImgInput"
+          (change)="imgChanged(logoImgInput.files)" fxHide type="file" #logoImgInput>
+        <div class="pt-8 logo-name break-word"
+          [style.visibility]="serviceHistoryForm.controls?.attachment?.value.fileName ? 'visible' : 'hidden'"
+          [style.display]="logoImgProp?.src ? 'block' : 'none'">
+          {{serviceHistoryForm.controls?.attachment?.value.fileName}}</div>
+      </div>
+    </div>
+
+    <div fxLayout="column" fxLayout.gt-sm="row" class="pt-12">
+
+      <mat-form-field appearance="outline" class="mr-sm-20" fxLayout="column" fxFlex.gt-xs="32" fxFlex="100">
+        <mat-label #odometerReadingService translate>Odometer Reading At Service</mat-label>
+        <input autocomplete="off" matInput (keyup)="preventSpace($event,'serviceHistoryForm','odometerReadingAtService')" formControlName="odometerReadingAtService" (blur)="trimTextBoxSpaces('serviceHistoryForm','odometerReadingAtService')">
+        <mat-error>
+          <app-validation [labelName]="odometerReadingService.innerText"
+            [validationControl]="serviceHistoryForm.controls.odometerReadingAtService" [doValidate]="serviceValidate">
+          </app-validation>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="px-sm-20" fxLayout="column" fxFlex.gt-xs="36" fxFlex="100">
+        <mat-label #odometerNextService translate>Odometer Reading Next Service</mat-label>
+        <input autocomplete="off" (keyup)="preventSpace($event,'serviceHistoryForm','odomenterReadingNextService')" matInput formControlName="odomenterReadingNextService" (blur)="trimTextBoxSpaces('serviceHistoryForm','odomenterReadingNextService')">
+        <mat-error>
+          <app-validation [labelName]="odometerNextService.innerText"
+            [validationControl]="serviceHistoryForm.controls.odomenterReadingNextService"
+            [doValidate]="serviceValidate">
+          </app-validation>
+        </mat-error>
+      </mat-form-field>
+
+
+      <mat-form-field appearance="outline" fxLayout="column" fxFlex.gt-xs="32" fxFlex="100">
+        <mat-label #additionalDetail translate>Additional Details</mat-label>
+        <input autocomplete="off" matInput formControlName="additionalDetails" (keyup)="preventSpace($event,'serviceHistoryForm','additionalDetails')" (blur)="trimTextBoxSpaces('serviceHistoryForm','additionalDetails')">
+        <mat-error>
+          <app-validation [labelName]="additionalDetail.innerText"
+            [validationControl]="serviceHistoryForm.controls.additionalDetails"
+            class="error-msg messages text-left text-danger" [doValidate]="serviceValidate">
+          </app-validation>
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div fxLayout="row" fxLayoutAlign="end center" class="mt-sm-12">
+      <button class="mr-12 text-uppercase" type="button" mat-raised-button (click)="closeAddForm()">
+        {{'Cancel' | translate}}</button>
+      <button mat-raised-button type="submit" class="text-uppercase" color="accent"
+        [disabled]="disableSubmitBtn">{{(updateButtonShow ? 'Update':'Create') | translate}}</button>
+    </div>
+  </form>
+</ng-template>

@@ -1,0 +1,25 @@
+<div fxLayout="column" class="info-relative mt-32">
+  <div fxLayout="row" fxLayoutAlign="end center" class="edit-info">
+    <button mat-raised-button color="primary" class="text-uppercase mr-4"
+      [routerLink]="['/communication/school-communications/communication-configuration']" translate>{{'Back' | translate}}</button>
+
+    <button mat-button type="button" (click)="getHelpText('Communication Details')">
+      <mat-icon class="grey-600-fg" >info</mat-icon>
+    </button>
+  </div>
+</div>
+
+<mat-tab-group [selectedIndex]="index" (selectedIndexChange)="selected($event)" class="manage-institue ">
+  <mat-tab label="{{'COMMUNICATION DETAILS' | translate}}">
+    <div *ngIf="showCommunicationDetails">
+      <app-communication-details [data]="selectedChanged"></app-communication-details>
+    </div>
+  </mat-tab>
+
+  <mat-tab label="{{'MESSAGE TRANSMISSION' | translate}}">
+    <div *ngIf="showMessageTransmission">
+      <app-message-transmissions [data]="selectedChanged"></app-message-transmissions>
+    </div>
+  </mat-tab>
+
+</mat-tab-group>

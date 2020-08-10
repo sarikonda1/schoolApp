@@ -1,0 +1,177 @@
+<div class="px-sm-40 pt-sm-24" #search>
+  <div class="p-12 font-size-18 text-uppercase" translate>Student Attendance</div>
+  <div class="w-100-p mat-elevation-z8 simple-table-container radius-t-20 px-sm-28 pt-sm-28 pb-sm-16">
+    <form [formGroup]="studentAttendanceForm">
+      <div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign="start center">
+        <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="30"
+          class="icon-center">
+          <mat-label translate #attendanceDate>Attendance Date</mat-label>
+          <input matInput (keyup)="forceValidation('attendanceDate',studentAttendanceForm)"
+            formControlName="attendanceDate" [matDatepicker]="picker" [min]="academicSession?.startDate"
+            [max]="academicSession?.endDate" required placeholder="Choose a start date">
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+          <mat-error>
+            <app-validation [labelName]='attendanceDate.innerText'
+              [validationControl]="studentAttendanceForm.controls.attendanceDate" [doValidate]="validate">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="30"
+          class="px-sm-20">
+          <mat-label translate #class>Class</mat-label>
+          <mat-select required formControlName="classId" (selectionChange)="onSelectClass($event)">
+            <mat-option *ngFor="let class of classes" [value]="class.value">
+              {{ class.label }}</mat-option>
+          </mat-select>
+          <mat-error>
+            <app-validation [labelName]='class.innerText' [validationControl]="studentAttendanceForm.controls.classId"
+              [doValidate]="validate">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="30"
+          >
+          <mat-label translate #section>Section</mat-label>
+          <mat-select required formControlName="sectionId">
+            <mat-option *ngFor="let section of sections" [value]="section.value">
+              {{ section.label }}</mat-option>
+          </mat-select>
+          <mat-error>
+            <app-validation [labelName]='section.innerText'
+              [validationControl]="studentAttendanceForm.controls.sectionId" [doValidate]="validate">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+        <div fxLayoutAlign="end center"> 
+          <button mat-raised-button translate color="accent" class="text-uppercase ml-12 mb-20"
+          (click)="onSearchHeaderForm()">
+          {{'Search' | translate}}
+        </button>
+        <button mat-button type='button' (click)="getHelpText('Student Attendance')" class="mb-20">
+          <mat-icon class="grey-600-fg">info</mat-icon>
+        </button>
+        </div>
+       
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<app-table *ngIf="submitted" [settings]="tableSettings" (getTableData)='tableData($event)'
+  (selectedRows)='selectedRows($event)' (additionalButtonClick)="markAttendanceComplete($event)"
+  (anchorDialogClick)="showLeaveInfo($event)" (radioSection)='onPresentAbsent($event)'
+  [massActionTemplateRef]="massActions" (resetFilter)="resetFilter()">
+</app-table>
+<app-custom-card *ngIf="!submitted" [title]="'Student Attendance Details'"
+  [inputMessage]="'Please Select Class And Section'">
+</app-custom-card>
+<ng-template #massActions>
+  <div>
+    <form [formGroup]="massActionForm" (ngSubmit)="massActionForm.valid && massActionsApply()">
+      <mat-form-field>
+        <mat-select formControlName="massOption">
+          <mat-select-trigger>
+            <div *ngIf="massActionForm.value.massOption === 'absent'">
+              {{'Absent' | translate}}
+            </div>
+            <div *ngIf="massActionForm.value.massOption === 'present'">
+              {{'Present' | translate}}
+            </div>
+            <div *ngIf="massActionForm.value.massOption === 'clear'">
+              {{'Clear Attendance' | translate}}
+            </div>
+          </mat-select-trigger>
+          <mat-option value="absent">
+            <mat-icon class="red-600-fg">clear</mat-icon>{{'Absent' | translate}}
+          </mat-option>
+          <mat-option value="present">
+            <mat-icon class="green-600-fg">check</mat-icon>{{'Present' | translate}}
+          </mat-option>
+          <mat-option value="clear" *ngIf="!classAttendanceMarked">
+            <mat-icon class="blue-600-fg">delete</mat-icon>{{'Clear Attendance' | translate}}
+          </mat-option>
+        </mat-select>
+        <mat-error>
+          <app-validation labelName='field' [validationControl]="massActionForm.controls.massOption"
+            [doValidate]="validate">
+          </app-validation>
+        </mat-error>
+      </mat-form-field>
+      <button type="submit" mat-raised-button translate color="accent" class="mx-12">
+        {{'Apply' | translate}}
+      </button>
+
+    </form>
+  </div>
+</ng-template>
+<ng-template #attendanceSummary>
+  <mat-list fxLayout="row wrap" class="pt-0 confirm-table border">
+    <mat-list-item fxFlex="50" fxLayout="column">
+      {{'Date' | translate}}
+    </mat-list-item>
+    <mat-list-item fxFlex="50" fxLayout="column">
+      {{getFormattedDateBySchoolDateFormat(markAttendanceDate)}}
+    </mat-list-item>
+    <mat-list-item fxFlex="50" fxLayout="column">
+      {{'No. of Students Present' | translate}}
+    </mat-list-item>
+    <mat-list-item fxFlex="50" fxLayout="column">
+      {{presentCount}}
+    </mat-list-item>
+    <mat-list-item fxFlex="50" fxLayout="column">
+      {{'No. of Students Absent' | translate}}
+    </mat-list-item>
+    <mat-list-item fxFlex="50" fxLayout="column">
+      {{absentCount}}
+    </mat-list-item>
+    <mat-list-item fxFlex="50" fxLayout="column">
+      {{'No. of Leave Requests' | translate}}
+    </mat-list-item>
+    <mat-list-item fxFlex="50" fxLayout="column">
+      {{leaveCount}}
+    </mat-list-item>
+  </mat-list>
+  <p fxLayoutAlign="center center">{{'Please Confirm to Mark Attendance Completion' | translate}}</p>
+  <div fxLayout="row" fxLayoutAlign="end center">
+    <button mat-raised-button color="primary" class="mr-16" matDialogClose (click)="close()"
+      >{{'Cancel' | translate}}</button>
+    <button mat-raised-button color="accent" (click)="submitAttendance()">{{'Confirm' | translate}}</button>
+  </div>
+</ng-template>
+<ng-template #leaveInfoDialog>
+  <div fxLayout="column">
+  <h2 mat-dialog-title>Leave Request</h2>
+  <!-- <div mat-dialog-content>
+    <p>{{'Date: ' + leaveInfo.from + ' - ' + leaveInfo.to }}</p>
+    <p>{{'Reason:'}}</p>
+    <div> {{leaveInfo.reason}}</div>
+  </div> -->
+  <div fxLayout="column" fxFlex="100">
+    <div fxLayout="row" class="pb-8">
+      <div class="w-68">Date</div>
+      <div><span class="px-4">:</span>{{ leaveInfo.from + ' - ' + leaveInfo.to }}</div>
+    </div>
+    <div fxLayout="row" class="pb-8">
+      <div class="w-68">Reason</div>
+      <div><span class="px-4">:</span><span class="break-word">{{leaveInfo.reason}}</span></div>
+    </div>
+    <div fxLayout="row" class="pb-8">
+      <div class="w-68">Status</div>
+      <div><span class="px-4">:</span><span class="break-word">{{leaveInfo.status}}</span></div>
+    </div>
+    <div fxLayout="row">
+      <button *ngIf="leaveInfo.attachment" mat-button color="accent" type="button" (click)="openAttachment()">
+        <mat-icon class="mr-4">attachment</mat-icon> View Request Letter
+      </button>
+    </div>
+  </div>
+</div>
+  <div fxLayout="row" fxLayoutAlign="end center" mat-dialog-actions class="pb-12">
+   
+    <button mat-raised-button mat-dialog-close color="primary">{{'Close' | translate}}</button>
+  </div>
+</ng-template>

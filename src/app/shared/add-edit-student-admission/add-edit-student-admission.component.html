@@ -1,0 +1,1350 @@
+<div fxLayout="column" ngClass="p-sm-40">
+  <h2 class="pl-16" *ngIf="studentId" translate>{{label}}</h2>
+  <mat-horizontal-stepper class="custom-horizontal-step radius-10 mat-elevation-z6" [linear]="true" fxLayout="row" fxFlex="100" #stepper
+    (selectionChange)="onSelectionChange($event)">
+
+    <mat-step [stepControl]="studentDetails">
+      <form fxLayout="column" [formGroup]="studentDetails">
+        <ng-template matStepLabel><span translate>Student Details</span></ng-template>
+        <div class="pt-24 font-size-20" fxLayout="row" fxFlex="100" fxLayoutAlign="start center"><span translate>Student
+            Details</span></div>
+        <div fxLayout="column" fxLayout.gt-sm="row" class="pt-24" fxFlex="100" fxLayoutAlign="center center">
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" class="icon-center">
+            <mat-label #dateofadmission translate>Date Of Admission</mat-label>
+            <input matInput (keyup)="forceValidation('dateOfAdmission',studentDetails)"
+              [matDatepicker]="dateOfAdmission" formControlName="dateOfAdmission" (dateChange)="validApplicationDate()"
+              required>
+            <mat-datepicker-toggle matSuffix [for]="dateOfAdmission"></mat-datepicker-toggle>
+            <mat-datepicker #dateOfAdmission></mat-datepicker>
+            <mat-error>
+              <app-validation [labelName]='dateofadmission.innerText'
+                [validationControl]="studentDetails.controls.dateOfAdmission" [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50"
+            class="pl-sm-24 icon-center">
+            <mat-label #dateofjoining translate>Date Of Joining</mat-label>
+            <input matInput (keyup)="forceValidation('dateOfJoining',studentDetails)" [matDatepicker]="dateOfJoining"
+              [min]="studentDetails.controls.dateOfAdmission.value" formControlName="dateOfJoining" required>
+            <mat-datepicker-toggle matSuffix [for]="dateOfJoining"></mat-datepicker-toggle>
+            <mat-datepicker #dateOfJoining></mat-datepicker>
+            <mat-error>
+              <app-validation [labelName]='dateofjoining.innerText'
+                [validationControl]="studentDetails.controls.dateOfJoining" [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div fxLayout="column" fxLayout.gt-sm="row" class="pt-24" fxFlex="100" fxLayoutAlign="center center">
+
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+            <mat-label #firstname translate>firstname</mat-label>
+            <input (keyup)="preventSpace($event,'studentDetails','firstName')" (blur)="trimTextBoxSpaces('studentDetails','firstName')"
+              formControlName="firstName" matInput required>
+            <mat-error>
+              <app-validation [labelName]='firstname.innerText' [validationControl]="studentDetails.controls.firstName"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50"
+            class="pl-sm-20">
+            <mat-label translate #middlename>Middle Name</mat-label>
+            <input (keyup)="preventSpace($event,'studentDetails','middleName')" (blur)="trimTextBoxSpaces('studentDetails','middleName')"
+              formControlName="middleName" matInput>
+            <mat-error>
+              <app-validation [labelName]='middlename.innerText'
+                [validationControl]="studentDetails.controls.middleName" [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div fxLayout="column" fxLayout.gt-sm="row" class="pt-24" fxFlex="100" fxLayoutAlign="center center">
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+            <mat-label translate #lastname>Last Name</mat-label>
+            <input (keyup)="preventSpace($event,'studentDetails','lastName')" (blur)="trimTextBoxSpaces('studentDetails','lastName')"
+              formControlName="lastName" matInput required>
+            <mat-error>
+              <app-validation [labelName]='lastname.innerText' [validationControl]="studentDetails.controls.lastName"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50"
+            class="pl-sm-20">
+            <mat-label #admissionForSchoolAcademicSessionId translate>Admission For Academic Session</mat-label>
+            <mat-select [disabled]="studentId" formControlName="admissionForSchoolAcademicSessionId"
+              (selectionChange)="onSelectAcademicSession($event.value)" required>
+              <mat-option *ngFor="let academicSession of academicSessions" [value]="academicSession.value">
+                {{academicSession.label}}</mat-option>
+            </mat-select>
+            <mat-error>
+              <app-validation [labelName]='admissionForSchoolAcademicSessionId.innerText'
+                [validationControl]="studentDetails.controls.admissionForSchoolAcademicSessionId"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div fxLayout.lt-sm="column" fxLayout.gt-sm="row" fxFlex="100" fxLayoutAlign="center center" class="pt-12">
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50"
+            *ngIf="schoolBoardsList.length">
+            <mat-label #admissionForSchoolBoardId translate>Admission For School Board</mat-label>
+            <mat-select [disabled]="studentId" formControlName="admissionForSchoolBoardId"
+              (selectionChange)="onSelectSchoolBoard($event.value)" required>
+              <mat-option *ngFor="let schoolBoard of schoolBoardsList" [value]="schoolBoard.value">{{schoolBoard.label}}
+              </mat-option>
+            </mat-select>
+            <mat-error>
+              <app-validation [labelName]='admissionForSchoolBoardId.innerText'
+                [validationControl]="studentDetails.controls.admissionForSchoolBoardId" [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50"
+            class="pl-sm-20">
+            <mat-label translate #admissionForClassId>Admission For Class</mat-label>
+            <mat-select [disabled]="studentId" formControlName="admissionForClassId" required>
+              <mat-option *ngFor="let class of filterClasses" [value]="class.value">{{class.label}}</mat-option>
+            </mat-select>
+            <mat-error>
+              <app-validation [labelName]='admissionForClassId.innerText'
+                [validationControl]="studentDetails.controls.admissionForClassId" [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div fxLayout="column" fxLayout.gt-sm="row" class="pt-12" fxFlex="100" fxLayoutAlign="start center">
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+            <mat-label #genderTypeId translate>Gender</mat-label>
+            <mat-select formControlName="genderTypeId" required>
+              <mat-option *ngFor="let gender of genders" [value]="gender.id">{{gender.name}}
+              </mat-option>
+            </mat-select>
+            <mat-error>
+              <app-validation [labelName]='genderTypeId.innerText'
+                [validationControl]="studentDetails.controls.genderTypeId" [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50"
+            class="pl-sm-20">
+            <mat-label translate #aadhaarNumber>Aadhaar Number</mat-label>
+            <input (keyup)="preventSpace($event,'studentDetails','aadhaarNumber')" (blur)="trimTextBoxSpaces('studentDetails','aadhaarNumber')"
+              formControlName="aadhaarNumber" matInput>
+            <mat-error>
+              <app-validation [labelName]='aadhaarNumber.innerText'
+                [validationControl]="studentDetails.controls.aadhaarNumber" [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div fxLayout="column" fxLayout.gt-sm="row" class="pt-12" fxFlex="100" fxLayoutAlign="start center">
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" class="icon-center">
+            <mat-label #dateofbirth translate>Date Of Birth</mat-label>
+            <input matInput (keyup)="forceValidation('dateOfBirth',studentDetails)" [matDatepicker]="dateOfBirth"
+              formControlName="dateOfBirth" (dateChange)="validApplicationDate()" [max]="currentDate" required>
+            <mat-datepicker-toggle matSuffix [for]="dateOfBirth"></mat-datepicker-toggle>
+            <mat-datepicker #dateOfBirth></mat-datepicker>
+            <mat-error>
+              <app-validation [labelName]='dateofbirth.innerText'
+                [validationControl]="studentDetails.controls.dateOfBirth" [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50"
+            class="pl-sm-20">
+            <mat-label translate #nationalityCountryId>Nationality</mat-label>
+            <mat-select formControlName="nationalityCountryId" required>
+              <mat-option *ngFor="let country of countryOptionsSelect" [value]="country.id">{{country.name}}
+              </mat-option>
+            </mat-select>
+            <mat-error>
+              <app-validation [labelName]='nationalityCountryId.innerText'
+                [validationControl]="studentDetails.controls.nationalityCountryId" [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div fxLayout="column" fxLayout.gt-sm="row" class="pt-12" fxFlex="100" fxLayoutAlign="start center">
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+            <mat-label #religionTypeId translate>Religion</mat-label>
+            <mat-select formControlName="religionTypeId">
+              <mat-option *ngIf="religions?.length"></mat-option>
+              <mat-option *ngFor="let religion of religions" [value]="religion.id">{{religion.name}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50"
+            class="pl-sm-20">
+            <mat-label #motherTongueLanguageId translate>Mother Tongue</mat-label>
+            <mat-select formControlName="motherTongueLanguageId">
+              <mat-option *ngIf="languages?.length"></mat-option>
+              <mat-option *ngFor="let langauge of languages" [value]="langauge.id">{{langauge.name}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div fxLayout="column" fxLayout.gt-sm="row" class="pt-12" fxFlex="100" fxLayoutAlign="start center">
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+            <mat-label #casteTypeId translate>caste</mat-label>
+            <mat-select formControlName="casteTypeId">
+              <mat-option *ngIf="casts?.length"></mat-option>
+              <mat-option *ngFor="let cast of casts" [value]="cast.id">{{cast.name}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50"
+            class="pl-sm-20">
+            <mat-label #studentGroupId translate>Student Group</mat-label>
+            <mat-select formControlName="studentGroupId">
+              <mat-option *ngIf="studentGroups?.length"></mat-option>
+              <mat-option *ngFor="let studentGroup of studentGroups" [value]="studentGroup.id">
+                {{studentGroup.shortName}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div fxLayout="column" fxLayout.gt-sm="row" class="pt-12" fxFlex="100" fxLayoutAlign="center start">
+          <div fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+            <div fxLayout="row" fxLayoutAlign="end center">
+              <button mat-raised-button color="primary" type="button"
+                (click)="studentImage.value = '';studentImage.click()">{{'Upload Image*' | translate}}</button>
+              <button mat-icon-button [style.display]="attachments['studentDetails']?.src ? 'block' : 'none'">
+                <mat-icon class="mb-4 grey-600-fg" (click)="studentImage.value = '';clearImages('studentDetails')">
+                  highlight_off</mat-icon>
+              </button>
+            </div>
+            <input [accept]="'image/*'" id="studentImage" (change)="imgChanged(studentImage.files,'studentDetails')"
+              fxHide type="file" #studentImage>
+            <div class="pt-4 primary-300-fg font-size-12 text-right pr-36">(<span translate>Preferred</span> 1:1)</div>
+            <mat-error class="text-right"
+              [style.visibility]="(!studentDetails?.value?.attachment?.fileValue) && stepper?.selected?.interacted ? 'visible' : 'hidden'">
+              Student Image Required</mat-error>
+          </div>
+          <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" class="pl-sm-32">
+            <img class="border w-200 h-200 studnt-img radius-5" [src]="attachments['studentDetails']?.src"
+              *ngIf="attachments['studentDetails']?.src" alt="Launchship" />
+          </div>
+        </div>
+
+        <div fxLayout="row" fxLayoutAlign="end center" class="mt-16">
+          <button mat-raised-button matStepperPrevious (click)="onCancel()" type="button" class="text-uppercase mr-12">{{'Cancel' | translate}}
+          </button>
+          <button mat-raised-button matStepperNext type="button" color="accent" class="text-uppercase">
+            {{'Next' | translate}}
+          </button>
+        </div>
+      </form>
+    </mat-step>
+    <mat-step [stepControl]="siblingCountForm">
+      <form fxLayout="column" [formGroup]="siblingCountForm">
+        <ng-template matStepLabel><span translate>Sibling Details</span></ng-template>
+        <div class="pt-24 font-size-20" fxLayout="row" fxFlex="100" fxLayoutAlign="start center">
+          <div fxLayout="column" translate>Sibling Details</div>
+        </div>
+        <div fxLayout="column" fxLayout.gt-sm="row" class="pt-12" fxFlex="100" fxLayoutAlign="start center" fxFlexFill>
+          <mat-form-field appearance="outline" fxFlex.gt-sm="32" fxLayout="column" fxFlex="100" fxFlexFill>
+            <mat-label translate #noOfOlderSiblings>No.Of Elder Siblings</mat-label>
+            <input matInput formControlName="siblingsOlderToApplicants" (keyup)="preventSpace($event,'siblingCountForm','siblingsOlderToApplicants')"
+              (blur)="trimTextBoxSpaces('siblingCountForm','siblingsOlderToApplicants')">
+            <mat-error>
+              <app-validation [labelName]='noOfOlderSiblings.innerText'
+                [validationControl]="siblingCountForm.controls.siblingsOlderToApplicants" [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" fxFlex.gt-sm="36" class="px-sm-20" fxLayout="column" fxFlex="100" fxFlexFill>
+            <mat-label translate #noOfyongrSiblings>No.Of Younger Siblings</mat-label>
+            <input matInput formControlName="siblingsYoungerToApplicants" (keyup)="preventSpace($event,'siblingCountForm','siblingsYoungerToApplicants')"
+              (blur)="trimTextBoxSpaces('siblingCountForm','siblingsYoungerToApplicants')">
+            <mat-error>
+              <app-validation [labelName]='noOfyongrSiblings.innerText'
+                [validationControl]="siblingCountForm.controls.siblingsYoungerToApplicants" [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="32" fxFlexFill>
+            <mat-label translate #noOfSiblingsInSchool>No.Of Siblings in this School</mat-label>
+            <input matInput formControlName="siblingsInSchool" [(ngModel)]="siblingCount" (keyup)="preventSpace($event,'siblingCountForm','siblingsInSchool');createSibling()"
+            [readonly]="siblingCount >= 1 && siblingCount < 5">
+            <button type="button" *ngIf="siblingCount >= 1 && siblingCount < 5" mat-icon-button matSuffix
+              (click)="$event.stopPropagation();clearCount()">
+              <mat-icon class="red-400-fg">cancel</mat-icon>
+            </button>
+            <mat-error>
+              <app-validation [labelName]='noOfSiblingsInSchool.innerText'
+                [validationControl]="siblingCountForm.controls.siblingsInSchool" [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <mat-divider class="mt-32"></mat-divider>
+        <div formArrayName="items"
+          *ngFor="let item of siblingCountForm.get('items')?.controls; let i = index;let l = last;let f = first"
+          class="my-20 border-bottom">
+          <div [formGroupName]="i" fxLayout="column">
+            <div fxLayout="row" class="py-24 font-size-20" fxLayout="row" fxFlex="100"
+              fxLayoutAlign="space-between center">
+              <div fxLayout="row"><span translate>Sibling</span> <span>{{i + 1}}</span></div>
+              <div fxLayout="column">
+                <mat-chip-list aria-label="Fish selection">
+                  <button mat-stroked-button type="button" (click)="clearSiblingForm(i)"
+                    class="mr-12 radius-20 px-20"><span translate>Clear</span></button>
+                  <mat-chip *ngIf="siblingCountForm.value.items[i].isVerified" class="green-100-custom">
+                    <mat-icon class="mr-8 green-800-cs">check_circle</mat-icon><span translate>Verified</span>
+                  </mat-chip>
+                  <mat-chip *ngIf="siblingCountForm.value.items[i].unableToVerify" class="red-100-cs">
+                    <mat-icon class="mr-8 red-800-cs">highlight_off</mat-icon><span translate>Unable to Verify</span>
+                  </mat-chip>
+                </mat-chip-list>
+              </div>
+            </div>
+            <div fxFlexFill fxLayout="column" fxLayoutAlign="start center" fxLayout.gt-xs="row" class="pt-12">
+              <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-xs="34">
+                <mat-label translate #admissionNumber>Admission Number</mat-label>
+                <input matInput [readonly]="item?.value?.isVerified" formControlName="siblingAdmissionNumber"
+                (keyup)="preventSpaceForArray($event, item?.controls?.siblingAdmissionNumber)" (blur)="trimTextBoxSpaceArray(i,'siblingAdmissionNumber')" required>
+                <mat-error>
+                  <app-validation [labelName]='admissionNumber.innerText'
+                    [validationControl]="item.controls.siblingAdmissionNumber" [doValidate]="validate">
+                  </app-validation>
+                </mat-error>
+              </mat-form-field>
+              <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-xs="34" class="px-sm-20">
+                <mat-label #class translate>Class</mat-label>
+                <mat-select [disabled]="item?.value?.isVerified" formControlName="classId" required>
+                  <mat-option *ngFor="let class of filterSiblingClasses" [value]="class.value">{{class.label}}
+                  </mat-option>
+                </mat-select>
+                <mat-error>
+                  <app-validation [labelName]='class.innerText' [validationControl]="item.controls.classId"
+                    [doValidate]="validate">
+                  </app-validation>
+                </mat-error>
+              </mat-form-field>
+              <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-xs="32">
+                <mat-label #section translate>Section</mat-label>
+                <mat-select [disabled]="item?.value?.isVerified" formControlName="sectionId">
+                  <mat-option *ngFor="let section of finalSections"
+                    [value]="section.value">
+                    {{section.label}}</mat-option>
+                </mat-select>
+                <mat-error>
+                  <app-validation [labelName]='section.innerText' [validationControl]="item.controls.sectionId"
+                    [doValidate]="validate">
+                  </app-validation>
+                </mat-error>
+              </mat-form-field>
+            </div>
+            <div fxFlexFill fxLayout="column" fxLayoutAlign="start center" fxLayout.gt-xs="row" class="pt-24">
+              <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-xs="34">
+                <mat-label #firstName translate>First Name</mat-label>
+                <input [readonly]="item?.value?.isVerified"  (keyup)="preventSpaceForArray($event, item?.controls?.firstName)"
+                  (blur)="trimTextBoxSpaceArray(i,'firstName')" formControlName="firstName" matInput required>
+                <mat-error>
+                  <app-validation [labelName]='firstName.innerText' [validationControl]="item.controls.firstName"
+                    [doValidate]="validate">
+                  </app-validation>
+                </mat-error>
+              </mat-form-field>
+              <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-xs="34" class="px-sm-20">
+                <mat-label translate #middleName>Middle Name</mat-label>
+                <input [readonly]="item?.value?.isVerified" formControlName="middleName" (keyup)="preventSpaceForArray($event, item?.controls?.middleName)"
+                  (blur)="trimTextBoxSpaceArray(i,'middleName')" matInput>
+                <mat-error>
+                  <app-validation [labelName]='middleName.innerText' [validationControl]="item?.controls.middleName"
+                    [doValidate]="validate">
+                  </app-validation>
+                </mat-error>
+              </mat-form-field>
+              <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-xs="32">
+                <mat-label translate #lastName>Last Name</mat-label>
+                <input [readonly]="item?.value?.isVerified" (keyup)="preventSpaceForArray($event, item?.controls?.lastName)" formControlName="lastName" (blur)="trimTextBoxSpaceArray(i,'lastName')"
+                  matInput required>
+                <mat-error>
+                  <app-validation [labelName]='lastName.innerText' [validationControl]="item.controls.lastName"
+                    [doValidate]="validate">
+                  </app-validation>
+                </mat-error>
+              </mat-form-field>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="end center" class="pb-24">
+              <button mat-raised-button (click)="resetForm(i) ;checkAllSiblings()" type="button" class="text-uppercase mr-12"
+                *ngIf="!(siblingCountForm.get('items').controls?.length > 1 && f)">{{'Remove' | translate}}
+              </button>
+              <button mat-raised-button (click)="addSibling(i)" color="accent" type="button" class="text-uppercase mr-12"
+              *ngIf="l && i < siblingCount-1 && siblingCountForm.value.items[i].isVerified">{{'Add' | translate}}
+              </button>
+
+              <button mat-raised-button type="button" (click)="siblingSubmit(siblingCountForm.value.items,i)"
+                color="primary" class="text-uppercase" [disabled]="item?.value?.isVerified">{{'Verify' | translate}}
+              </button>
+            </div>
+
+          </div>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="end center" class="mt-24">
+          <button mat-raised-button matStepperPrevious type="button" class="text-uppercase mr-12">
+            {{'Previous' | translate}}
+          </button>
+          <button mat-raised-button matStepperNext type="button" color="accent" class="text-uppercase"
+            [disabled]="!siblingCountForm.controls['items'].valid">
+            {{'Next' | translate}}
+          </button>
+        </div>
+      </form>
+    </mat-step>
+    <mat-step [stepControl]="contactDetails" [optional]="isSiblingVerified">
+      <ng-template matStepLabel><span translate>Contact Details</span></ng-template>
+      <form fxLayout="column" [formGroup]="contactDetails" *ngIf="!isSiblingVerified">
+        <div class="pt-24 font-size-20" fxLayout="row" fxFlex="100" fxLayoutAlign="start center"><span translate>Contact Details</span></div>
+
+        <div fxLayout="column" fxFlexFill fxLayout.gt-sm="row" class="pt-12" fxLayoutAlign="start center">
+          <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+            <mat-label translate #email1>Primary Email</mat-label>
+            <input (keyup)="preventSpace($event,'contactDetails','email1')" (blur)="trimTextBoxSpaces('contactDetails','email1')"
+              formControlName="email1" matInput required>
+            <mat-error>
+              <app-validation [labelName]='email1.innerText' [validationControl]="contactDetails.controls.email1"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" class="pl-sm-20">
+            <mat-label translate #email2>Secondary Email</mat-label>
+            <input (keyup)="preventSpace($event,'contactDetails','email2')" (blur)="trimTextBoxSpaces('contactDetails','email2')"
+              formControlName="email2" matInput>
+            <mat-error>
+              <app-validation [labelName]='email2.innerText' [validationControl]="contactDetails.controls.email2"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div *ngIf="loaded" fxFlexFill fxLayout="column" fxLayout.gt-sm="row" class="pt-12"
+          fxLayoutAlign="center center">
+          <mat-form-field class="coutline" appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+            <mat-label translate #mobileNumber1>mobilenumber</mat-label>
+            <input type="text" required matInput formControlName="mobileTel" ng2TelInput
+              (hasError)="onError($event,'mobileTel','contactDetails')" [ng2TelInputOptions]="telOptions"
+              (ng2TelOutput)="getNumber($event,'mobileTel','contactDetails')"
+              (countryChange)="onCountryChangeMobile($event,'mobileTel','contactDetails')" />
+            <mat-error>
+              <app-validation [labelName]="mobileNumber1.innerText"
+                [validationControl]="contactDetails.controls.mobileTel" [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50"
+            class="pl-sm-24 coutline">
+            <mat-label translate #alternateNumber>alternatenumber</mat-label>
+            <input type="text" matInput formControlName="otherTel" ng2TelInput
+              (hasError)="onError($event,'otherTel','contactDetails')" [ng2TelInputOptions]="telOptions"
+              (ng2TelOutput)="getNumber($event,'otherTel','contactDetails')"
+              (countryChange)="onCountryChangeMobile($event,'otherTel','contactDetails')" />
+            <mat-error>
+              <app-validation [labelName]="alternateNumber.innerText"
+                [validationControl]="contactDetails.controls.otherTel" [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div *ngIf="loaded" fxLayout="column" fxFlexFill fxLayout.gt-sm="row" fxLayoutAlign="start center"
+          class="pt-12">
+          <mat-form-field class="coutline" appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+            <mat-label translate #landlineNumber>landlinenumber</mat-label>
+            <input type="text" matInput formControlName="landTel" ng2TelInput
+              (hasError)="onError($event,'landTel','contactDetails')" [ng2TelInputOptions]="telOptions"
+              (ng2TelOutput)="getNumber($event,'landTel','contactDetails')"
+              (countryChange)="onCountryChangeMobile($event,'landTel','contactDetails')" />
+            <mat-error>
+              <app-validation [labelName]="landlineNumber.innerText"
+                [validationControl]="contactDetails.controls.landTel" [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </form>
+      <div *ngIf="isSiblingVerified" fxLayout="column">
+        <div class="my-24 font-size-20" fxLayout="row" fxLayoutAlign="start center"><span translate>Contact
+            Details</span></div>
+        <div fxLayout="row" fxLayoutAlign="center center" class="mt-32">
+          <h2 fxLayout="column" fxFlex="50" translate class="text-center">
+            {{getSiblingDetailsString('Contact')}}
+          </h2>
+        </div>
+      </div>
+      <div fxLayout="row" fxLayoutAlign="end center" class="mt-16">
+        <button mat-raised-button matStepperPrevious type="button" class="text-uppercase mr-12">
+          {{'Previous' | translate}}
+        </button>
+        <button mat-raised-button matStepperNext type="button" color="accent" class="text-uppercase">
+          {{'Next' | translate}}
+        </button>
+      </div>
+    </mat-step>
+    <mat-step [stepControl]="addressDetails" [completed]="addressDetails.valid" [optional]="isSiblingVerified">
+      <ng-template matStepLabel><span translate>Address Details</span></ng-template>
+      <form fxLayout="column" [formGroup]="addressDetails" *ngIf="!isSiblingVerified">
+        <div class="pt-24 font-size-20" fxLayout="row" fxFlex="100" fxLayoutAlign="start center" translate>Address
+          Details</div>
+
+        <div fxLayout="column" fxFlexFill class="pt-24" fxLayout.gt-sm="row" fxLayoutAlign="center center">
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+            <mat-label translate #addressLine1>Address Line 1</mat-label>
+            <input (keyup)="preventSpace($event,'addressDetails','line1')" (blur)="trimTextBoxSpaces('addressDetails','line1')"
+              formControlName="line1" matInput required>
+            <mat-error>
+              <app-validation [labelName]='addressLine1.innerText' [validationControl]="addressDetails.controls.line1"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50"
+            class="pl-sm-20">
+            <mat-label translate #addressLine2>Address Line 2</mat-label>
+            <input (keyup)="preventSpace($event,'addressDetails','line2')" (blur)="trimTextBoxSpaces('addressDetails','line2')"
+              formControlName="line2" matInput>
+            <mat-error>
+              <app-validation [labelName]='addressLine2.innerText' [validationControl]="addressDetails.controls.line2"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div fxLayout="column" fxFlexFill fxLayout.gt-xs="row" fxLayoutAlign="center center" class="pt-12">
+          <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+            <mat-label translate #addressLine3>Address Line 3</mat-label>
+            <input (keyup)="preventSpace($event,'addressDetails','line3')" (blur)="trimTextBoxSpaces('addressDetails','line3')"
+              formControlName="line3" matInput>
+            <mat-error>
+              <app-validation [labelName]='addressLine3.innerText' [validationControl]="addressDetails.controls.line3"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" class="pl-sm-20">
+            <mat-label translate #country>country</mat-label>
+            <mat-select (selectionChange)="countryChanged($event.value)" matInput required formControlName="countryId"
+              required>
+              <mat-option *ngFor="let country of countryOptionsSelect" [value]="country.id">{{country.name}}
+              </mat-option>
+            </mat-select>
+            <mat-error>
+              <app-validation [labelName]='country.innerText' [validationControl]="addressDetails.controls.countryId"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div fxLayout="column" fxFlexFill class="pt-12" fxLayout.gt-xs="row" fxLayoutAlign="center center">
+          <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+            <mat-label translate #state>state</mat-label>
+            <mat-select matInput formControlName="stateId" required>
+              <mat-option *ngFor="let state of stateOptionsSelect" [value]="state.id">{{state.name}}</mat-option>
+            </mat-select>
+            <mat-error>
+              <app-validation [labelName]='state.innerText' [validationControl]="addressDetails.controls.stateId"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" class="pl-sm-20">
+            <mat-label translate #city>city</mat-label>
+            <input (keyup)="preventSpace($event,'addressDetails','city')" (blur)="trimTextBoxSpaces('addressDetails','city')"
+              formControlName="city" matInput>
+            <mat-error>
+              <app-validation [labelName]='city.innerText' [validationControl]="addressDetails.controls.city"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div fxLayout="column" fxFlexFill fxLayout.gt-xs="row" fxLayoutAlign="start center" class="pt-12">
+          <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+            <mat-label translate #pincode>pincode</mat-label>
+            <input (keyup)="preventSpace($event,'addressDetails','pincode')" (blur)="trimTextBoxSpaces('addressDetails','pincode')"
+              formControlName="pincode" matInput required>
+            <mat-error>
+              <app-validation [labelName]='pincode.innerText' [validationControl]="addressDetails.controls.pincode"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </form>
+      <div *ngIf="isSiblingVerified" fxLayout="column">
+        <div class="my-24 font-size-20" fxLayout="row" fxLayoutAlign="start center"><span translate>Address
+            Details</span></div>
+        <div fxLayout="row" fxLayoutAlign="center center" class="mt-32">
+          <h2 fxLayout="column" fxFlex="50" translate class="text-center">
+            {{getSiblingDetailsString('Address')}}
+          </h2>
+        </div>
+      </div>
+      <div fxLayout="row" fxLayoutAlign="end center" class="mt-sm-20">
+        <button mat-raised-button matStepperPrevious type="button" class="text-uppercase mr-12">
+          {{'Previous' | translate}}
+        </button>
+        <button mat-raised-button matStepperNext type="button" color="accent" class="text-uppercase">
+          {{'Next' | translate}}
+        </button>
+      </div>
+    </mat-step>
+    <mat-step [stepControl]="emergencyContactDetails" [optional]="isSiblingVerified">
+      <ng-template matStepLabel><span translate>Emergency Contact Details</span></ng-template>
+      <form fxLayout="column" [formGroup]="emergencyContactDetails" *ngIf="!isSiblingVerified">
+        <div class="pt-24 font-size-20" fxLayout="row" fxFlex="100" fxLayoutAlign="start center"><span
+            translate>Emergency
+            Contact Details</span></div>
+
+        <div fxLayout="column" fxFlexFill fxLayout.gt-sm="row" class="pt-12" fxLayoutAlign="start center">
+          <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" class="pr-sm-20">
+            <mat-label translate #emergencyContactName1>Emergency Contact Name 1</mat-label>
+            <input (keyup)="preventSpace($event,'emergencyContactDetails','emergencyContactName1')"
+              (blur)="trimTextBoxSpaces('emergencyContactDetails','emergencyContactName1')"
+              formControlName="emergencyContactName1" matInput required>
+            <mat-error>
+              <app-validation [labelName]='emergencyContactName1.innerText'
+                [validationControl]="emergencyContactDetails.controls.emergencyContactName1" [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+         
+          <mat-form-field class="coutline" appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" >
+            <mat-label translate #emergencyContactNumber1>Emergency Contact Phone Number 1</mat-label>
+            <input type="text" required matInput formControlName="emgergencyContactTelNumber1" ng2TelInput
+              (hasError)="onError($event,'emgergencyContactTelNumber1','emergencyContactDetails')"
+              [ng2TelInputOptions]="telOptions"
+              (ng2TelOutput)="getNumber($event,'emgergencyContactTelNumber1','emergencyContactDetails')"
+              (countryChange)="onCountryChangeMobile($event,'emgergencyContactTelNumber1','emergencyContactDetails')"
+              required />
+            <mat-error>
+              <app-validation [labelName]="emergencyContactNumber1.innerText"
+                [validationControl]="emergencyContactDetails.controls.emgergencyContactTelNumber1"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div *ngIf="loaded" fxLayout="column" fxLayout.gt-sm="row" fxFlexFill class="pt-12"
+          fxLayoutAlign="start center">
+          <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" class="pr-sm-20">
+            <mat-label translate #emergencyContatctRelation1>Emergency Contact Relation 1</mat-label>
+            <input (keyup)="preventSpace($event,'emergencyContactDetails','emergencyContactRelation1')"
+              (blur)="trimTextBoxSpaces('emergencyContactDetails','emergencyContactRelation1')"
+              formControlName="emergencyContactRelation1" matInput required>
+            <mat-error>
+              <app-validation [labelName]='emergencyContatctRelation1.innerText'
+                [validationControl]="emergencyContactDetails.controls.emergencyContactRelation1"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field class="coutline" appearance="outline" fxFlexFill fxLayout="column" fxFlex="100"
+          fxFlex.gt-sm="50">
+          <mat-label translate #emergencyContactNumber2>Emergency Contact Phone Number 2</mat-label>
+          <input type="text" matInput formControlName="emgergencyContactTelNumber2" ng2TelInput
+            (hasError)="onError($event,'emgergencyContactTelNumber2','emergencyContactDetails')"
+            [ng2TelInputOptions]="telOptions"
+            (ng2TelOutput)="getNumber($event,'emgergencyContactTelNumber2','emergencyContactDetails')"
+            (countryChange)="onCountryChangeMobile($event,'emgergencyContactTelNumber2','emergencyContactDetails')" />
+          <mat-error>
+            <app-validation [labelName]="emergencyContactNumber2.innerText"
+              [validationControl]="emergencyContactDetails.controls.emgergencyContactTelNumber2"
+              [doValidate]="validate">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+        </div>
+
+        <div fxFlexFill fxLayout="column" fxLayout.gt-sm="row" class="pt-12" fxLayoutAlign="start center">
+          <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" class="pr-sm-20">
+            <mat-label translate #emergencyContactName2>Emergency Contact Name 2</mat-label>
+            <input (keyup)="preventSpace($event,'emergencyContactDetails','emergencyContactName2')"
+              (blur)="trimTextBoxSpaces('emergencyContactDetails','emergencyContactName2')"
+              formControlName="emergencyContactName2" matInput>
+            <mat-error>
+              <app-validation [labelName]='emergencyContactName2.innerText'
+                [validationControl]="emergencyContactDetails.controls.emergencyContactName2" [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+            <mat-label translate #emergencyContatctRelation2>Emergency Contact Relation 2</mat-label>
+            <input (keyup)="preventSpace($event,'emergencyContactDetails','emergencyContactRelation2')"
+              (blur)="trimTextBoxSpaces('emergencyContactDetails','emergencyContactRelation2')"
+              formControlName="emergencyContactRelation2" matInput>
+            <mat-error>
+              <app-validation [labelName]='emergencyContatctRelation2.innerText'
+                [validationControl]="emergencyContactDetails.controls.emergencyContactRelation2"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div *ngIf="loaded" fxFlexFill fxLayout="column" fxLayout.gt-sm="row" class="pt-12"
+          fxLayoutAlign="start center">
+         
+        </div>
+      </form>
+      <div *ngIf="isSiblingVerified" fxLayout="column">
+        <div class="my-24 font-size-20" fxLayout="row" fxLayoutAlign="start center"><span translate>Emergency Contact
+            Details</span></div>
+        <div fxLayout="row" fxLayoutAlign="center center" class="mt-32">
+          <h2 fxLayout="column" fxFlex="50" translate class="text-center">
+            {{getSiblingDetailsString('Emergency Contact')}}
+          </h2>
+        </div>
+      </div>
+      <div fxLayout="row" fxLayoutAlign="end center" class="mt-16">
+        <button mat-raised-button matStepperPrevious type="button" class="text-uppercase mr-12">
+          {{'Previous' | translate}}
+        </button>
+        <button mat-raised-button matStepperNext type="button" color="accent" class="text-uppercase">
+          {{'Next' | translate}}
+        </button>
+      </div>
+    </mat-step>
+    <mat-step [stepControl]="fatherDetails"
+      [optional]="isNestedObjectEmpty(this.fatherDetails.value) || isSiblingVerified">
+      <ng-template matStepLabel><span translate>Father Details</span></ng-template>
+      <form fxLayout="column" [formGroup]="fatherDetails" *ngIf="!isSiblingVerified">
+        <div class="pt-24 font-size-20" fxLayout="row" fxFlex="100" fxLayoutAlign="start center" translate>Father
+          Details</div>
+
+        <div fxLayout="column" fxFlexFill fxLayout.gt-sm="row" class="pt-24" fxLayoutAlign="center center">
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+            <mat-label #firstname translate>First Name</mat-label>
+            <input (keyup)="preventSpace($event,'fatherDetails','firstName')" (blur)="trimTextBoxSpaces('fatherDetails','firstName')"
+              formControlName="firstName" matInput required>
+            <mat-error>
+              <app-validation [labelName]='firstname.innerText' [validationControl]="fatherDetails.controls.firstName"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" class="pl-sm-20">
+            <mat-label translate #middlename>Middle Name</mat-label>
+            <input (keyup)="preventSpace($event,'fatherDetails','middleName')" (blur)="trimTextBoxSpaces('fatherDetails','middleName')"
+              formControlName="middleName" matInput>
+            <mat-error>
+              <app-validation [labelName]='middlename.innerText' [validationControl]="fatherDetails.controls.middleName"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div fxLayout.lt-sm="column" fxFlexFill fxLayout.gt-sm="row" fxLayoutAlign="center center" class="pt-12">
+          <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+            <mat-label translate #lastname>Last Name</mat-label>
+            <input (keyup)="preventSpace($event,'fatherDetails','lastName')" (blur)="trimTextBoxSpaces('fatherDetails','lastName')"
+              formControlName="lastName" matInput required>
+            <mat-error>
+              <app-validation [labelName]='lastname.innerText' [validationControl]="fatherDetails.controls.lastName"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" class="pl-sm-20">
+            <mat-label translate #occupation>Occupation</mat-label>
+            <input (keyup)="preventSpace($event,'fatherDetails','occupation')" (blur)="trimTextBoxSpaces('fatherDetails','occupation')"
+              formControlName="occupation" matInput>
+            <mat-error>
+              <app-validation [labelName]='occupation.innerText' [validationControl]="fatherDetails.controls.occupation"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div fxLayout="column" fxFlexFill fxLayout.gt-xs="row" fxLayoutAlign="center center" class="pt-12">
+          <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+            <mat-label translate #organization>Organization</mat-label>
+            <input (keyup)="preventSpace($event,'fatherDetails','organization')" (blur)="trimTextBoxSpaces('fatherDetails','organization')"
+              formControlName="organization" matInput>
+            <mat-error>
+              <app-validation [labelName]='organization.innerText'
+                [validationControl]="fatherDetails.controls.organization" [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" class="pl-sm-20">
+            <mat-label translate #designation>Designation</mat-label>
+            <input (keyup)="preventSpace($event,'fatherDetails','designation')" (blur)="trimTextBoxSpaces('fatherDetails','designation')"
+              formControlName="designation" matInput>
+            <mat-error>
+              <app-validation [labelName]='designation.innerText'
+                [validationControl]="fatherDetails.controls.designation" [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+
+        </div>
+
+        <div fxLayout="column" fxFlexFill class="pt-12" fxLayout.gt-xs="row" fxLayoutAlign="center center">
+          <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+            <mat-label translate #panNumber>Pan Number</mat-label>
+            <input (keyup)="preventSpace($event,'fatherDetails','panNumber')" (blur)="trimTextBoxSpaces('fatherDetails','panNumber')"
+              formControlName="panNumber" matInput>
+            <mat-error>
+              <app-validation [labelName]='panNumber.innerText' [validationControl]="fatherDetails.controls.panNumber"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" class="pl-sm-20">
+            <mat-label translate #aadhaar>Aadhaar Number</mat-label>
+            <input (keyup)="preventSpace($event,'fatherDetails','aadhaarNumber')" (blur)="trimTextBoxSpaces('fatherDetails','aadhaarNumber')"
+              formControlName="aadhaarNumber" matInput>
+            <mat-error>
+              <app-validation [labelName]='aadhaar.innerText' [validationControl]="fatherDetails.controls.aadhaarNumber"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+
+
+        </div>
+
+        <div *ngIf="loaded" fxLayout="column" fxFlexFill fxLayout.gt-sm="row" class="pt-12"
+          fxLayoutAlign="center center">
+          <mat-form-field class="coutline" appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+            <mat-label translate #mobilenumber>mobilenumber</mat-label>
+            <input type="text" matInput formControlName="mobileTel" ng2TelInput
+              (hasError)="onError($event,'mobileTel','fatherDetails')" [ng2TelInputOptions]="telOptions"
+              (ng2TelOutput)="getNumber($event,'mobileTel','fatherDetails')"
+              (countryChange)="onCountryChangeMobile($event,'mobileTel','fatherDetails')" />
+            <mat-error>
+              <app-validation [labelName]="mobilenumber.innerText"
+                [validationControl]="fatherDetails.controls.mobileTel" [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" class="pl-sm-20">
+            <mat-label translate #email>Email</mat-label>
+            <input (keyup)="preventSpace($event,'fatherDetails','email1')" (blur)="trimTextBoxSpaces('fatherDetails','email1')"
+              formControlName="email1" matInput>
+            <mat-error>
+              <app-validation [labelName]='email.innerText' [validationControl]="fatherDetails.controls.email1"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+
+        </div>
+
+        <div *ngIf="loaded" fxLayout="column" fxLayout.gt-sm="row" fxFlex="100" fxLayoutAlign="start center"
+          class="pt-12">
+          <mat-form-field class="coutline dropdown-up" appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+            <mat-label translate #landlineNumber>landlinenumber</mat-label>
+            <input type="text" matInput formControlName="landTel" ng2TelInput
+              (hasError)="onError($event,'landTel','fatherDetails')" [ng2TelInputOptions]="telOptions"
+              (ng2TelOutput)="getNumber($event,'landTel','fatherDetails')"
+              (countryChange)="onCountryChangeMobile($event,'landTel','fatherDetails')" />
+            <mat-error>
+              <app-validation [labelName]="landlineNumber.innerText"
+                [validationControl]="fatherDetails.controls.landTel" [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" class="pl-sm-24 coutline dropdown-up"
+            fxFlex.gt-sm="50">
+            <mat-label translate #alternateNumber>alternatenumber</mat-label>
+            <input type="text" matInput formControlName="otherTel" ng2TelInput
+              (hasError)="onError($event,'otherTel','fatherDetails')" [ng2TelInputOptions]="telOptions"
+              (ng2TelOutput)="getNumber($event,'otherTel','fatherDetails')"
+              (countryChange)="onCountryChangeMobile($event,'otherTel','fatherDetails')" />
+            <mat-error>
+              <app-validation [labelName]="alternateNumber.innerText"
+                [validationControl]="fatherDetails.controls.otherTel" [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+
+        </div>
+
+        <div fxLayout="column" fxLayout.gt-sm="row" class="pt-12" fxFlex="100" fxLayoutAlign="center start">
+          <div fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+            <div fxLayout="row" fxLayoutAlign="end center">
+              <button mat-raised-button color="primary" type="button"
+                (click)="fatherImage.value='';fatherImage.click()">{{'Upload Image' | translate}}</button>
+              <button mat-icon-button [style.display]="attachments['fatherDetails']?.src ? 'block' : 'none'">
+                <mat-icon class="mb-4 grey-600-fg" (click)="fatherImage.value='';clearImages('fatherDetails')">
+                  highlight_off</mat-icon>
+              </button>
+            </div>
+            <input [accept]="'image/*'" id="fatherImage" (change)="imgChanged(fatherImage.files,'fatherDetails')" fxHide
+              type="file" #fatherImage>
+            <div class="pt-4 primary-300-fg font-size-12 text-right pr-36">(<span translate>Preferred</span> 1:1)</div>
+          </div>
+          <div fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" class="pl-sm-32">
+            <img class="border w-200 h-200 studnt-img radius-5" [src]="attachments['fatherDetails']?.src"
+              *ngIf="attachments['fatherDetails']?.src" />
+          </div>
+        </div>
+      </form>
+      <div *ngIf="isSiblingVerified" fxLayout="column">
+        <div class="my-24 font-size-20" fxLayout="row" fxLayoutAlign="start center"><span translate>Father
+            Details</span>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="center center" class="mt-32">
+          <h2 fxLayout="column" fxFlex="50" translate class="text-center">
+            {{getSiblingDetailsString('Parent/Guardian')}}
+          </h2>
+        </div>
+      </div>
+      <div fxLayout="row" fxLayoutAlign="end center" class="mt-sm-20">
+        <button mat-raised-button matStepperPrevious type="button" class="text-uppercase mr-12">
+          {{'Previous' | translate}}
+        </button>
+        <button mat-raised-button matStepperNext type="button" color="accent" class="text-uppercase">
+          {{'Next' | translate}}
+        </button>
+      </div>
+    </mat-step>
+    <mat-step [stepControl]="motherDetails"
+      [optional]="isNestedObjectEmpty(this.motherDetails.value) || isSiblingVerified">
+      <ng-template matStepLabel><span translate>Mother Details</span></ng-template>
+      <form fxLayout="column" [formGroup]="motherDetails" *ngIf="!isSiblingVerified">
+        <div class="pt-24 font-size-20" fxLayout="row" fxFlex="100" fxLayoutAlign="start center" translate>Mother
+          Details</div>
+
+        <div fxLayout="column" fxFlexFill fxLayout.gt-sm="row" class="pt-24" fxLayoutAlign="center center">
+          <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+            <mat-label #firstname translate>First Name</mat-label>
+            <input (keyup)="preventSpace($event,'motherDetails','firstName')" (blur)="trimTextBoxSpaces('motherDetails','firstName')"
+              formControlName="firstName" matInput required>
+            <mat-error>
+              <app-validation [labelName]='firstname.innerText' [validationControl]="motherDetails.controls.firstName"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" class="pl-sm-20">
+            <mat-label translate #middlename>Middle Name</mat-label>
+            <input (keyup)="preventSpace($event,'motherDetails','middleName')" (blur)="trimTextBoxSpaces('motherDetails','middleName')"
+              formControlName="middleName" matInput>
+            <mat-error>
+              <app-validation [labelName]='middlename.innerText' [validationControl]="motherDetails.controls.middleName"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div fxLayout.lt-sm="column" fxFlexFill fxLayout.gt-sm="row" fxLayoutAlign="center center" class="pt-12">
+          <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+            <mat-label translate #lastname>Last Name</mat-label>
+            <input (keyup)="preventSpace($event,'motherDetails','lastName')" (blur)="trimTextBoxSpaces('motherDetails','lastName')"
+              formControlName="lastName" matInput required>
+            <mat-error>
+              <app-validation [labelName]='lastname.innerText' [validationControl]="motherDetails.controls.lastName"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" class="pl-sm-20">
+            <mat-label translate #occupation>Occupation</mat-label>
+            <input (keyup)="preventSpace($event,'motherDetails','occupation')" (blur)="trimTextBoxSpaces('motherDetails','occupation')"
+              formControlName="occupation" matInput>
+            <mat-error>
+              <app-validation [labelName]='occupation.innerText' [validationControl]="motherDetails.controls.occupation"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div fxLayout="column" fxFlexFill fxLayout.gt-xs="row" fxLayoutAlign="center center" class="pt-12">
+          <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+            <mat-label translate #organization>Organization</mat-label>
+            <input (keyup)="preventSpace($event,'motherDetails','organization')" (blur)="trimTextBoxSpaces('motherDetails','organization')"
+              formControlName="organization" matInput>
+            <mat-error>
+              <app-validation [labelName]='organization.innerText'
+                [validationControl]="motherDetails.controls.organization" [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" class="pl-sm-20">
+            <mat-label translate #designation>Designation</mat-label>
+            <input (keyup)="preventSpace($event,'motherDetails','designation')" (blur)="trimTextBoxSpaces('motherDetails','designation')"
+              formControlName="designation" matInput>
+            <mat-error>
+              <app-validation [labelName]='designation.innerText'
+                [validationControl]="motherDetails.controls.designation" [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+
+        </div>
+
+        <div fxLayout="column" fxFlexFill class="pt-12" fxLayout.gt-xs="row" fxLayoutAlign="center center">
+          <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+            <mat-label translate #panNumber>Pan Number</mat-label>
+            <input (keyup)="preventSpace($event,'motherDetails','panNumber')" (blur)="trimTextBoxSpaces('motherDetails','panNumber')"
+              formControlName="panNumber" matInput>
+            <mat-error>
+              <app-validation [labelName]='panNumber.innerText' [validationControl]="motherDetails.controls.panNumber"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" class="pl-sm-20">
+            <mat-label translate #aadhaar>Aadhaar Number</mat-label>
+            <input (keyup)="preventSpace($event,'motherDetails','aadhaarNumber')" (blur)="trimTextBoxSpaces('motherDetails','aadhaarNumber')"
+              formControlName="aadhaarNumber" matInput>
+            <mat-error>
+              <app-validation [labelName]='aadhaar.innerText' [validationControl]="motherDetails.controls.aadhaarNumber"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div *ngIf="loaded" fxLayout="column" fxFlexFill fxLayout.gt-sm="row" class="pt-12"
+          fxLayoutAlign="center center">
+          <mat-form-field class="coutline" appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+            <mat-label translate #mobilenumber>mobilenumber</mat-label>
+            <input type="text" matInput formControlName="mobileTel" ng2TelInput
+              (hasError)="onError($event,'mobileTel','motherDetails')" [ng2TelInputOptions]="telOptions"
+              (ng2TelOutput)="getNumber($event,'mobileTel','motherDetails')"
+              (countryChange)="onCountryChangeMobile($event,'mobileTel','motherDetails')" />
+            <mat-error>
+              <app-validation [labelName]="mobilenumber.innerText"
+                [validationControl]="motherDetails.controls.mobileTel" [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" class="pl-sm-20">
+            <mat-label translate #email>Email</mat-label>
+            <input (keyup)="preventSpace($event,'motherDetails','email1')" (blur)="trimTextBoxSpaces('motherDetails','email1')"
+              formControlName="email1" matInput>
+            <mat-error>
+              <app-validation [labelName]='email.innerText' [validationControl]="motherDetails.controls.email1"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+
+        </div>
+
+        <div *ngIf="loaded" fxLayout="column" fxLayout.gt-sm="row" fxFlex="100" fxLayoutAlign="start center"
+          class="pt-12">
+          <mat-form-field class="coutline dropdown-up" appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+            <mat-label translate #landlineNumber>landlinenumber</mat-label>
+            <input type="text" matInput formControlName="landTel" ng2TelInput
+              (hasError)="onError($event,'landTel','motherDetails')" [ng2TelInputOptions]="telOptions"
+              (ng2TelOutput)="getNumber($event,'landTel','motherDetails')"
+              (countryChange)="onCountryChangeMobile($event,'landTel','motherDetails')" />
+            <mat-error>
+              <app-validation [labelName]="landlineNumber.innerText"
+                [validationControl]="motherDetails.controls.landTel" [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" class="pl-sm-24 coutline dropdown-up"
+            fxFlex.gt-sm="50">
+            <mat-label translate #alternateNumber>alternatenumber</mat-label>
+            <input type="text" matInput formControlName="otherTel" ng2TelInput
+              (hasError)="onError($event,'otherTel','motherDetails')" [ng2TelInputOptions]="telOptions"
+              (ng2TelOutput)="getNumber($event,'otherTel','motherDetails')"
+              (countryChange)="onCountryChangeMobile($event,'otherTel','motherDetails')" />
+            <mat-error>
+              <app-validation [labelName]="alternateNumber.innerText"
+                [validationControl]="motherDetails.controls.otherTel" [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+
+        </div>
+
+        <div fxLayout="column" fxFlexFill fxLayout.gt-sm="row" class="pt-12" fxLayoutAlign="center start">
+          <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+            <div fxLayout="row" fxLayoutAlign="end center">
+              <button mat-raised-button color="primary" type="button"
+                (click)="motherImage.value='';motherImage.click()">{{'Upload Image' | translate}}</button>
+              <button mat-icon-button [style.display]="attachments['motherDetails']?.src ? 'block' : 'none'">
+                <mat-icon class="mb-4 grey-600-fg" (click)="motherImage.value='';clearImages('motherDetails')">
+                  highlight_off</mat-icon>
+              </button>
+            </div>
+            <input [accept]="'image/*'" id="motherImage" (change)="imgChanged(motherImage.files,'motherDetails')" fxHide
+              type="file" #motherImage>
+            <div class="pt-4 primary-300-fg font-size-12 text-right pr-36">(<span translate>Preferred</span> 1:1)</div>
+          </div>
+          <div fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" class="pl-sm-32">
+            <img class="border w-200 h-200 studnt-img radius-5" [src]="attachments['motherDetails']?.src"
+              *ngIf="attachments['motherDetails']?.src" />
+          </div>
+        </div>
+      </form>
+      <div *ngIf="isSiblingVerified" fxLayout="column">
+        <div class="my-24 font-size-20" fxLayout="row" fxLayoutAlign="start center"><span translate>Mother
+            Details</span>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="center center" class="mt-32">
+          <h2 fxLayout="column" fxFlex="50" translate class="text-center">
+            {{getSiblingDetailsString('Parent/Guardian')}}
+          </h2>
+        </div>
+      </div>
+      <div fxLayout="row" fxLayoutAlign="end center" class="mt-sm-20">
+        <button mat-raised-button matStepperPrevious type="button" class="text-uppercase mr-12">
+          {{'Previous' | translate}}
+        </button>
+        <button mat-raised-button matStepperNext type="button" color="accent" class="text-uppercase">
+          {{'Next' | translate}}
+        </button>
+      </div>
+    </mat-step>
+    <mat-step [stepControl]="guardianDetails"
+      [optional]="isNestedObjectEmpty(this.guardianDetails.value,'genderTypeId') || isSiblingVerified">
+      <ng-template matStepLabel><span translate>Guardian Details</span></ng-template>
+      <form fxLayout="column" [formGroup]="guardianDetails" *ngIf="!isSiblingVerified">
+        <div class="pt-24 font-size-20" fxLayout="row" fxFlex="100" fxLayoutAlign="start center" translate>Guardian
+          Details</div>
+
+        <div fxLayout="column" fxLayout.gt-sm="row" class="pt-24" fxFlex="100" fxLayoutAlign="center center">
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+            <mat-label #firstname translate>First Name</mat-label>
+            <input (keyup)="preventSpace($event,'guardianDetails','firstName')" (blur)="trimTextBoxSpaces('guardianDetails','firstName')"
+              formControlName="firstName" matInput required>
+            <mat-error>
+              <app-validation [labelName]='firstname.innerText' [validationControl]="guardianDetails.controls.firstName"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50"
+            class="pl-sm-20">
+            <mat-label translate #middlename>Middle Name</mat-label>
+            <input (keyup)="preventSpace($event,'guardianDetails','middleName')" (blur)="trimTextBoxSpaces('guardianDetails','middleName')"
+              formControlName="middleName" matInput>
+            <mat-error>
+              <app-validation [labelName]='middlename.innerText'
+                [validationControl]="guardianDetails.controls.middleName" [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div fxLayout.lt-sm="column" fxLayout.gt-sm="row" fxFlex="100" fxLayoutAlign="center center" class="pt-12">
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+            <mat-label translate #lastname>Last Name</mat-label>
+            <input (keyup)="preventSpace($event,'guardianDetails','lastName')" (blur)="trimTextBoxSpaces('guardianDetails','lastName')"
+              formControlName="lastName" matInput required>
+            <mat-error>
+              <app-validation [labelName]='lastname.innerText' [validationControl]="guardianDetails.controls.lastName"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" class="pl-sm-20"
+            fxFlex.gt-sm="50">
+            <mat-label #genderTypeIdd translate>Gender</mat-label>
+            <mat-select formControlName="genderTypeId"
+              [required]="guardianDetails.controls.lastName.value && guardianDetails.controls.firstName.value">
+              <mat-option *ngFor="let gender of genders" [value]="gender.id">{{gender.name}}
+              </mat-option>
+            </mat-select>
+            <mat-error>
+              <app-validation [labelName]='genderTypeIdd.innerText'
+                [validationControl]="guardianDetails.controls.genderTypeId" [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div fxLayout="column" fxFlexFill fxLayout.gt-xs="row" fxLayoutAlign="center center" class="pt-12">
+          <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+            <mat-label translate #organization>Organization</mat-label>
+            <input (keyup)="preventSpace($event,'guardianDetails','organization')" (blur)="trimTextBoxSpaces('guardianDetails','organization')"
+              formControlName="organization" matInput>
+            <mat-error>
+              <app-validation [labelName]='organization.innerText'
+                [validationControl]="guardianDetails.controls.organization" [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" class="pl-sm-20">
+            <mat-label translate #designation>Designation</mat-label>
+            <input (keyup)="preventSpace($event,'guardianDetails','designation')" (blur)="trimTextBoxSpaces('guardianDetails','designation')"
+              formControlName="designation" matInput>
+            <mat-error>
+              <app-validation [labelName]='designation.innerText'
+                [validationControl]="guardianDetails.controls.designation" [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+
+        </div>
+
+        <div fxLayout="column" fxFlexFill class="pt-12" fxLayout.gt-xs="row" fxLayoutAlign="center center">
+          <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+            <mat-label translate #occupation>Occupation</mat-label>
+            <input (keyup)="preventSpace($event,'guardianDetails','occupation')" (blur)="trimTextBoxSpaces('guardianDetails','occupation')"
+              formControlName="occupation" matInput>
+            <mat-error>
+              <app-validation [labelName]='occupation.innerText' [validationControl]="guardianDetails.controls.occupation"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" class="pl-sm-20">
+            <mat-label translate #panNumber>Pan Number</mat-label>
+            <input (keyup)="preventSpace($event,'guardianDetails','panNumber')" (blur)="trimTextBoxSpaces('guardianDetails','panNumber')"
+              formControlName="panNumber" matInput>
+            <mat-error>
+              <app-validation [labelName]='panNumber.innerText' [validationControl]="guardianDetails.controls.panNumber"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div fxLayout="column" fxFlexFill fxLayout.gt-sm="row" class="pt-12" fxLayoutAlign="center center">
+          <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+            <mat-label translate #aadhaar>Aadhaar Number</mat-label>
+            <input (keyup)="preventSpace($event,'guardianDetails','aadhaarNumber')" (blur)="trimTextBoxSpaces('guardianDetails','aadhaarNumber')"
+              formControlName="aadhaarNumber" matInput>
+            <mat-error>
+              <app-validation [labelName]='aadhaar.innerText' [validationControl]="guardianDetails.controls.aadhaarNumber"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" class="pl-sm-20">
+            <mat-label translate #email>Email</mat-label>
+            <input (keyup)="preventSpace($event,'guardianDetails','email1')" (blur)="trimTextBoxSpaces('guardianDetails','email1')"
+              formControlName="email1" matInput>
+            <mat-error>
+              <app-validation [labelName]='email.innerText' [validationControl]="guardianDetails.controls.email1"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div *ngIf="loaded" fxLayout="column" fxFlexFill fxLayout.gt-sm="row" class="pt-12"
+          fxLayoutAlign="center center">
+          <mat-form-field class="coutline" appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+            <mat-label translate #mobilenumber>mobilenumber</mat-label>
+            <input type="text" matInput formControlName="mobileTel" ng2TelInput
+              (hasError)="onError($event,'mobileTel','guardianDetails')" [ng2TelInputOptions]="telOptions"
+              (ng2TelOutput)="getNumber($event,'mobileTel','guardianDetails')"
+              (countryChange)="onCountryChangeMobile($event,'mobileTel','guardianDetails')" />
+            <mat-error>
+              <app-validation [labelName]="mobilenumber.innerText"
+                [validationControl]="guardianDetails.controls.mobileTel" [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field class="coutline" appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" class="pl-sm-24 coutline">
+            <mat-label translate #landlineNumber>landlinenumber</mat-label>
+            <input type="text" matInput formControlName="landTel" ng2TelInput
+              (hasError)="onError($event,'landTel','guardianDetails')" [ng2TelInputOptions]="telOptions"
+              (ng2TelOutput)="getNumber($event,'landTel','guardianDetails')"
+              (countryChange)="onCountryChangeMobile($event,'landTel','guardianDetails')" />
+            <mat-error>
+              <app-validation [labelName]="landlineNumber.innerText"
+                [validationControl]="guardianDetails.controls.landTel" [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+          <div *ngIf="loaded" fxLayout="column" fxLayout.gt-sm="row" fxFlex="100" fxLayoutAlign="start center"
+            class="pt-12">
+            <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" class="coutline dropdown-up"
+              fxFlex.gt-sm="50">
+              <mat-label translate #alternateNumber>alternatenumber</mat-label>
+              <input type="text" matInput formControlName="otherTel" ng2TelInput
+                (hasError)="onError($event,'otherTel','guardianDetails')" [ng2TelInputOptions]="telOptions"
+                (ng2TelOutput)="getNumber($event,'otherTel','guardianDetails')"
+                (countryChange)="onCountryChangeMobile($event,'otherTel','guardianDetails')" />
+              <mat-error>
+                <app-validation [labelName]="alternateNumber.innerText"
+                  [validationControl]="guardianDetails.controls.otherTel" [doValidate]="validate">
+                </app-validation>
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <div fxLayout="column" fxLayout.gt-sm="row" class="pt-12" fxFlex="100" fxLayoutAlign="center start">
+            <div fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+              <div fxLayout="row" fxLayoutAlign="end center">
+                <button mat-raised-button color="primary" type="button"
+                  (click)="guardianImage.value='';guardianImage.click()">{{'Upload Image' | translate}}</button>
+                <button mat-icon-button [style.display]="attachments['guardianDetails']?.src ? 'block' : 'none'">
+                  <mat-icon class="mb-4 grey-600-fg" (click)="guardianImage.value='';clearImages('guardianDetails')">
+                    highlight_off</mat-icon>
+                </button>
+              </div>
+              <input [accept]="'image/*'" id="guardianImage"
+                (change)="imgChanged(guardianImage.files,'guardianDetails')" fxHide type="file" #guardianImage>
+              <div class="pt-4 primary-300-fg font-size-12 text-right pr-36">(<span translate>Preferred</span> 1:1)
+              </div>
+            </div>
+            <div fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" class="pl-sm-32">
+              <img class="border w-200 h-200 studnt-img radius-5" [src]="attachments['guardianDetails']?.src"
+                *ngIf="attachments['guardianDetails']?.src" />
+            </div>
+          </div>
+      </form>
+      <div *ngIf="isSiblingVerified" fxLayout="column">
+        <div class="my-24 font-size-20" fxLayout="row" fxLayoutAlign="start center"><span translate>Guardian
+            Details</span></div>
+        <div fxLayout="row" fxLayoutAlign="center center" class="mt-32">
+          <h2 fxLayout="column" fxFlex="50" translate class="text-center">
+            {{getSiblingDetailsString('Parent/Guardian')}}
+          </h2>
+        </div>
+      </div>
+      <div fxLayout="row" fxLayoutAlign="end center" class="mt-sm-20">
+        <button mat-raised-button matStepperPrevious type="button" class="text-uppercase mr-12">
+          {{'Previous' | translate}}
+        </button>
+        <button mat-raised-button matStepperNext type="button" color="accent" class="text-uppercase">
+          {{'Next' | translate}}
+        </button>
+      </div>
+    </mat-step>
+    <mat-step>
+      <ng-template matStepLabel><span translate>Done</span></ng-template>
+      <p *ngIf="!checkAllDetailsEmpty() && !studentId" class="text-center font-weight-800 mt-120" translate>Please Confirm To Submit The New Student Admission.</p>
+      <p *ngIf="!checkAllDetailsEmpty() && studentId" class="text-center font-weight-800 mt-120" translate>Please Confirm To Update The Student Admission.</p>
+
+      <div *ngIf="checkAllDetailsEmpty()" class="message-box error" translate>Please Enter atleast one Parent/Guardian details to Submit.</div>
+      <div fxLayout="row" fxLayoutAlign="center center" class="mt-32 pt-24">
+        <button mat-raised-button matStepperPrevious type="submit" class="text-uppercase mr-12">{{'Previous' | translate}}</button>
+        <button mat-raised-button type="submit" [disabled]="checkAllDetailsEmpty()" class="text-uppercase"
+          color="accent" (click)="onSubmit()">{{button | translate}}
+        </button>
+      </div>
+    </mat-step>
+  </mat-horizontal-stepper>
+</div>

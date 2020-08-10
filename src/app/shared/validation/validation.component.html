@@ -1,0 +1,8 @@
+<div *ngIf="showMessage && !isTollTip">
+    <span md-colors-watch="false" translate>{{message}}
+    </span>
+</div>
+<button *ngIf="isTollTip && showMessage" type="button" mat-button class="bottom-10" color="warn" #tooltip="matTooltip"
+[matTooltip]="message" matTooltipClass="error-tooltip">
+<mat-icon class="font-size-16">warning</mat-icon>
+</button>

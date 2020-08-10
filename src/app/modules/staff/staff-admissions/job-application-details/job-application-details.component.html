@@ -1,0 +1,67 @@
+<div class="p-40">
+  <div class="ml-20 p-8 text-uppercase font-size-18" translate>Job Application Details</div>
+  <div class="mat-elevation-z2 simple-table-container radius-t-20 mb-20">
+    <div fxLayout="row" fxLayoutAlign="end center" class="p-20">
+      <div fxlayout="column" fxLayoutAlign="end center" fxFlex="40" class="mx-sm-24">
+        <div class="h3 secondary-text" translate>Application Reference
+          Number :<strong>&nbsp;&nbsp;{{headerValues?.applicationReferenceNo}}</strong></div>
+      </div>
+      <button mat-raised-button color="primary" translate (click)="back()">{{'Back' | translate}}</button>
+      <button type="button" mat-button (click)="getHelpText('Job Applications')">
+        <mat-icon class="grey-600-fg">info</mat-icon>
+      </button>
+    </div>
+    <mat-divider></mat-divider>
+    <div fxLayout="row" fxLayoutAlign="start center" class="ml-24">
+      <div class="profile-image border m-24 radius-10">
+        <img *ngIf="profileImage" [src]="profileImage ? profileImage : ''" class="w-200 h-200 radius-10"
+          alt="No Image" />
+        <div *ngIf="!profileImage" fxLayoutAlign="center center" class="w-200 h-200" translate>No Image</div>
+      </div>
+      <div fxLayout="column" fxFlex="60">
+        <div class="h2 primary-900-fg-custom mb-16">{{staffName}}</div>
+        <div *ngFor="let item of staffApplicantInfo">           
+          <div fxLayout="row" fxLayoutAlign="start center">
+
+            <div class="w-180 py-4 primary-300-fg" translate>{{item.Label}}</div> : <div fxLayout="row" fxLayoutAlign="center center" class="ml-24 break-word" [ngClass]="{'accent-fg cursor-pointer': item.Label == 'resumeFile'}" (click)="item.Label == 'resumeFile';viewAttachment(item.Label)">
+              <mat-icon *ngIf="item.Value && item.Label == 'resumeFile'" (click)="item.Label == 'resumeFile';viewAttachment()" class="pt-2 accent-fg">attachment</mat-icon>&nbsp;{{item?.Value? item?.Value : "-"}}</div>          
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+  <app-job-application-details-view [staffJobApplicantDetailsView]="applicantInfo"></app-job-application-details-view>
+
+  <div *ngIf="headerValues.statusCode == 'Pending'" fxLayout="row" fxLayoutAlign="end center" class="mt-32">
+    <button (click)="submitApplication(false)" mat-raised-button type="button" class="text-uppercase mr-12">{{'reject' | translate}}</button>
+    <button (click)="submitApplication(true)" mat-raised-button type="submit" class="text-uppercase" color="accent">
+      {{'approve' | translate}}
+    </button>
+  </div>
+
+
+<ng-template #rejectPopup>
+  <div fxLayout="row" class="pb-24 font-size-16 font-weight-600" translate>Please confirm to reject this Application</div>
+  <div fxLayout="row" fxLayoutAlign="start center" class="mb-8" translate>Rejection Comments:</div>
+  <form [formGroup]="approveForm">
+    <div fxLayout="row">
+      <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" class="reject-comment">
+        <mat-label #comments translate>Comments</mat-label>
+        <textarea required matInput (keypress)="preventSpace($event,'approveForm','commentText')" (blur)="trimTextBoxSpaces('approveForm','commentText')"
+          formControlName="commentText" placeholder="Leave a comment"></textarea>
+        <mat-error class="pt-8">
+          <app-validation [labelName]="comments.innerText" [validationControl]="approveForm.controls.commentText"
+            [doValidate]="true">
+          </app-validation>
+        </mat-error>
+      </mat-form-field>
+    </div>
+    <small class="pr-8" fxLayoutAlign="end" translate>Max 180 characters</small>
+    <div fxLayout="row" fxLayoutAlign="end center" class="mt-32">     
+      <button (click)="onPopUpSelect(false)" mat-raised-button type="reset" >
+        {{'No' | translate}}
+      </button>
+      <button (click)="onPopUpSelect()" mat-raised-button type="submit" color="accent" class="ml-12">{{'Yes' | translate}}</button>
+    </div>
+  </form>
+</ng-template>

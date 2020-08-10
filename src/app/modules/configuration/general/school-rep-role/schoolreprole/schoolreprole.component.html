@@ -1,0 +1,31 @@
+<app-table [settings]="tabSettings" (selectedRows)="selectAll($event)"
+    (rowBasedAction)='rowActions($event)' (openAddForm)="addForm()" (deleteAllRows)='deleteAll()'
+    [disabled]="disbleSubmitBtn" [closeRowForm]='closeAddPanel'
+    [deletedRecords]="failedRecords" [templateRef]="addSchoolRepRoleTemplate"
+    (getTableData)='getAllSchoolFacilityRepRoles($event)'></app-table>
+
+
+
+<ng-template #addSchoolRepRoleTemplate>
+    <form [formGroup]="schoolRepRoleForm" (ngSubmit)="addUpdateRepRole(schoolRepRoleForm.value)" #RepRoleForm="ngForm">
+        <div fxFlexFill fxLayout="row" class="pt-24" fxLayoutAlign="center center">
+            <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex.gt-xs="50" fxFlex="100">
+                <mat-label #name translate>name</mat-label>
+                <input matInput autocomplete="off" formControlName="name" required (blur)="trimTextBoxSpaces('schoolRepRoleForm', 'name')" (keyup)="preventSpace($event,'schoolRepRoleForm','name')">
+                <mat-error>
+                    <app-validation [labelName]="name.innerText" [validationControl]="schoolRepRoleForm.controls.name"
+                        [doValidate]="doValidate">
+                    </app-validation>
+                </mat-error>
+            </mat-form-field>
+
+        </div>
+
+        <div fxLayout="row" class="pt-16 pb-8" fxLayoutAlign="end center">
+            <button class="mr-12 text-uppercase" type="button" mat-raised-button (click)="onCancelClick()">
+                {{'Cancel' | translate}}</button>
+            <button mat-raised-button type="submit" class="text-uppercase"
+                color="accent">{{(!updateShow ? 'Create':'Update') | translate}}</button>
+        </div>
+    </form>
+</ng-template>

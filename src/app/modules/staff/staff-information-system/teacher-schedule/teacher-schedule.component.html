@@ -1,0 +1,116 @@
+<div class="p-40">
+  <div *ngIf="!isShow" class="px-16 font-size-18 text-uppercase">{{ (!isStaffLogin ? 'Teacher Schedule': 'Schedule') | translate}}</div>
+  <div class="mat-elevation-z8 radius-t-20 simple-table-container" fxLayout="column">
+    <div class="px-20 pt-20" fxLayout="column" fxLayoutAlign="start" fxLayout.gt-sm="row"
+      fxLayoutAlign.gt-xs="space-between center">
+      <div class="ml-sm-32" fxLayout="row" fxLayoutAlign="center center" fxFlex>
+        <div *ngIf="!isStaffLogin" class="mw-400" fxLayoutAlign="center center">
+            <af-select appearance="outline" label="Teacher" [optionGroupRequired]="false" fxFlex="100" [required]="false"
+            [options]="teachers | async" placeholder="Select Teacher" (selectionChange)="getStaffTemplates($event)">
+          </af-select>
+        </div>
+
+      </div>
+      <div fxLayout="row" fxLayoutAlign="end center">
+        <button mat-button type='button' (click)="getHelpText('Teacher Schedules')">
+          <mat-icon class="grey-600-fg" matTooltip="{{'Info' | translate}}">info</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <mat-divider *ngIf="showClasses"></mat-divider>
+    <div fxLayout="row" fxLayoutAlign="center center">
+      <div fxLayout="column" fxFlex.gt-sm="50">
+        <table class="custom-table my-24 border" *ngIf="showClasses">
+          <tr *ngIf="teacherTemplates?.classSectionList?.length">
+            <th translate>Class Teacher For</th>
+            <th></th>
+          </tr>
+          <tr *ngFor="let classData of teacherTemplates?.classSectionList">
+            <td> {{classData.value}}</td>
+            <td> {{classData.label}}</td>
+          </tr>
+          <tr *ngIf="!teacherTemplates?.classSectionList?.length">
+            <td colspan="2" translate>No classes assigned as class teacher</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+    <mat-divider *ngIf="showClasses"></mat-divider>
+    <div class="px-20 pt-20" fxLayout="column" fxLayoutAlign="start" fxLayout.gt-sm="row"
+      fxLayoutAlign.gt-xs="space-between center" *ngIf="teacherTemplates.timeTableList">
+      <div class="mr-sm-32" fxLayout="row" fxLayoutAlign="center center" fxFlex *ngIf="teacherTemplates.timeTableList.length">
+          <af-select appearance="outline" label="Time Table" [optionGroupRequired]="false" fxFlex.gt-sm="40" fxFlex="100" class="mw-400" [required]="false"
+          [options]="teacherTemplates.timeTableList" [value]="selectedTemplate" placeholder="Select Time Table" (selectionChange)="getTeacherSchedule($event)">
+        </af-select>
+      </div>
+    </div>
+    <div *ngIf="!showSchedules && showClasses" class="text-center pb-20" translate>No Classes has been scheduled</div>
+    <div fxLayout.gt-sm="row" fxLayout="column" fxLayoutAlign="center start" class="section-assignament mb-20"
+      *ngIf="teacherSchedule?.teacherScheduleList.length">
+      <div fxLayout="column" fxFlex.gt-sm="65" fxFlex="100">
+        <table class="custom-table m-24 border">
+          <tr>
+            <th translate>Class</th>
+            <th translate>Section</th>
+            <th translate>Board</th>
+            <th translate>Subject</th>
+            <th translate>Periods Per Week</th>
+          </tr>
+          <tr *ngFor="let classData of teacherSchedule?.teacherScheduleList">
+            <td>
+              {{classData.className}}
+            </td>
+            <td>
+              {{classData.sectionName}}
+            </td>
+            <td>
+              {{classData.board}}
+            </td>
+            <td>
+              {{classData.courseName}}
+            </td>
+            <td class="text-center">
+              {{classData.periodsPerWeek}}
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div fxLayout="column" fxFlex.gt-sm="40" fxFlex="100" class="border m-w m-24 radius-10"
+        [@animate]="{value:'*',params:{y:'100%'}}">
+        <p class="text-center text-uppercase font-size-16" translate>Total Periods Per Week</p>
+        <mat-divider></mat-divider>
+        <span class="text-center font-size-24 py-8 accent-900-fg-custom">{{teacherSchedule.toatalPeriods}}</span>
+
+      </div>
+    </div>
+
+    <mat-divider *ngIf="teacherSchedule?.teacherPeriodsView.length"></mat-divider>
+
+
+
+    <div class="m-20 border school-period" [style.max-width.px]="innerWidth"
+      *ngIf="teacherSchedule?.teacherPeriodsView.length" fxFlex="100" fxLayout="column">
+      <div xLayout="row inline" class="mw-100-p border-bottom h2 p-12 weekDay" translate>Time Table</div>
+      <div fxLayout="row inline" *ngFor="let item of teacherSchedule?.teacherPeriodsView; "
+        class="mw-100-p">
+        <div fxLayout="column" fxFlex="20"
+          class="border-right border-bottom p-20 w-120 weekDay custom-white font-weight-600 text-uppercase" translate>
+          {{item.weekDayName}}</div>
+        <div *ngIf="item?.teacherSchedulePeriodsView.length > 0" class="border-bottom">
+          <div fxLayout="column" fxFlex="20" fxLayoutAlign="center start" class="border-right w-180 p-12 break-word"
+            *ngFor="let child of item.teacherSchedulePeriodsView;let i=index" [ngClass]="item.value?.length > teacherSchedule?.teacherPeriodsView[ind-1]?.value?.length ? (i > ( teacherSchedule?.teacherPeriodsView[ind-1]?.value?.length-1) && ind  ? 'border-top': '') : ''">
+            <div fxLayout="row">{{child.periodName}}</div>
+            <div fxLayout="row" class="grey-500-fg" *ngIf="child.startTime!= null">{{child.startTime | slice:0:5 }} to
+              {{child.endTime | slice:0:5}}
+            </div>
+            <div fxLayout="row" class="grey-500-fg" *ngIf="child.startTime!= null">{{child.className}}
+              {{child.sectionName}}
+            </div>
+            <div fxLayout="row">{{child.courseName}}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

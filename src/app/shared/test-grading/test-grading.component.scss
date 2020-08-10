@@ -1,0 +1,17 @@
+.coustom-mat-error{
+    position: relative;
+    .mat-error{
+        position: absolute;
+        bottom: -13px;
+        white-space: nowrap;
+        padding-right: 20px;
+    }
+}
+.tick-position{
+    position: absolute;
+    right: 20px;
+}
+.top-20{
+    top: 21px;
+    left: 20px;
+}

@@ -1,0 +1,156 @@
+<div class="px-sm-40 pt-sm-28">
+  <div class="py-8 px-20 font-size-18 text-uppercase">{{'Payments Search' | translate }}</div>
+  <div class="mat-elevation-z3 simple-table-container radius-t-20">
+        <div fxLayoutAlign="end center" class="p-16 border-bottom">
+            <button mat-button (click)="getHelpText('Payments')">
+                <mat-icon class="grey-600-fg">info</mat-icon>
+              </button>
+        </div>
+    <form [formGroup]="paymentSearchForm" (ngSubmit)="searchPayment(paymentSearchForm.value)" #paymentSearch="ngForm"
+      class="p-24">
+      <div fxFlexFill fxLayout="column" class="pt-12" fxLayout.gt-sm="row">
+        <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="28"
+          class="pr-sm-20">
+          <mat-label translate #academicsession>Academic Session</mat-label>
+          <mat-select required placeholder="Academic Session" formControlName="academicSessionId"
+            (selectionChange)="academicSessionChange($event)">
+            <mat-option *ngFor="let academicSession of schoolAcademicSession" [value]="academicSession.value">
+              {{ academicSession.label }}</mat-option>
+          </mat-select>
+          <mat-error>
+            <app-validation [labelName]="academicsession.innerText" [validationControl]="paymentSearchForm.controls.academicSessionId"
+              [doValidate]="true">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="18"
+          class="pr-sm-20">
+          <mat-label translate #board>Board</mat-label>
+          <mat-select placeholder="Board" formControlName="boardId"
+            (selectionChange)="boardChange($event,paymentSearchForm.controls.academicSessionId.value)">
+            <mat-option *ngIf="schoolBoards?.length"></mat-option>
+            <mat-option *ngFor="let board of schoolBoards" [value]="board.value">
+              {{ board.label }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="18"
+          class="pr-sm-20">
+          <mat-label translate #class>Class</mat-label>
+          <mat-select placeholder="Class" formControlName="classId"
+            (selectionChange)="ClassChange($event,paymentSearchForm.controls.academicSessionId.value,paymentSearchForm.controls.boardId.value)">
+            <mat-option *ngIf="classes?.length"></mat-option>
+            <mat-option *ngFor="let class of classes" [value]="class.value">
+              {{ class.label }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="18" class="pr-sm-20">
+          <mat-label translate #section>Section</mat-label>
+          <mat-select placeholder="Section" formControlName="sectionId">
+            <mat-option *ngIf="sections?.length"></mat-option>
+            <mat-option *ngFor="let section of sections" [value]="section.value">
+              {{ section.label }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="18">
+        <mat-label translate #feeterm>Fee Terms</mat-label>
+        <mat-select placeholder="Fee Terms" formControlName="feetermId">
+          <mat-option *ngIf="feeTerms?.length"></mat-option>
+          <mat-option *ngFor="let feeTerm of feeTerms" [value]="feeTerm.value">
+            {{ feeTerm.label }}</mat-option>
+        </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div fxFlexFill fxLayout="column" fxLayout.gt-sm="row" class="pt-sm-12">
+        <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="46"
+          class="pr-sm-20">
+          <input [readonly]="!paymentSearchForm.value.academicSessionId" #studentName matInput placeholder="{{'Search Students' | translate}}" formControlName="studentId"
+            aria-label="StudentName" matInput [matAutocomplete]="studentNameSearch">
+          <mat-autocomplete #studentNameSearch="matAutocomplete" [displayWith]="displayFn"
+            (optionSelected)='getSelectedStudent($event.option.value)'>
+            <mat-option *ngFor="let option of filterdStudents" [value]="option">
+              {{option.studentName}}
+              <span class="grey-400-fg"> {{option.currentClassName}} {{option.currentSectionName}}</span>
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+        <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="18"
+          class="pr-sm-20">
+          <mat-label translate #invoicenumber>Invoice Number</mat-label>
+          <input (keyup)="preventSpace($event,'paymentSearchForm','invoiceNumber')" matInput formControlName="invoiceNumber"
+            (blur)="trimTextBoxSpaces('paymentSearchForm','invoiceNumber')">
+        </mat-form-field>
+
+        <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="18"
+          class="pr-sm-20">
+          <mat-label translate #receiptnumber>Receipt Number</mat-label>
+          <input (keyup)="preventSpace($event,'paymentSearchForm','receiptNumber')" matInput formControlName="receiptNumber"
+            (blur)="trimTextBoxSpaces('paymentSearchForm','receiptNumber')">
+        </mat-form-field>
+
+        <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="18">
+          <mat-label #section translate>Payment Status</mat-label>
+          <mat-select placeholder="Payment Status" formControlName="statusId">
+            <mat-option *ngIf="paymentStatus?.length"></mat-option>
+            <mat-option *ngFor="let status of paymentStatus" [value]="status.value">
+              {{ status.label }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div fxLayout="row" fxLayoutAlign="end center" class="my-20">
+        <button mat-raised-button type="reset" color="accent" class="text-uppercase mr-12" (click)="onClickNewpayment()">
+          {{'New' | translate}}
+        </button>
+        <button mat-raised-button type="reset" class="text-uppercase mr-12" (click)="onClear()">
+          {{'Clear' | translate}}
+        </button>
+        <button mat-raised-button type="submit" color="primary" class="text-uppercase">
+          {{'Search' | translate}}
+        </button>
+      </div>
+
+    </form>
+  </div>
+
+  <div class="mat-elevation-z3 simple-table-container mt-20 radius-5">
+    <mat-accordion>
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title class="font-size-18" translate>Result Summary</mat-panel-title>
+        </mat-expansion-panel-header>
+        <mat-list *ngIf="rows?.length" class="pt-0 confirm-table border my-16 mx-sm-auto" fxLayout="row wrap" fxFlex="100" fxFlex.gt-sm="69"
+          fxLayoutAlign="center center">
+          <mat-list-item fxLayout="column" fxFlex.gt-sm="75" fxFlex="100"><span translate>Total Number of Payments</span></mat-list-item>
+          <mat-list-item fxLayout="column" fxFlex.gt-sm="25" fxFlex="100">
+            <div class="ml-auto">{{ totalItems }}</div>
+          </mat-list-item>
+          <mat-list-item fxLayout="column" fxFlex.gt-sm="75" fxFlex="100" ><span translate>Total Amount Of Realized Payments</span></mat-list-item>
+          <mat-list-item fxLayout="column" fxFlex.gt-sm="25" fxFlex="100">
+            <div class="ml-auto"> {{ realizedPayments }}</div>
+          </mat-list-item>
+          <mat-list-item fxLayout="column" fxFlex.gt-sm="75" fxFlex="100"><span translate>Total Amount Of Unrealized Payments</span></mat-list-item>
+          <mat-list-item fxLayout="column" fxFlex.gt-sm="25" fxFlex="100">
+            <div class="ml-auto"> {{ unRealizedPayments }}</div>
+          </mat-list-item>
+          <mat-list-item fxLayout="column" fxFlex.gt-sm="75" fxFlex="100"><span translate>Total Amount Of Cancelled Payments</span></mat-list-item>
+          <mat-list-item fxLayout="column" fxFlex.gt-sm="25" fxFlex="100">
+            <div class="ml-auto"> {{ cancelledPayments }}</div>
+          </mat-list-item>
+        </mat-list>
+        <div class="text-center w-100-p font-size-18" *ngIf="rows?.length==0" translate>No Data Found</div>
+      </mat-expansion-panel>
+
+    </mat-accordion>
+  </div>
+</div>
+
+<app-table *ngIf="!showCustomCard" [settings]="tableSettings" (getTableData)='paymentsData($event)'
+  (rowBasedAction)='onRowActions($event)' >
+</app-table>
+<app-custom-card *ngIf="showCustomCard" [title]=customCardDetails.title [inputMessage]=customCardDetails.message>
+</app-custom-card>

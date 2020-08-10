@@ -1,0 +1,121 @@
+<div fxLayout="row" fxLayoutAlign="space-between center" class="px-44 pb-12 mt-40">
+  <div class="font-size-20" translate>Test Grading</div>
+  <div>
+    <button mat-raised-button class="text-uppercase mr-4" color="primary" (click)="back()" translate>{{'Back' | translate}}
+    </button>
+    <button mat-button type='button' (click)="getHelpText('Test Schedules/Marks')">
+      <mat-icon class="grey-600-fg">info</mat-icon>
+    </button>
+  </div>
+</div>
+<div class="simple-table-container radius-t-20 mat-elevation-z3 mx-32 mb-20">
+  <div class="pb-4">
+    <div fxLayout="column">
+      <div fxLayoutAlign="space-between center" class="p-12">
+        <h2 class="px-24" translate>Test Details</h2>
+        <div class="mr-12">
+          <button [disabled]="!testMaxMarksForm.controls.maxMarks.valid" mat-raised-button color="accent" *ngIf="testData?.status=='Scheduled'" (click)="onTestStatus(true)" translate class="mr-12"><span translate>Mark as Completed</span></button>
+          <button [disabled]="!testMaxMarksForm.controls.maxMarks.valid" mat-raised-button  *ngIf="testData?.status!='Cancelled'" (click)="onTestStatus(false)" translate class="mr-8"><span translate>Mark as Cancel</span></button>
+          <button [disabled]="!testMaxMarksForm.controls.maxMarks.valid || !rows.length || isEditMode"  mat-icon-button [matMenuTriggerFor]="moreMenu"> 
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          
+        </div>
+      </div>
+      <mat-divider></mat-divider>
+      <div fxLayout="row wrap" fxFlex="100" class="w-90-p m-auto px-20 pt-40 pb-8">
+        <div fxLayout="column" fxFlex="20">
+          <div class="grey-500-fg pb-4" translate>Board</div>
+          <div class="break-word pr-12">{{testData?.board}}</div>
+        </div>
+        <div fxLayout="column" fxFlex="20">
+          <div class="grey-500-fg pb-4" translate>Class</div>
+          <div class="break-word pr-12">{{testData?.class}}</div>
+        </div>
+        <div fxLayout="column" fxFlex="20">
+          <div class="grey-500-fg pb-4" translate>Section</div>
+          <div class="break-word pr-12">{{testData?.section}}</div>
+        </div>
+        <div fxLayout="column" fxFlex="20">
+          <div class="grey-500-fg pb-4" translate>Test Type</div>
+          <div class="break-word pr-12">{{testData?.testType}}</div>
+        </div>
+        <div fxLayout="column" fxFlex="20">
+          <div class="grey-500-fg pb-4" translate>Test Name</div>
+          <div class="break-word pr-12">{{testData?.testName}}</div>
+        </div>
+      </div>
+      <div fxLayout="row wrap" fxFlex="100" class="w-90-p m-auto p-20">
+        <div fxLayout="column" fxFlex="20">
+          <div class="grey-500-fg pb-4" translate>Test Date</div>
+          <div class="break-word pr-12">{{testData?.testDate}}</div>
+        </div>
+        <div fxLayout="column" fxFlex="20">
+          <div class="grey-500-fg pb-4" translate>Course</div>
+          <div class="break-word pr-12">{{testData?.course}}</div>
+        </div>
+        <div fxLayout="column" fxFlex="20">
+          <div class="grey-500-fg pb-4" translate>Status</div>
+          <div class="break-word pr-12">{{testData?.status}}</div>
+        </div>
+        <div fxLayout="column" fxFlex="20">
+          <div class="grey-500-fg pb-4" translate>Grading Term</div>
+          <div class="break-word pr-12">{{testData?.gradingTerm}}</div>
+        </div>
+        <div fxLayout="column" fxFlex="20">
+          <form [formGroup]="testMaxMarksForm">
+
+            <mat-form-field appearance="outline" fxFlexFill>
+              <mat-label for="form" translate #maximumMarks translate>Maximum Marks</mat-label>
+              <input (keyup)="preventSpace($event,'testMaxMarksForm','maxMarks')" matInput autocomplete="off" formControlName="maxMarks" (blur)="onTestMarksUpdate($event)" required>
+              <mat-error>
+                <app-validation [labelName]='maximumMarks.innerText' [validationControl]="testMaxMarksForm.controls.maxMarks"
+                  [doValidate]='true'>
+                </app-validation>
+              </mat-error>
+            </mat-form-field>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <mat-divider></mat-divider>
+
+  <mat-menu #moreMenu="matMenu">
+    <button mat-menu-item type="button" (click)="downLoadFile()" translate>{{'DownLoad Excel File' | translate}}</button>
+    <button mat-menu-item type="button" 
+      (click)="logoImgInput.value='';logoImgInput.click()">{{'UpLoad Excel File' | translate}}</button>
+    <input accept=" .xls, .xlsx" id="logoImgInput" fxHide type="file" #logoImgInput
+      (change)="upLoadFile($event)" />
+  </mat-menu>
+
+  <app-table [settings]="tableSettings" (getTableData)='getStudentDetails($event)'
+    (additionalButtonClick)="onShowAll($event)" [rowTemplateRef]="studentScore" *ngIf="isMarksTableShow">
+  </app-table>
+  <app-table [settings]="importTabSettings" *ngIf="!isMarksTableShow" (getTableData)='getImportedStudentDetails($event)' (additionalButtonClick)="onClear($event)" [massActionTemplateRef]="massActions" (headerButtonClick)="reset()" (selectedRows)='selectedRows($event)'>
+  </app-table>
+</div>
+
+<ng-template #studentScore let-name="name">
+  <form [formGroup]="studentScoreForm">
+    <ng-container formArrayName="scores" *ngFor="let c of studentScoreForm.get('scores')?.controls; let i = index">
+        <div [formGroupName]="i" fxLayoutAlign="center center" *ngIf="i==name" class="coustom-mat-error">
+          <mat-form-field fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-xs="32">
+            <input  matInput formControlName="marks"
+            (keyup)="preventSpaceForArray($event, c.controls.marks)"  (blur)="trimTextBoxSpaceArray(c,'marks');updateStudentScore(studentScoreForm.controls.scores.controls[i],i)">
+          </mat-form-field>
+              <mat-error *ngIf="!c.controls.marks.valid && c.controls.marks.touched">
+               <app-validation [isTollTip]="true" [labelName]="'Marks'" [validationControl]="c.controls.marks" [doValidate]="true"></app-validation>
+              </mat-error>
+          <mat-icon class="tick-position green-fg" *ngIf="marksIndex['marks_' + i]">check</mat-icon>
+          <mat-spinner [diameter]="20"  color="accent" *ngIf="marksIndex['spinner_' + i]"></mat-spinner>
+        </div>   
+    </ng-container>
+  </form>
+</ng-template>
+
+ 
+  <ng-template #massActions>
+    <button type="button" mat-raised-button class="text-uppercase mx-8" color="accent"
+      (click)="onProcessClick()">{{'Process' | translate}}</button>
+  </ng-template>

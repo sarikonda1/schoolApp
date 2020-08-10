@@ -1,0 +1,11 @@
+.confirm-table{
+     ::ng-deep .mat-list-item-content{
+         width:80%
+     }
+}
+.edit-settings{
+    ::ng-deep .mat-form-field-wrapper{
+       margin:0;
+       padding-bottom: 12px;
+    }
+}

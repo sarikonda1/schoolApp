@@ -1,0 +1,679 @@
+<app-table *ngIf="!hideGrid;else addUserTemplate" [settings]="tabSettings" (rowBasedAction)='rowActions($event)'
+    (openAddForm)="addForms()" [disabled]="disbleSubmitBtn" [closeRowForm]='closeAddPanel'
+    [showSelectAll]="isDeleteAllRequired" [templateRef]="addUserTemplate" (getTableData)='getAllUser($event)'>
+</app-table>
+
+
+<ng-template #addUserTemplate>
+    <mat-vertical-stepper (selectionChange)="OnSelectionChange($event)" *ngIf="!detailsShow" [linear]="true"
+        [ngClass]="{'mat-elevation-z3 m-36 radius-10 p-12': hideGrid}" #stepper (animationDone)="onStepperAnimationDone(stepper.selectedIndex)">
+        <mat-step [stepControl]="userDetailsForm">
+            <form [formGroup]="userDetailsForm" fxLayout="column">
+                <ng-template matStepLabel><span translate>userdetails</span></ng-template>
+                <div fxFlexFill fxLayout.lt-sm="column" class="pt-24" fxLayout.gt-xs="row">
+
+                    <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex.gt-xs="32">
+                        <mat-label #firstName translate>firstname</mat-label>
+                        <input matInput autocomplete="off" (keyup)="preventSpace($event,'userDetailsForm','firstName')"
+                            (blur)="trimTextBoxSpaces('userDetailsForm','firstName')" formControlName="firstName"
+                            required>
+                        <mat-error>
+                            <app-validation [labelName]="firstName.innerText"
+                                [validationControl]="userDetailsForm.controls.firstName" [doValidate]="doValidate">
+                            </app-validation>
+                        </mat-error>
+                    </mat-form-field>
+
+
+                    <mat-form-field fxFlexFill appearance="outline" class="px-sm-20" fxLayout="column"
+                        fxFlex.gt-xs="36">
+                        <mat-label #middleName translate>middlename</mat-label>
+                        <input matInput autocomplete="off" (keyup)="preventSpace($event,'userDetailsForm','middleName')"
+                            (blur)="trimTextBoxSpaces('userDetailsForm','middleName')" formControlName="middleName">
+                        <mat-error>
+                            <app-validation [labelName]="middleName.innerText"
+                                [validationControl]="userDetailsForm.controls.middleName" [doValidate]="doValidate">
+                            </app-validation>
+                        </mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex.gt-xs="32">
+                        <mat-label #lastName translate>lastname</mat-label>
+                        <input matInput autocomplete="off" (keyup)="preventSpace($event,'userDetailsForm','lastName')"
+                            (blur)="trimTextBoxSpaces('userDetailsForm','lastName')" formControlName="lastName"
+                            required>
+                        <mat-error>
+                            <app-validation [labelName]="lastName.innerText"
+                                [validationControl]="userDetailsForm.controls.lastName" [doValidate]="doValidate">
+                            </app-validation>
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+
+                <div fxFlexFill fxLayout.lt-sm="column" fxLayout.gt-xs="row">
+                    <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-xs="32">
+                        <mat-label translate #gender>gender</mat-label>
+                        <mat-select formControlName="genderTypeId" required>
+                            <mat-option *ngFor="let facilityType of genderDetailsList" [value]="facilityType.id">
+                                {{facilityType.name}}
+                            </mat-option>
+                        </mat-select>
+                        <mat-error>
+                            <app-validation [labelName]='gender.innerText'
+                                [validationControl]="userDetailsForm.controls.genderTypeId" [doValidate]="doValidate">
+                            </app-validation>
+                        </mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex.gt-xs="36"
+                        class="px-sm-20 icon-center">
+                        <mat-label #date translate>dateofbirth</mat-label>
+                        <input (keyup)="forceValidation('dateOfBirth',userDetailsForm)" matInput [max]="currentDate"
+                            [matDatepicker]="picker" formControlName="dateOfBirth">
+                        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-datepicker #picker></mat-datepicker>
+                        <mat-error>
+                            <app-validation [labelName]="date.innerText"
+                                [validationControl]="userDetailsForm.controls.dateOfBirth" [doValidate]="doValidate">
+                            </app-validation>
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <div fxLayout="row" fxLayoutAlign="center center" class="mt-16">
+                    <button mat-raised-button id="resetButtonStepper" type="reset" class="text-uppercase mr-12"
+                        (click)="onCancelClick()">
+                        {{'cancel' | translate}}
+                    </button>
+                    <button mat-raised-button matStepperNext type="button" color="accent" class="text-uppercase">
+                        {{'next' | translate}}
+                    </button>
+
+                </div>
+            </form>
+        </mat-step>
+
+        <mat-step [stepControl]="rolesForm">
+            <form [formGroup]="rolesForm" fxLayout="column" class="pt-sm-20">
+                <ng-template matStepLabel><span translate>userroles</span></ng-template>
+                <af-select *ngIf="showMultiSelectDropDown" [required]=true (selectionChange)="onSelect($event)"
+                    appearance="outline" fxFlex="100" fxFlex.gt-sm="50" [optionGroupRequired]="false"
+                    [options]="rolesList" [showChips]="3" placeholder="Roles" [multiple]="true" formControlName="roleId"
+                    [value]="rolesData"></af-select>
+                <div fxLayout="row" fxLayoutAlign="center center" class="mt-16">
+                    <button mat-raised-button matStepperPrevious type="button" class="text-uppercase mr-12">
+                        {{'previous' | translate}}
+                    </button>
+                    <button mat-raised-button matStepperNext type="button" color="accent" class="text-uppercase">
+                        {{'next' | translate}}
+                    </button>
+                </div>
+            </form>
+        </mat-step>
+
+        <mat-step [stepControl]="contactDetailsForm">
+            <form [formGroup]="contactDetailsForm" fxLayout="column">
+                <ng-template matStepLabel><span translate>contactdetails</span></ng-template>
+                <div fxFlexFill fxLayout.lt-sm="column" fxLayout.gt-xs="row" fxLayoutAlign="center center"
+                    class="pt-sm-20">
+
+                    <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-xs="50">
+                        <mat-label #website translate>website</mat-label>
+                        <input matInput formControlName="website" (keyup)="preventSpace($event,'contactDetailsForm','website')"
+                            (blur)="trimTextBoxSpaces('contactDetailsForm','website')">
+                        <mat-error>
+                            <app-validation [labelName]="website.innerText"
+                                [validationControl]="contactDetailsForm.controls.website" [doValidate]="doValidate">
+                            </app-validation>
+                        </mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-xs="50"
+                        class="pl-sm-20">
+                        <mat-label #email translate>email</mat-label>
+                        <input matInput formControlName="email1" [readonly]="emailDisable" required
+                            (keyup)="preventSpace($event,'contactDetailsForm','email1')" (blur)="trimTextBoxSpaces('contactDetailsForm','email1')">
+                        <mat-error>
+                            <app-validation [labelName]="email.innerText"
+                                [validationControl]="contactDetailsForm.controls.email1" [doValidate]="doValidate">
+                            </app-validation>
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <div fxFlexFill fxLayout.lt-sm="column" fxLayout.gt-xs="row" fxLayoutAlign="center center"
+                    *ngIf="loaded">
+                    <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt.xs="50"
+                        class="coutline">
+                        <mat-label #mobiletel translate>mobilenumber</mat-label>
+                        <input type="text" required matInput formControlName="mobileTel" ng2TelInput
+                            (hasError)="onError($event,'mobileTel')" [ng2TelInputOptions]="telOptions"
+                            (ng2TelOutput)="getNumber($event,'mobileTel')"
+                            (countryChange)="onCountryChangeMobile($event,'mobileTel')" />
+                        <mat-error>
+                            <app-validation [labelName]="mobiletel.innerText"
+                                [validationControl]="contactDetailsForm.controls.mobileTel" [doValidate]="doValidate">
+                            </app-validation>
+                        </mat-error>
+                    </mat-form-field>
+                    <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt.xs="50"
+                        class="coutline pl-sm-24">
+                        <mat-label #otherTel translate>alternatemobilenumber</mat-label>
+                        <input type="text" matInput formControlName="otherTel" ng2TelInput
+                            (hasError)="onError($event,'otherTel')" [ng2TelInputOptions]="telOptions"
+                            (ng2TelOutput)="getNumber($event,'otherTel')"
+                            (countryChange)="onCountryChangeMobile($event,'otherTel')" />
+                        <mat-error>
+                            <app-validation [labelName]="otherTel.innerText"
+                                [validationControl]="contactDetailsForm.controls.otherTel" [doValidate]="doValidate">
+                            </app-validation>
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+
+                <div fxFlexFill fxLayout.lt-sm="column" fxLayout.gt-xs="row" fxLayoutAlign="start center">
+                    <mat-form-field *ngIf="loaded" appearance="outline" fxFlexFill fxLayout="column" fxFlex="100"
+                        fxFlex.gt.xs="50" class="coutline">
+                        <mat-label #landTel translate>landlinenumber</mat-label>
+                        <input type="text" matInput formControlName="landTel" ng2TelInput
+                            (hasError)="onError($event,'landTel')" [ng2TelInputOptions]="telOptions"
+                            (ng2TelOutput)="getNumber($event,'landTel')"
+                            (countryChange)="onCountryChangeMobile($event,'landTel')" />
+                        <mat-error>
+                            <app-validation [labelName]="landTel.innerText"
+                                [validationControl]="contactDetailsForm.controls.landTel" [doValidate]="doValidate">
+                            </app-validation>
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+
+                <div fxLayout="row" fxLayoutAlign="center center" class="mt-16">
+                    <button mat-raised-button matStepperPrevious type="button" class="text-uppercase mr-12">
+                        {{'previous' | translate}}
+                    </button>
+                    <button mat-raised-button matStepperNext type="button" color="accent" class="text-uppercase">
+                        {{'next' | translate}}
+                    </button>
+                </div>
+
+            </form>
+        </mat-step>
+
+        <mat-step [stepControl]="addressesDetailsForm">
+            <form [formGroup]="addressesDetailsForm" fxLayout="column">
+                <ng-template matStepLabel><span translate>addressdetails</span></ng-template>
+                <div fxFlexFill fxLayout.lt-sm="column" fxLayout.gt-xs="row" fxLayoutAlign="center center"
+                    class="pt-sm-20">
+
+                    <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-xs="50">
+                        <mat-label #line translate>addressline1</mat-label>
+                        <input matInput autocomplete="off" (keyup)="preventSpace($event,'addressesDetailsForm','line1')"
+                            (blur)="trimTextBoxSpaces('addressesDetailsForm','line1')" autocomplete="off"
+                            formControlName="line1" required>
+                        <mat-error>
+                            <app-validation [labelName]="line.innerText"
+                                [validationControl]="addressesDetailsForm.controls.line1" [doValidate]="doValidate">
+                            </app-validation>
+                        </mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-xs="50"
+                        class="pl-sm-20">
+                        <mat-label #line2 translate>addressline2</mat-label>
+                        <input matInput formControlName="line2" (keyup)="preventSpace($event,'addressesDetailsForm','line2')"
+                            (blur)="trimTextBoxSpaces('addressesDetailsForm','line2')" autocomplete="off">
+                        <mat-error>
+                            <app-validation [labelName]="line2.innerText"
+                                [validationControl]="addressesDetailsForm.controls.line2" [doValidate]="doValidate">
+                            </app-validation>
+                        </mat-error>
+                    </mat-form-field>
+
+                </div>
+
+                <div fxFlexFill fxLayout.lt-sm="column" fxLayout.gt-xs="row" fxLayoutAlign="center center">
+
+                    <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-xs="50">
+                        <mat-label #line3 translate>addressline3</mat-label>
+                        <input matInput formControlName="line3" (keyup)="preventSpace($event,'addressesDetailsForm','line3')"
+                            (blur)="trimTextBoxSpaces('addressesDetailsForm','line3')" autocomplete="off">
+                        <mat-error>
+                            <app-validation [labelName]="line3.innerText"
+                                [validationControl]="addressesDetailsForm.controls.line3" [doValidate]="doValidate">
+                            </app-validation>
+                        </mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field fxFlexFill appearance="outline" class="pl-sm-20" fxLayout="column" fxFlex="100"
+                        fxFlex.gt-xs="50">
+                        <mat-label #country translate>country</mat-label>
+                        <mat-select formControlName="countryId" (selectionChange)="stateDetails($event.value)" required>
+                            <mat-option *ngFor="let countries of countryDetails" [value]="countries.id">
+                                {{countries.name}}
+                            </mat-option>
+                        </mat-select>
+                        <mat-error>
+                            <app-validation [labelName]="country.innerText"
+                                [validationControl]="addressesDetailsForm.controls.countryId" [doValidate]="doValidate">
+                            </app-validation>
+                        </mat-error>
+                    </mat-form-field>
+
+                </div>
+
+
+                <div fxFlexFill fxLayout.lt-sm="column" fxLayout.gt-xs="row" fxLayoutAlign="center center">
+
+                    <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-xs="50">
+                        <mat-label #state translate>state</mat-label>
+                        <mat-select formControlName="stateId" required>
+                            <mat-option *ngFor="let states of stateDetailsList" [value]="states.id">
+                                {{states.name}}
+                            </mat-option>
+                        </mat-select>
+                        <mat-error>
+                            <app-validation [labelName]="state.innerText"
+                                [validationControl]="addressesDetailsForm.controls.stateId" [doValidate]="doValidate">
+                            </app-validation>
+                        </mat-error>
+                    </mat-form-field>
+
+
+                    <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-xs="50"
+                        class="pl-sm-20">
+                        <mat-label #city translate>city</mat-label>
+                        <input matInput formControlName="city" maxlength="45" (keyup)="preventSpace($event,'addressesDetailsForm','city')"
+                            (blur)="trimTextBoxSpaces('addressesDetailsForm','city')" autocomplete="off" required>
+                        <mat-error>
+                            <app-validation [labelName]="city.innerText"
+                                [validationControl]="addressesDetailsForm.controls.city" [doValidate]="doValidate">
+                            </app-validation>
+                        </mat-error>
+                    </mat-form-field>
+
+                </div>
+
+
+                <div fxFlexFill fxLayout.lt-sm="column" fxLayout.gt-xs="row" fxLayoutAlign="start center">
+
+                    <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-xs="50">
+                        <mat-label #pincode translate>pincode</mat-label>
+                        <input matInput formControlName="pincode" (keyup)="preventSpace($event,'addressesDetailsForm','pincode')"
+                            (blur)="trimTextBoxSpaces('addressesDetailsForm','pincode')" required>
+                        <mat-error>
+                            <app-validation [labelName]="pincode.innerText"
+                                [validationControl]="addressesDetailsForm.controls.pincode" [doValidate]="doValidate">
+                            </app-validation>
+                        </mat-error>
+                    </mat-form-field>
+
+                </div>
+
+                <div fxLayout="row" fxLayoutAlign="center center" class="mt-16">
+                    <button mat-raised-button matStepperPrevious type="button" class="text-uppercase mr-12">
+                        {{'previous' | translate}}
+                    </button>
+                    <button mat-raised-button matStepperNext type="button" color="accent" class="text-uppercase">
+                        {{'next' | translate}}
+                    </button>
+                </div>
+            </form>
+        </mat-step>
+
+        <mat-step>
+            <ng-template matStepLabel><span translate>done</span></ng-template>
+            <div fxFlex="80" class="text-center font-size-18 m-auto pb-20 pt-8" translate>Please verify the entered
+                information before your final submit</div>
+            <mat-list fxLayout.gt-xs="row wrap" fxFlex.gt-xs="80" fxFlex="100" fxLayout.lt-sm="column"
+                class="pt-0 border m-auto confirm-table list-item-start">
+
+                <mat-list-item *ngIf="userDetailsForm?.controls?.firstName?.value" fxLayout="column" fxFlex.gt-xs="50">
+                    <!-- <div><strong><span translate>firstname</span></strong> :
+                        {{userDetailsForm?.controls?.firstName?.value}}</div> -->
+
+                        <div fxLayout="row" fxFlex="40"><strong><span translate>firstname</span></strong></div>
+                        <div fxLayout="row" fxFlex="60"><span class="pr-4">:</span>{{userDetailsForm?.controls?.firstName?.value}} </div>
+                        
+                </mat-list-item>
+
+                <mat-list-item *ngIf="userDetailsForm?.controls?.middleName?.value" fxLayout="column" fxFlex.gt-xs="50">
+                    <!-- <div fxLayout="row"><strong><span translate>middlename</span></strong> :
+                        {{userDetailsForm?.controls?.middleName?.value}} </div> -->
+
+                        <div fxLayout="row" fxFlex="40"><strong><span translate >middlename</span></strong></div>
+                        <div fxLayout="row" fxFlex="60"><span class="pr-4">:</span>{{userDetailsForm?.controls?.middleName?.value}} </div>
+
+                </mat-list-item>
+
+                <mat-list-item *ngIf="userDetailsForm?.controls?.lastName?.value" fxLayout="column" fxFlex.gt-xs="50">
+                    <!-- <div fxLayout="row"><strong><span translate>lastname</span></strong> :
+                        {{userDetailsForm?.controls?.lastName?.value}}
+                    </div> -->
+
+                    <div fxLayout="row" fxFlex="40"><strong><span translate>lastname</span></strong></div>
+                        <div fxLayout="row" fxFlex="60"><span class="pr-4">:</span> {{userDetailsForm?.controls?.lastName?.value}} </div>
+
+                </mat-list-item>
+
+                <mat-list-item *ngIf="genderDetailsList" fxLayout="column" fxFlex.gt-xs="50">
+
+                    <!-- <div fxLayout="row"><strong><span translate>gender</span></strong> :
+                        {{getNamesOnId('gender',userDetailsForm.controls.genderTypeId?.value)}}</div> -->
+
+                        <div fxLayout="row" fxFlex="40"><strong><span translate>gender</span></strong></div>
+                        <div fxLayout="row" fxFlex="60"><span class="pr-4">:</span> {{getNamesOnId('gender',userDetailsForm.controls.genderTypeId?.value)}}</div>
+
+                </mat-list-item>
+
+                <mat-list-item fxLayout="column" fxFlex.gt-xs="50"
+                    *ngIf="userDetailsForm?.controls?.dateOfBirth?.value">
+
+                    <!-- <div fxLayout="row"><strong><span translate>dateofbirth</span></strong> :
+                        {{dateOfBirth}}</div> -->
+
+                        <div fxLayout="row" fxFlex="40"><strong><span translate>dateofbirth</span></strong></div>
+                        <div fxLayout="row" fxFlex="60"><span class="pr-4">:</span>{{dateOfBirth}}</div>
+
+                </mat-list-item>
+
+
+
+                <mat-list-item *ngIf="contactDetailsForm?.controls?.website?.value" fxLayout="column" fxFlex.gt-xs="50">
+
+                    <!-- <div fxLayout="row"><strong><span translate>website</span></strong> :
+                        {{contactDetailsForm?.controls?.website?.value}}</div> -->
+
+                        <div fxLayout="row" fxFlex="40"><strong><span translate>website</span></strong></div>
+                        <div fxLayout="row" fxFlex="60"><span class="pr-4">:</span>{{contactDetailsForm?.controls?.website?.value}}</div>
+
+                </mat-list-item>
+
+                <mat-list-item fxLayout="column" fxFlex.gt-xs="50" *ngIf="contactDetailsForm?.controls?.email1?.value">
+
+                    <!-- <div fxLayout="row"><strong><span translate>email</span></strong>
+                        :{{contactDetailsForm?.controls?.email1?.value}}
+                    </div> -->
+                    <div fxLayout="row" fxFlex="40"><strong><span translate>email</span></strong></div>
+                        <div fxLayout="row" fxFlex="60"><span class="pr-4">:</span>{{contactDetailsForm?.controls?.email1?.value}}</div>
+
+                </mat-list-item>
+
+                <mat-list-item fxLayout="column" *ngIf="contactDetailsForm?.controls?.mobileTel?.value"
+                    fxFlex.gt-xs="50">
+
+                    <!-- <div fxLayout="row"><strong><span translate>mobilenumber</span></strong> :
+                        {{finalMobileNumbers.mobileTel}}</div> -->
+
+                        <div fxLayout="row" fxFlex="40"><strong><span translate>mobilenumber</span></strong></div>
+                        <div fxLayout="row" fxFlex="60"><span class="pr-4">:</span> {{finalMobileNumbers.mobileTel}}</div>
+
+                </mat-list-item>
+                <mat-list-item fxLayout="column" *ngIf="contactDetailsForm?.controls?.otherTel?.value"
+                    fxFlex.gt-xs="50">
+
+                    <!-- <div fxLayout="row"><strong><span translate>alternatemobilenumber</span></strong> :
+                        {{finalMobileNumbers.otherTel}}</div> -->
+
+                        <div fxLayout="row" fxFlex="40"><strong><span translate>alternatemobilenumber</span></strong></div>
+                        <div fxLayout="row" fxFlex="60"><span class="pr-4">:</span>{{finalMobileNumbers.otherTel}}</div>
+
+                </mat-list-item>
+
+                <mat-list-item fxLayout="column" fxFlex.gt-xs="50" *ngIf="contactDetailsForm?.controls?.landTel?.value">
+
+                    <!-- <div fxLayout="row"><strong><span translate>landlinenumber</span></strong> :
+                        {{finalMobileNumbers.landTel}}</div> -->
+                        <div fxLayout="row" fxFlex="40"><strong><span translate >landlinenumber</span></strong></div>
+                        <div fxLayout="row" fxFlex="60"><span class="pr-4">:</span>{{finalMobileNumbers.landTel}}</div>
+
+                </mat-list-item>
+
+
+                <mat-list-item fxLayout="column" fxFlex.gt-xs="50">
+
+                    <!-- <div fxLayout="row"><strong><span translate>address</span></strong> :
+                        {{getCustomAddress()}} </div> -->
+
+                        <div fxLayout="row" fxFlex="40"><strong><span translate>address</span></strong></div>
+                        <div fxLayout="row" fxFlex="60"><span class="pr-4">:</span>{{getCustomAddress()}}</div>
+                </mat-list-item>
+
+
+                <mat-list-item *ngIf="countryDetails" fxLayout="column" fxFlex.gt-xs="50">
+
+                    <!-- <div fxLayout="row"><strong><span translate>country</span></strong> :
+                        {{getNamesOnId('country',addressesDetailsForm.controls.countryId?.value)}}</div> -->
+
+                        <div fxLayout="row" fxFlex="40"><strong><span translate>country</span></strong></div>
+                        <div fxLayout="row" fxFlex="60"><span class="pr-4">:</span>{{getNamesOnId('country',addressesDetailsForm.controls.countryId?.value)}}</div>
+                </mat-list-item>
+
+                <mat-list-item *ngIf="stateDetailsList" fxLayout="column" fxFlex.gt-xs="50">
+
+                    <!-- <div fxLayout="row"><strong><span translate>state</span></strong> :
+                        {{getNamesOnId('state',addressesDetailsForm.controls.stateId?.value)}}</div> -->
+
+                        <div fxLayout="row" fxFlex="40"><strong><span translate>state</span></strong></div>
+                        <div fxLayout="row" fxFlex="60"><span class="pr-4">:</span>{{getNamesOnId('state',addressesDetailsForm.controls.stateId?.value)}}</div>
+                </mat-list-item>
+
+                <mat-list-item *ngIf="addressesDetailsForm?.controls?.city?.value" fxLayout="column" fxFlex.gt-xs="50">
+
+                    <!-- <div fxLayout="row"><strong><span translate>city</span></strong> :
+                        {{addressesDetailsForm?.controls?.city?.value}}</div> -->
+                        <div fxLayout="row" fxFlex="40"><strong><span translate>city</span></strong></div>
+                        <div fxLayout="row" fxFlex="60"><span class="pr-4">:</span>{{addressesDetailsForm?.controls?.city?.value}}</div>
+                </mat-list-item>
+
+                <mat-list-item *ngIf="addressesDetailsForm?.controls?.pincode?.value" fxLayout="column"
+                    fxFlex.gt-xs="50">
+
+                    <!-- <div fxLayout="row"><strong><span translate>pincode</span></strong> :
+                        {{addressesDetailsForm?.controls?.pincode?.value}}</div> -->
+
+                        <div fxLayout="row" fxFlex="40"><strong><span translate>pincode</span></strong></div>
+                        <div fxLayout="row" fxFlex="60"><span class="pr-4">:</span>{{addressesDetailsForm?.controls?.pincode?.value}}</div>
+                </mat-list-item>
+                <mat-list-item *ngIf="rolesForm?.controls?.roleId?.value?.length > 0" fxLayout="column"
+                    fxFlex.gt-xs="50">
+
+                    <!-- <div><strong class="pt-8"><span translate>Roles</span></strong> :
+                        <ul class="ml-36">
+                            <li *ngFor="let item of rolesForm?.controls?.roleId?.value;let l=last" class="pb-8">
+                                {{item.label}}</li>
+                        </ul>
+                    </div> -->
+                    <div fxLayout="row" fxFlex="40" class="pt-12"><strong><span translate>Roles</span></strong></div>
+                        <div fxLayout="row" fxFlex="60">
+                            <ul>
+                                <li *ngFor="let item of rolesForm?.controls?.roleId?.value;let l=last" class="pb-8">
+                                    {{item.label}}</li>
+                            </ul>
+                        </div>
+
+                </mat-list-item>
+            </mat-list>
+
+            <div fxLayout="row" fxLayoutAlign="center center" class="mt-32 pt-24">
+                <button mat-raised-button matStepperPrevious type="button" class="text-uppercase mr-8">
+                    Previous
+                </button>
+
+                <button mat-raised-button type="button" (click)="addUpdateNewUser()" class="text-uppercase"
+                    color="accent">{{!updateShow ? 'Create':'Update'}}</button>
+            </div>
+        </mat-step>
+
+
+    </mat-vertical-stepper>
+
+    <div *ngIf="detailsShow" fxLayout="column">
+        <div class="mt-20 font-size-18 text-uppercase font-weight-600 pl-4" >User Details</div>
+        <mat-list *ngIf="detailsresults" fxLayout.gt-xs="row wrap" fxFlex="100" fxLayout.lt-sm="column"
+            class="my-16 border confirm-table list-item-start">
+            <mat-list-item *ngIf="detailsresults?.firstName" fxLayout="column" fxFlex.gt-xs="50">
+                <!-- <div fxLayout="row"><strong><span translate>firstname</span></strong> : {{detailsresults?.firstName}}
+                </div> -->
+
+                <div fxLayout="row" fxFlex="40"><strong><span translate>firstname</span></strong></div>
+                <div fxLayout="row" fxFlex="60"><span class="pr-4">:</span> {{detailsresults?.firstName}} </div>
+
+            </mat-list-item>
+            <mat-list-item *ngIf="detailsresults?.middleName" fxLayout="column" fxFlex.gt-xs="50">
+               
+                <!-- <div fxLayout="row"><strong><span translate>middlename</span></strong> : {{detailsresults?.middleName}}
+                </div> -->
+
+                <div fxLayout="row" fxFlex="40"><strong><span translate >middlename</span></strong></div>
+                <div fxLayout="row" fxFlex="60"><span class="pr-4">:</span>{{detailsresults?.middleName}} </div>
+
+            </mat-list-item>
+
+            <mat-list-item *ngIf="detailsresults?.lastName" fxLayout="column" fxFlex.gt-xs="50">
+
+                <!-- <div fxLayout="row"><strong><span translate>lastname</span></strong> : {{detailsresults?.lastName}}
+                </div> -->
+                <div fxLayout="row" fxFlex="40"><strong><span translate >lastname</span></strong></div>
+                <div fxLayout="row" fxFlex="60"><span class="pr-4">:</span> {{detailsresults?.lastName}}</div>
+            </mat-list-item>
+
+
+            <mat-list-item *ngIf="detailsresults?.genderName" fxLayout="column" fxFlex.gt-xs="50">
+
+                <!-- <div fxLayout="row"><strong><span translate>gender</span></strong>: {{detailsresults?.genderName}}</div> -->
+
+                <div fxLayout="row" fxFlex="40"><strong><span translate >gender</span></strong></div>
+                <div fxLayout="row" fxFlex="60"><span class="pr-4">:</span> {{detailsresults?.genderName}}</div>
+            </mat-list-item>
+
+            <mat-list-item *ngIf="detailsresults?.dateOfBirth" fxLayout="column" fxFlex.gt-xs="50">
+
+                <!-- <div fxLayout="row" fxFlex="50"><strong><span translate>dateofbirth</span></strong> :
+                    {{detailsresults?.dateOfBirth | date}}</div> -->
+
+                    <div fxLayout="row" fxFlex="40"><strong><span translate >dateofbirth</span></strong></div>
+                <div fxLayout="row" fxFlex="60"><span class="pr-4">:</span> {{detailsresults?.dateOfBirth | date}}</div>
+            </mat-list-item>
+
+
+          
+
+            <mat-list-item *ngIf="detailsresults?.contact?.website" fxLayout="column" fxFlex.gt-xs="50">
+
+                <!-- <div fxLayout="row"><strong><span translate>website</span></strong> :
+                    {{detailsresults?.contact?.website}}</div> -->
+
+                    <div fxLayout="row" fxFlex="40"><strong><span translate >website</span></strong></div>
+                <div fxLayout="row" fxFlex="60"><span class="pr-4">:</span>{{detailsresults?.contact?.website}}</div>
+            </mat-list-item>
+
+            <mat-list-item *ngIf="detailsresults?.contact?.email1" fxLayout="column" fxFlex.gt-xs="50">
+
+                <!-- <div fxLayout="row"><strong><span translate>email</span></strong> : {{detailsresults?.contact?.email1}}
+                </div> -->
+                <div fxLayout="row" fxFlex="40"><strong><span translate >email</span></strong></div>
+                <div fxLayout="row" fxFlex="60"><span class="pr-4">:</span>{{detailsresults?.contact?.email1}}</div>
+            </mat-list-item>
+
+            <mat-list-item *ngIf="detailsresults?.contact?.mobileTel" fxLayout="column" fxFlex.gt-xs="50">
+
+                <!-- <div fxLayout="row"><strong><span translate>mobilenumber</span></strong> :
+                    {{detailsresults?.contact?.mobileTel}}</div> -->
+
+                    <div fxLayout="row" fxFlex="40"><strong><span translate >mobilenumber</span></strong></div>
+                <div fxLayout="row" fxFlex="60"><span class="pr-4">:</span>{{detailsresults?.contact?.mobileTel}}</div>
+            </mat-list-item>
+
+            <mat-list-item *ngIf="detailsresults?.contact?.otherTel" fxLayout="column" fxFlex.gt-xs="50">
+
+                <!-- <div fxLayout="row"><strong><span translate>alternatemobilenumber</span></strong> :
+                    {{detailsresults?.contact?.otherTel}}</div> -->
+
+                    <div fxLayout="row" fxFlex="40"><strong><span translate >alternatemobilenumber</span></strong></div>
+                    <div fxLayout="row" fxFlex="60"><span class="pr-4">:</span>{{detailsresults?.contact?.otherTel}}</div>
+
+            </mat-list-item>
+
+
+            <mat-list-item *ngIf="detailsresults?.contact?.landTel" fxLayout="column" fxFlex.gt-xs="50">
+
+                <!-- <div fxLayout="row"><strong><span translate>landlinenumber</span></strong> :
+                    {{detailsresults?.contact?.landTel}}</div> -->
+                    <div fxLayout="row" fxFlex="40"><strong><span translate >landlinenumber</span></strong></div>
+                    <div fxLayout="row" fxFlex="60"><span class="pr-4">:</span>{{detailsresults?.contact?.landTel}}</div>
+            </mat-list-item>
+
+
+            <mat-list-item fxLayout="column" fxFlex.gt-xs="50">
+                <!-- <div fxLayout="row"><strong><span translate>address</span></strong> :
+                    {{detailsresults?.address?.line1}} {{detailsresults?.address?.line2}}
+                    {{detailsresults?.address?.line3}}
+                </div> -->
+
+                <div fxLayout="row" fxFlex="40"><strong><span translate >address</span></strong></div>
+                <div fxLayout="row" fxFlex="60"><span class="pr-4">:</span> {{detailsresults?.address?.line1}} {{detailsresults?.address?.line2}}
+                    {{detailsresults?.address?.line3}}</div>
+
+            </mat-list-item>
+
+            <mat-list-item fxLayout="column" fxFlex.gt-xs="50">
+
+                <!-- <div fxLayout="row"><strong><span translate>country</span></strong> :
+                    {{detailsresults?.countryName}} </div> -->
+
+                    <div fxLayout="row" fxFlex="40"><strong><span translate >country</span></strong></div>
+                    <div fxLayout="row" fxFlex="60"><span class="pr-4">:</span> {{detailsresults?.countryName}}</div>
+            </mat-list-item>
+
+
+            <mat-list-item fxLayout="column" fxFlex.gt-xs="50">
+
+                <!-- <div fxLayout="row"><strong><span translate>state</span></strong> :
+                    {{detailsresults?.stateName}} </div> -->
+
+                    <div fxLayout="row" fxFlex="40"><strong><span translate >state</span></strong></div>
+                    <div fxLayout="row" fxFlex="60"><span class="pr-4">:</span> {{detailsresults?.stateName}}</div>
+            </mat-list-item>
+
+            <mat-list-item *ngIf="detailsresults?.address?.pincode" fxLayout="column" fxFlex.gt-xs="50">
+
+                <!-- <div fxLayout="row"><strong><span translate>pincode</span></strong> :
+                    {{detailsresults?.address?.pincode}} </div> -->
+                    <div fxLayout="row" fxFlex="40"><strong><span translate >pincode</span></strong></div>
+                    <div fxLayout="row" fxFlex="60"><span class="pr-4">:</span>  {{detailsresults?.address?.pincode}}</div>
+            </mat-list-item>
+
+            <mat-list-item *ngIf="detailsresults?.address?.city" fxLayout="column" fxFlex.gt-xs="50">
+
+                <!-- <div fxLayout="row"><strong><span translate>city</span></strong> :
+                    {{detailsresults?.address?.city}} </div> -->
+
+                    <div fxLayout="row" fxFlex="40"><strong><span translate >city</span></strong></div>
+                    <div fxLayout="row" fxFlex="60"><span class="pr-4">:</span>{{detailsresults?.address?.city}}</div>
+            </mat-list-item>
+            <mat-list-item fxLayout="column" fxFlex.gt-xs="50">
+
+                <!-- <div><strong><span translate>role</span></strong>:
+                    <span *ngFor="let item of detailsresults?.roles;let l = last">{{item.roleName}}{{l?'':','}}</span>
+                </div> -->
+
+                <div fxLayout="row" fxFlex="40" class="pt-12"><strong><span translate >role</span></strong></div>
+                <div fxLayout="row" fxFlex="60">
+                    <ul>
+                        <li *ngFor="let item of detailsresults?.roles;let l = last" class="pb-8">
+                            {{item.roleName}}</li>
+                    </ul>
+                </div>
+
+            </mat-list-item>
+
+        </mat-list>
+
+    </div>
+
+    <div *ngIf="detailsShow" fxLayout="row" fxLayoutAlign="center center" class="my-8">
+        <button cdkFocusInitial mat-raised-button id="cancelButton" type="reset" class="text-uppercase"
+            (click)="onCancelClick()">
+            {{'cancel' | translate}}
+        </button>
+    </div>
+
+</ng-template>

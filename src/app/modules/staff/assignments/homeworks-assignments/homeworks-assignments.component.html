@@ -1,0 +1,414 @@
+<app-table [settings]="tableSettings" [closeRowForm]='closeForm' [templateRef]="newHomework"
+  (getTableData)='tableData($event)' (rowBasedAction)='actions($event)' (openAddForm)='openForm()' [matExpansioncustomClass]="true"
+  (selectedRows)='selectedRows($event)' [rowTemplateRef]="testInfoTemplate">
+</app-table>
+<ng-template #newHomework>
+  <mat-vertical-stepper *ngIf="!onView" [linear]="true" #stepper
+    (selectionChange)="onSelectionChange($event)">
+    <mat-step [stepControl]="classSectionForm">
+        <form fxLayout="column" [formGroup]="classSectionForm" class="pr-16">
+          <ng-template matStepLabel><span translate>Class & Section</span></ng-template>
+          <div class="pt-24 font-size-18 pb-8" translate>Please Select The Class and section That This Homework is Being Assigned To</div>
+          <div fxLayout="column" fxLayout.gt-sm="row" fxFlex="100">
+            <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100"
+              fxFlex.gt-sm="50">
+              <mat-label #board translate>Board</mat-label>
+              <mat-select formControlName="boardId" (selectionChange)="onSelectSchoolBoard($event.value)" required>
+                <mat-option *ngFor="let board of schoolBoardsList" [value]="board.value">
+                  {{board.label}}</mat-option>
+              </mat-select>
+              <mat-error>
+                <app-validation [labelName]='board.innerText' [validationControl]="classSectionForm.controls.boardId"
+                  [doValidate]="validate">
+                </app-validation>
+              </mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50"
+              class="pl-sm-24">
+              <mat-label #classes translate>Class</mat-label>
+              <mat-select formControlName="classId" (selectionChange)="onSelectClass()" required>
+                <mat-option *ngFor="let class of classesList" [value]="class.value">
+                  {{class.label}}</mat-option>
+              </mat-select>
+              <mat-error>
+                <app-validation [labelName]='classes.innerText' [validationControl]="classSectionForm.controls.classId"
+                  [doValidate]="validate">
+                </app-validation>
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <div fxLayout.lt-sm="column" fxLayout.gt-sm="row" fxFlex="100" class="pt-sm-12">
+              <af-select [required]="afterLoadItems" (selectionChange)="onSelectChange($event)" appearance="outline" fxFlex="100" fxFlex.gt-sm="50" [optionGroupRequired]="false" [options]="items"
+                       [showChips]="3" placeholder="Sections" [multiple]="true"
+                        formControlName="sectionId"  [value]="selectedItems"
+            ></af-select>
+          </div>
+
+          <div fxLayout="row" fxLayoutAlign="center center" class="mt-16">
+            <button #resetButtonStepper mat-raised-button id="resetButtonStepper" (click)="onCancel()" type="reset"
+              class="text-uppercase mr-12">
+              {{'Cancel' | translate}}
+            </button>
+            <button mat-raised-button matStepperNext type="button" color="accent" class="text-uppercase">
+              {{'Next' | translate}}
+            </button>
+          </div>
+        </form>
+    </mat-step>
+
+    <mat-step [stepControl]="typeCourseForm" [completed]="typeCourseForm.valid">
+        <div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign="center start" fxFlexFill>
+      <form fxLayout="column" fxFlex.gt-sm="70" [formGroup]="typeCourseForm"  class="pr-16">
+        <ng-template matStepLabel><span translate>Type & Course</span></ng-template>
+        <div class="pt-20 pb-8 font-size-18"><span translate>Please Select The Type Of Homework And The Course</span></div>
+        <div fxLayout="column" fxLayout.gt-sm="row" fxFlex="100">
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+            <mat-label #type translate>Type</mat-label>
+            <mat-select formControlName="typeId" required>
+              <mat-option *ngFor="let type of typesList" [value]="type.id">
+                {{type.name}}</mat-option>
+            </mat-select>
+            <mat-error>
+              <app-validation [labelName]='type.innerText' [validationControl]="typeCourseForm.controls.typeId"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50"
+            class="pl-sm-24">
+            <mat-label #course translate>Course</mat-label>
+            <mat-select formControlName="courseId" required>
+              <mat-option *ngFor="let course of coursesList" [value]="course.value">
+                {{course.label}}</mat-option>
+            </mat-select>
+            <mat-error>
+              <app-validation [labelName]='course.innerText' [validationControl]="typeCourseForm.controls.courseId"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="center center" class="mt-16">
+          <button mat-raised-button matStepperPrevious type="button" class="text-uppercase mr-12">
+            {{'Previous' | translate}}
+          </button>
+          <button mat-raised-button matStepperNext type="button" color="accent" class="text-uppercase">
+            {{'Next' | translate}}
+          </button>
+        </div>
+      </form>
+      <ng-template *ngTemplateOutlet="sideBarData;context:{stepperIndex: 1}"></ng-template>
+      </div>
+    </mat-step>
+
+    <mat-step [stepControl]="detailsForm">
+        <div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign="center start" fxFlexFill>
+      <form fxLayout="column" [formGroup]="detailsForm" fxFlex.gt-sm="70" class="pr-16">
+        <ng-template matStepLabel><span translate>Details</span></ng-template>
+        <div class="pt-24 font-size-18"><span translate>Please Enter Name and Description Of The Homework if
+            Any</span></div>
+        <div fxLayout="column" fxLayout.gt-sm="row" class="pt-24" fxFlex="100">
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+            <mat-label translate #homeworkName>Name</mat-label>
+            <input (keyup)="preventSpace($event,'detailsForm','homeworkName')" (blur)="trimTextBoxSpaces('detailsForm','homeworkName')" formControlName="homeworkName"
+              matInput required>
+            <mat-error>
+              <app-validation [labelName]='homeworkName.innerText' [validationControl]="detailsForm.controls.homeworkName"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" class="pl-sm-24 pt-8">
+            <div fxLayout="row">
+              <button mat-raised-button color="primary" type="button" (click)="attachment.value=''; attachment.click()">
+                <mat-icon class="mr-8">attachment</mat-icon>{{'Upload Attachment' | translate}}
+              </button>
+              <button *ngIf="detailsForm.value.file?.fileNameWithExtension" (click)="attachment.value='';attachmentUrl=null;clearImages()" mat-icon-button type="button">
+                <mat-icon class="mb-4 grey-600-fg">highlight_off</mat-icon>
+              </button>
+              <input  (change)="imgChanged(attachment.files)" [accept]="AcceptImagesApplicationType" fxHide type="file"
+                #attachment>
+            </div>
+            <a *ngIf="updateId && attachmentUrl;else image_name" [href]="attachmentUrl" target="_blank" >View Attachment</a>
+            <ng-template #image_name>
+              <div fxLayout="row" class="break-word">{{detailsForm.value?.file?.fileNameWithExtension}}</div>
+            </ng-template>
+          </div>
+        </div>
+        <div fxLayout="column" fxLayout.gt-sm="row" class="pt-sm-12" fxFlex="100">
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100">
+            <mat-label translate #homeworkDescriptionn>Description</mat-label>
+            <textarea (keypress)="preventSpace($event,'detailsForm','homeworkDescription')" (blur)="trimTextBoxSpaces('detailsForm','homeworkDescription')"
+              formControlName="homeworkDescription" matInput></textarea>
+            <mat-error>
+              <app-validation [labelName]='homeworkDescriptionn.innerText' [validationControl]="detailsForm.controls.homeworkDescription"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div fxFlexFill fxLayout="column" class="pt-sm-12">
+          <div class="mb-12 pl-4" #isPostToCalendarText translate>Do You Want To Post This Home work Information To The
+            Student Calendar ?</div>
+          <mat-radio-group fxLayout="row" fxFlex="100" required formControlName="isPostToCalendar">
+            <mat-radio-button class="ml-24" [value]="true">Yes</mat-radio-button>
+            <mat-radio-button class="ml-24" [value]="false">No</mat-radio-button>
+          </mat-radio-group>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="center center" class="mt-16">
+            <button mat-raised-button matStepperPrevious type="button" class="text-uppercase mr-12">
+              {{'Previous' | translate}}
+            </button>
+            <button mat-raised-button matStepperNext type="button" color="accent" class="text-uppercase">
+              {{'Next' | translate}}
+            </button>
+        </div>
+      </form>
+      <ng-template *ngTemplateOutlet="sideBarData;context:{stepperIndex: 2}"></ng-template>
+    </div>
+    </mat-step>
+
+    <mat-step [stepControl]="dateForm">
+     <div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign="center start" fxFlexFill>
+      <form fxFlex.gt-sm="70" class="pr-16" fxLayout="column" [formGroup]="dateForm">
+        <ng-template matStepLabel><span translate>Dates</span></ng-template>
+        <div class="pt-20 pb-8 font-size-18"><span translate>Please Select The Dates Pertaining This Homework</span></div>
+        <div fxLayout="column" fxLayout.gt-sm="row" fxFlex="100" fxLayoutAlign="center center">
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" class="icon-center">
+            <mat-label #issueDatee translate>Issue Date</mat-label>
+            <input matInput (keyup)="forceValidation('issueDate',dateForm)" [matDatepicker]="issueDate"
+            [min]="academicSession?.startDate"
+            [max]="academicSession?.endDate"
+              formControlName="issueDate"  required>
+            <mat-datepicker-toggle matSuffix [for]="issueDate"></mat-datepicker-toggle>
+            <mat-datepicker #issueDate></mat-datepicker>
+            <mat-error>
+              <app-validation [labelName]='issueDatee.innerText' [validationControl]="dateForm.controls.issueDate"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50"
+            class="pl-sm-24 icon-center">
+            <mat-label #endDatee translate>Due Date</mat-label>
+            <input  [min]="dateForm?.controls?.issueDate?.value" matInput (keyup)="forceValidation('dueDate',dateForm)" [matDatepicker]="endDate" 
+            [min]="academicSession?.startDate"
+            [max]="academicSession?.endDate"
+              formControlName="dueDate" >
+            <mat-datepicker-toggle matSuffix [for]="endDate"></mat-datepicker-toggle>
+            <mat-datepicker #endDate [startAt]="dateForm.value.issueDate"></mat-datepicker>
+            <mat-error>
+              <app-validation [labelName]='endDatee.innerText' [validationControl]="dateForm.controls.dueDate"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="center center" class="mt-16">
+          <button mat-raised-button matStepperPrevious type="button" class="text-uppercase mr-12">
+            {{'Previous' | translate}}
+          </button>
+          <button mat-raised-button matStepperNext type="button" color="accent" class="text-uppercase">
+            {{'Next' | translate}}
+          </button>
+        </div>
+      </form>
+      <ng-template *ngTemplateOutlet="sideBarData;context:{stepperIndex: 3}"></ng-template>
+      </div>
+    </mat-step>
+
+
+    <mat-step [stepControl]="testInformation">
+     <div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign="center start" fxFlexFill>
+      <form fxLayout="column" fxFlex.gt-sm="70" class="pr-16" [formGroup]="testInformation" #testInfoForm="ngForm">
+        <ng-template matStepLabel><span translate>Test information</span></ng-template>
+        <div fxLayout="column" class="pt-24 pb-12" fxFlex="100" fxLayoutAlign="center center">
+          <div class="mb-12 font-size-16" translate>Will this Homework be Graded as a part of a Test ?</div>
+          <mat-radio-group (change)="onChnageGraded($event)" fxLayout="row" fxFlex="100" formControlName="isGraded">
+            <mat-radio-button class="ml-24" [value]="true">Yes</mat-radio-button>
+            <mat-radio-button class="ml-24" [value]="false">No</mat-radio-button>
+          </mat-radio-group> 
+        </div>
+
+        <div *ngIf="testInformation.value.isGraded" class="my-20" translate>If Yes, Please select the Test Details to be associated with this homework</div>
+
+        <div *ngIf="testInformation.value.isGraded" fxLayout="column" fxLayout.gt-sm="row" fxFlex="100">
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" >
+            <mat-label #board translate>Test Type</mat-label>
+            <mat-select  formControlName="testTypeId"  [required]="testInformation.value.isGraded">
+              <mat-option *ngFor="let testType of testTypesList" [value]="testType.id">
+                {{testType.name}}</mat-option>
+            </mat-select>
+            <mat-error>
+              <app-validation [labelName]='board.innerText' [validationControl]="testInformation.controls.testTypeId"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+
+
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50"
+            class="pl-sm-24">
+            <mat-label #class translate>Grading Term</mat-label>
+            <mat-select formControlName="gradeTermId"  [required]="testInformation.value.isGraded">
+              <mat-option *ngFor="let gradeTerm of gradingTermsList" [value]="gradeTerm.id">
+                {{gradeTerm.name}}</mat-option>
+            </mat-select>
+            <mat-error>
+              <app-validation [labelName]='class.innerText' [validationControl]="testInformation.controls.gradeTermId"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div *ngIf="testInformation.value.isGraded" fxLayout="column" fxLayout.gt-sm="row" class="pt-sm-12" fxFlex="100">
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+            <mat-label translate #marks>Marks</mat-label>
+            <input (keyup)="preventSpace($event,'testInformation','maxMarks')" (blur)="trimTextBoxSpaces('testInformation','maxMarks')"
+              formControlName="maxMarks" matInput [required]="testInformation.value.isGraded">
+            <mat-error>
+              <app-validation [labelName]='marks.innerText' [validationControl]="testInformation.controls.maxMarks"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="center center" class="mt-16">
+          <button mat-raised-button matStepperPrevious type="button" class="text-uppercase mr-12">
+            {{'Previous' | translate}}
+          </button>
+          <button mat-raised-button matStepperNext type="button" color="accent" class="text-uppercase">
+            {{'Next' | translate}}
+          </button>
+        </div>
+      </form>
+      <ng-template *ngTemplateOutlet="sideBarData;context:{stepperIndex: 4}"></ng-template>
+      </div>
+    </mat-step>
+
+    <mat-step>
+      <ng-template matStepLabel><span translate>Complete</span></ng-template>
+      <div fxFlex="100" class="font-size-20 py-16" translate>Confirm Information</div>
+      <mat-list fxLayout="row wrap" class="pt-0 confirm-table border">
+          <mat-list-item fxLayout="column" fxFlex="50"><strong translate>Board</strong>: {{getNameBasedOnValue('board',classSectionForm.value.boardId)}}</mat-list-item>
+          <mat-list-item fxLayout="column" fxFlex="50"><strong translate>Class</strong>:  {{getNameBasedOnValue('class',classSectionForm.value.classId)}} </mat-list-item>
+          <mat-list-item fxLayout="column" fxFlex="50"><strong translate>Sections</strong>:  <span *ngFor="let section of classSectionForm?.value?.sectionId;let l = last;">{{section.label}}{{l?'':', '}} </span></mat-list-item>
+          <mat-list-item fxLayout="column" fxFlex="50"><strong translate>Type</strong> : 
+            {{getNameBasedOnValue('type',typeCourseForm.value.typeId)}}</mat-list-item>
+          <mat-list-item fxLayout="column" fxFlex="50"><strong translate>Course</strong>:  {{getNameBasedOnValue('course',typeCourseForm.value.courseId)}}</mat-list-item>
+  
+          <mat-list-item fxLayout="column" fxFlex="50"><strong translate>Name</strong>: {{detailsForm.value.homeworkName}}</mat-list-item>
+          <mat-list-item *ngIf="detailsForm.value.file?.fileNameWithExtension" fxLayout="column" fxFlex="50"><strong translate>Attachment</strong>: {{detailsForm.value.file?.fileNameWithExtension}}</mat-list-item>
+          <mat-list-item *ngIf="dateForm.value.homeworkDescription" fxLayout="column" fxFlex="50"><strong translate>Description</strong>: {{detailsForm.value.homeworkDescription}}</mat-list-item>
+          <mat-list-item  fxLayout="column" fxFlex="50"><strong translate>Post to Student calendar</strong>: {{detailsForm.value.isPostToCalendar ? "Yes" : "No"}}</mat-list-item>
+  
+          <mat-list-item *ngIf="dateForm.value.issueDate" fxLayout="column" fxFlex="50"><strong translate>Issue Date</strong>: {{getSchoolDate(dateForm.value.issueDate) }}</mat-list-item>
+          <mat-list-item *ngIf="dateForm.value.dueDate" fxLayout="column" fxFlex="50"><strong translate>Due Date</strong> : {{getSchoolDate(dateForm.value.dueDate) }}</mat-list-item>
+  
+          <mat-list-item fxLayout="column" fxFlex="50"><strong translate>Graded As Test</strong>: {{testInformation.value.isGraded ? "Yes" : "No"}}</mat-list-item>
+          <mat-list-item *ngIf="testInformation.value.testTypeId" fxLayout="column" fxFlex="50"><strong translate>Test Type</strong> 
+            : {{getNameBasedOnValue('testType',testInformation.value.testTypeId)}}</mat-list-item>
+          <mat-list-item *ngIf="testInformation.value?.gradeTermId" fxLayout="column" fxFlex="50"><strong translate>Grading Term</strong>:  {{getNameBasedOnValue('gradingTerm',testInformation.value.gradeTermId)}}</mat-list-item>
+          <mat-list-item *ngIf="testInformation.value?.maxMarks" fxLayout="column" fxFlex="50"><strong translate>Marks</strong> : {{testInformation.value.maxMarks}}</mat-list-item>
+        </mat-list>
+
+      <div fxLayout="row" fxLayoutAlign="center center" class="mt-32 pt-24">
+        <button mat-raised-button matStepperPrevious type="button" class="text-uppercase mr-12">{{'Previous' | translate}}</button>
+        <button mat-raised-button type="submit" class="text-uppercase" color="accent" (click)="submitHomeWork()">{{(updateId ? 'Update' : 'Submit') | translate}}
+        </button>
+      </div>
+    </mat-step>
+  </mat-vertical-stepper>
+  <div *ngIf="onView">
+          <div  class="font-size-20 py-24 mx-24" translate>Homework Information</div>
+          <mat-list fxLayout="row wrap" class="pt-0 confirm-table border mx-24">
+              <mat-list-item fxLayout="column" fxFlex="50"><strong translate>Board</strong>: {{homeWorkData?.boardName}}</mat-list-item>
+              <mat-list-item fxLayout="column" fxFlex="50"><strong translate>Class</strong>: {{homeWorkData?.classSections[0]?.className}}</mat-list-item>
+              <mat-list-item fxLayout="column" fxFlex="50"><strong translate>Sections</strong> :<span *ngFor="let section of homeWorkData?.classSections;let l = last;">{{section.sectionName}} {{l ? '' :', '}}</span></mat-list-item>
+              <mat-list-item fxLayout="column" fxFlex="50"><strong translate>Type</strong> : 
+                {{homeWorkData?.typeName}}</mat-list-item>
+              <mat-list-item fxLayout="column" fxFlex="50"><strong translate>Course</strong>:   {{homeWorkData?.courseName}}</mat-list-item>
+      
+              <mat-list-item fxLayout="column" fxFlex="50"><strong translate>Name</strong>: {{homeWorkData?.homeworkName}}</mat-list-item>
+              <mat-list-item *ngIf="homeWorkData?.attachment?.fileName" fxLayout="column" fxFlex="50"><strong translate>Attachment</strong> : 
+                <a *ngIf="homeWorkData?.attachment?.attachmentUrl" [href]="homeWorkData?.attachment?.attachmentUrl" target="_blank" >   {{'view attachment'}}</a></mat-list-item>
+      
+              <mat-list-item *ngIf="homeWorkData?.homeworkDescription" fxLayout="column" fxFlex="50"><strong translate>Description</strong> :{{homeWorkData?.homeworkDescription}}</mat-list-item>
+              <mat-list-item fxLayout="column" fxFlex="50"><strong translate>Post to Student calendar</strong> :  {{homeWorkData?.isPostToCalendar ? "Yes" : "No"}}</mat-list-item>
+      
+              <mat-list-item *ngIf="homeWorkData?.issueDate" fxLayout="column" fxFlex="50"><strong translate>Issue Date</strong> :  {{getSchoolDate(homeWorkData?.issueDate)}}</mat-list-item>
+              <mat-list-item *ngIf="homeWorkData?.dueDate" fxLayout="column" fxFlex="50"><strong translate>Due Date</strong> : {{getSchoolDate(homeWorkData?.dueDate)}}</mat-list-item>
+      
+              <mat-list-item fxLayout="column" fxFlex="50"><strong translate>Graded As Test  </strong> : {{homeWorkData?.isGraded ? "Yes" : "No"}}</mat-list-item>
+              <mat-list-item *ngIf="homeWorkData?.testTypeName"  fxLayout="column" fxFlex="50"><strong translate>Test Type</strong> 
+               : {{homeWorkData?.testTypeName}}</mat-list-item>
+              <mat-list-item *ngIf="homeWorkData?.gradeTermName"  fxLayout="column" fxFlex="50"><strong translate>Grading Term</strong> : {{homeWorkData?.gradeTermName}}</mat-list-item>
+              <mat-list-item *ngIf="homeWorkData?.maxMarks"  fxLayout="column" fxFlex="50"><strong translate>Marks</strong> :{{homeWorkData?.maxMarks}}</mat-list-item>
+            </mat-list>
+            <div fxLayout="row" fxLayoutAlign="center center" class="py-24">
+                <button mat-raised-button type="submit" class="text-uppercase" color="accent" (click)="closeView()">
+                  {{'Close' | translate}}
+                </button>
+            </div> 
+  </div>
+</ng-template>
+
+<ng-template #sideBarData let-stepperIndex="stepperIndex">
+  <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="30" class="my-28 px-20 border-left">
+    <div  fxLayout="row" class="py-4">
+      <div class="w-144" translate>Board</div> :<div class="pl-12"><div class="break-word">{{getNameBasedOnValue('board',classSectionForm.value.boardId)}}</div></div>
+    </div>
+    <div  fxLayout="row" class="py-4">
+      <div class="w-144" translate>Class</div> :<div class="pl-12"><div class="break-word">{{getNameBasedOnValue('class',classSectionForm.value.classId)}}</div> </div>
+    </div>
+    <div fxLayout="row" class="py-4">
+      <div class="w-144" translate>Sections</div> :<div class="pl-12"><span *ngFor="let section of classSectionForm?.value?.sectionId;let l = last;">{{section.label}} {{l ? '' : ','}} </span></div>
+    </div>
+
+    <ng-container *ngIf="stepperIndex > 1">
+      <div fxLayout="row" class="py-4">
+        <div class="w-144" translate>Type</div> :<div class="pl-12"><div class="break-word">{{getNameBasedOnValue('type',typeCourseForm.value.typeId)}}</div></div>
+      </div>
+      <div fxLayout="row" class="py-4">
+        <div class="w-144" translate>Course</div> :<div class="pl-12"><div class="break-word">{{getNameBasedOnValue('course',typeCourseForm.value.courseId)}}</div></div>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="stepperIndex > 2">
+      <div fxLayout="row" class="py-4">
+        <div class="w-144" translate>Name</div> :<div class="pl-12"><div class="break-word">{{detailsForm.value.homeworkName}}</div></div>
+      </div>
+      <div *ngIf="classSectionForm?.value?.homeworkDescription" fxLayout="row" class="py-4">
+        <div class="w-144" translate>Description</div> :<div class="pl-12"><div class="break-word">{{detailsForm.value.homeworkDescription}}</div></div>
+      </div>
+      <div fxLayout="row" class="py-4">
+        <div class="w-144" translate>Post to Student calendar</div> :<div class="pl-12">{{detailsForm.value.isPostToCalendar ? "Yes" : "No"}}</div>
+      </div>
+      <div *ngIf="classSectionForm?.value?.file?.fileNameWithExtension" fxLayout="row" class="py-4">
+        <div class="w-144" translate>Attachment</div> :<div class="pl-12"><div class="break-word">{{detailsForm.value?.file?.fileNameWithExtension}}</div></div>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="stepperIndex > 3">
+      <div *ngIf="dateForm.value?.issueDate" fxLayout="row" class="py-4">
+        <div class="w-144" translate>Issue Date</div> :<div class="pl-12">{{getSchoolDate(dateForm.value.issueDate) }}</div>
+      </div>
+      <div *ngIf="dateForm.value?.dueDate" fxLayout="row" class="py-4">
+        <div class="w-144" translate>Due Date</div> :<div class="pl-12">{{getSchoolDate(dateForm.value.dueDate) }}</div>
+      </div>
+    </ng-container>
+  </div>
+</ng-template>
+
+
+<ng-template #testInfoTemplate let-name="name">
+  <ng-container *ngFor="let test of rows;let i = index;">
+      <div *ngIf="i==name" matTooltipClass="matTool-tip"
+      matTooltipPosition="above" [matTooltip]="test?.termName + ', ' + test?.testTypeName + ', ' + test?.marks">
+        <div class="pt-8">{{test?.termName}}</div>
+      <div class="pt-8"> {{test?.testTypeName}}</div>
+      <div class="py-8" *ngIf="test.marks">Marks: {{test?.marks}}</div>
+      </div>
+  </ng-container>
+</ng-template>

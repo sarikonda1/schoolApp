@@ -1,0 +1,9 @@
+<div fxLayout="row" fxLayoutAlign="center" class="pt-16 font-size-18 text-uppercase">
+    Preview student request
+</div>
+
+<div id="previewHtml" #dataContainer></div>
+<div fxLayout="row" fxLayoutAlign="end center" class="p-16">
+  <button class="mr-12 text-uppercase" mat-raised-button type="button" (click)="onCancel()" translate>{{'Cancel' | translate}}</button>
+  <button mat-raised-button (click)="onSubmit()" type="submit" class="mr-12 text-uppercase theme-test" color="accent" >{{ 'generateCertificate' | translate}}</button>
+</div>

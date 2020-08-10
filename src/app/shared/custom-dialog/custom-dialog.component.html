@@ -1,0 +1,19 @@
+<mat-dialog-title class="secondary-text font-size-16 text-center" *ngIf="dialogData.title">
+  {{dialogData.title  | translate}}</mat-dialog-title>
+<ng-container *ngIf="data.template" [ngTemplateOutlet]="data.template"></ng-container>
+<mat-dialog-content *ngIf="dialogData.text" class="secondary-text py-8 text-center">{{dialogData.text | translate}}
+</mat-dialog-content>
+
+<mat-dialog-content *ngIf="data.tableInformation" [innerHtml]="data.tableInformation"></mat-dialog-content>
+<mat-dialog-actions align="end" class="py-20" *ngIf="dialogData.action">
+
+  <button mat-raised-button *ngIf="dialogData.btn4Text" [ngClass]="dialogData?.btn4Class ? dialogData?.btn4Class : mat-button"
+    (click)="onClickButton(dialogData.btn4Text)">{{dialogData.btn4Text | translate}}</button>
+  <button mat-raised-button *ngIf="dialogData.btn3Text" [ngClass]="dialogData?.btn3Class ? dialogData?.btn3Class : mat-button"
+    (click)="onClickButton(dialogData.btn3Text)">{{dialogData.btn3Text | translate}}</button>
+  <button mat-raised-button *ngIf="dialogData.btn2Text" [ngClass]="dialogData?.btn2Class ? dialogData?.btn2Class : 'accent'" 
+    (click)="onClickButton(dialogData.btn2Text)">{{dialogData.btn2Text | translate}}</button>
+  <button mat-raised-button *ngIf="dialogData.btn1Text" [ngClass]="dialogData?.btn1Class ? dialogData?.btn1Class : 'primary'" 
+    (click)="onClickButton(dialogData.btn1Text)" cdkFocusInitial>{{dialogData.btn1Text | translate}}</button>
+
+</mat-dialog-actions>

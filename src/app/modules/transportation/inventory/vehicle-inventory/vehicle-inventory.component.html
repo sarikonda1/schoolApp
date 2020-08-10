@@ -1,0 +1,330 @@
+<app-table [settings]="tabSettings" (getTableData)='getAllVehicles($event)' (rowBasedAction)="rowWiseActions($event)"
+    (openAddForm)='openForm()' [matExpansioncustomClass]="true" [templateRef]="testSchedules"
+    [closeRowForm]='closeAddPanel'>
+</app-table>
+
+<ng-template #testSchedules>
+    <mat-horizontal-stepper class="custom-horizontal-step" [linear]="true" fxLayout="row" fxFlex="100" #stepper
+        (selectionChange)="onSelectionChange($event)">
+        <mat-step [stepControl]="vehicalDetailsForm">
+            <form fxLayout="column" [formGroup]="vehicalDetailsForm" #vehicalDataForm="ngForm">
+                <ng-template matStepLabel><span translate>Vehicle Basic Details</span></ng-template>
+                <!-- <div class="pt-24 font-size-18"><span translate>Vehicle Basic Details</span></div> -->
+                <div fxLayout="column" fxLayout.gt-sm="row" class="pt-24" fxFlex="100">
+                    <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+                        <mat-label #name translate>Vehicle Name</mat-label>
+                        <input (keyup)="preventSpace($event, 'vehicalDetailsForm','name')" (blur)="trimTextBoxSpaces('vehicalDetailsForm','name')" formControlName="name" matInput required>
+                        <mat-error>
+                            <app-validation [labelName]='name.innerText'
+                                [validationControl]="vehicalDetailsForm.controls.name" [doValidate]="validate">
+                            </app-validation>
+                        </mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50"
+                        class="pl-sm-20">
+                        <mat-label #manufacturer translate>Manufacturer</mat-label>
+                        <input (keyup)="preventSpace($event,'vehicalDetailsForm','manufacturer')" (blur)="trimTextBoxSpaces('vehicalDetailsForm','manufacturer')" formControlName="manufacturer" matInput required>
+                        <mat-error>
+                            <app-validation [labelName]='manufacturer.innerText'
+                                [validationControl]="vehicalDetailsForm.controls.manufacturer" [doValidate]="validate">
+                            </app-validation>
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+
+                <div fxLayout="column" fxLayout.gt-sm="row" class="pt-sm-12" fxFlex="100">
+                    <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+                        <mat-label #model translate>Model</mat-label>
+                        <input (keyup)="preventSpace($event,'vehicalDetailsForm','model')" (blur)="trimTextBoxSpaces('vehicalDetailsForm','model')" formControlName="model" matInput required>
+                        <mat-error>
+                            <app-validation [labelName]='model.innerText'
+                                [validationControl]="vehicalDetailsForm.controls.model" [doValidate]="validate">
+                            </app-validation>
+                        </mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50"
+                        class="pl-sm-20">
+                        <mat-label #code translate>Code</mat-label>
+                        <input (keyup)="preventSpace($event,'vehicalDetailsForm','code')" (blur)="trimTextBoxSpaces('vehicalDetailsForm','code')" formControlName="code" matInput>
+                        <mat-error>
+                            <app-validation [labelName]='code.innerText'
+                                [validationControl]="vehicalDetailsForm.controls.code" [doValidate]="validate">
+                            </app-validation>
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+
+                <div fxLayout="column" fxLayout.gt-sm="row" class="pt-sm-12" fxFlex="100">
+                    <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+                        <mat-label #maxCapacity translate>MaxCapacity</mat-label>
+                        <input (keyup)="preventSpace($event,'vehicalDetailsForm','maxCapacity')" (blur)="trimTextBoxSpaces('vehicalDetailsForm','maxCapacity')" formControlName="maxCapacity" numbersOnly matInput>
+                        <mat-error>
+                            <app-validation [labelName]='maxCapacity.innerText'
+                                [validationControl]="vehicalDetailsForm.controls.maxCapacity" [doValidate]="validate">
+                            </app-validation>
+                        </mat-error>
+                    </mat-form-field>
+                    <div fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" class="pl-sm-20 pt-sm-16">
+                        <div fxLayout="row" fxLayoutAlign="start center"><button mat-raised-button color="primary"
+                                (click)="ImgInput.value='';ImgInput.click()" type="button">
+                                <mat-icon class="mr-4">attach_file</mat-icon>{{'Vehicle Photos' | translate}}
+                            </button>
+                            <button mat-icon-button [style.display]="vehicleImageProp?.src ? 'block' : 'none'" (click)="ImgInput.value='';filePaths.image='';clearImages()">
+                                <mat-icon class="mb-4 grey-600-fg" >
+                                    highlight_off
+                                </mat-icon>
+                            </button>
+                        </div>
+
+                        <input [accept]="'image/*'" id="ImgInput"
+                            (change)="vehicleImgChanged(ImgInput.files,vehicalDetailsForm)" fxHide type="file"
+                            #ImgInput>
+                        <div *ngIf="filePaths?.image; else form_value" class="pt-4 primary-300-fg font-size-12 text-left pr-36 break-word">
+                            <a target="_blank" [href]="filePaths?.image">View Vehicle Photo</a>
+                        </div>
+                        <ng-template #form_value>
+                            <div [style.visibility]="vehicalDetailsForm?.value?.photoAttachment?.fileName ? 'visible' : 'hidden'"
+                            class="pt-4 break-word font-size-12 text-left pr-36">
+                            {{vehicalDetailsForm?.value?.photoAttachment?.fileName}}
+                        </div>
+                        </ng-template>
+                        
+                        <!-- <div class="pt-4 primary-300-fg font-size-12 text-right pr-36">(<span translate>Preferred</span>
+                            1:1)</div> -->
+                    </div>
+                </div>
+
+               
+                <!-- <div fxLayout="column" class="w-200 h-200 border">
+                    <img class="radius-5 w-200 h-200" [src]="vehicleImageProp?.src" *ngIf="vehicleImageProp?.src"
+                        alt="Launchship" />
+                </div> -->
+                <div fxLayout="row" fxLayoutAlign="end center" class="mt-16">
+                    <button #resetButtonStepper mat-raised-button id="resetButtonStepper" (click)="onCancel()"
+                        type="reset" class="text-uppercase mr-12">
+                        {{'Cancel' | translate}}
+                    </button>
+                    <button mat-raised-button matStepperNext type="button" color="accent" class="text-uppercase">
+                        {{'Next' | translate}}
+                    </button>
+                </div>
+            </form>
+        </mat-step>
+
+        <mat-step [stepControl]="registrationInfoForm" [optional]="registrationInfoForm.valid">
+            <form fxLayout="column" [formGroup]="registrationInfoForm" #registrationForm="ngForm"  autocomplete="off">
+                <ng-template matStepLabel><span translate>Registration Info</span></ng-template>
+                <!-- <div class="pt-24 font-size-18"><span translate>Registration Info</span></div> -->
+                <div fxLayout="column" fxLayout.gt-sm="row" class="pt-24" fxFlex="100">
+                    <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+                        <mat-label #regNumber translate>Registration Number</mat-label>
+                        <input (keyup)="preventSpace($event,'registrationInfoForm','regNumber')" (blur)="trimTextBoxSpaces('registrationInfoForm','regNumber')" formControlName="regNumber" matInput>
+                        <mat-error>
+                            <app-validation [labelName]='regNumber.innerText'
+                                [validationControl]="registrationInfoForm.controls.regNumber" [doValidate]="validate">
+                            </app-validation>
+                        </mat-error>
+                    </mat-form-field>
+
+                    <div fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" class="px-sm-20 pt-16">
+                        <div fxLayout="row" fxLayoutAlign="start center"><button mat-raised-button color="primary"
+                                (click)="fileInput.value='';fileInput.click()" type="button"><mat-icon class="mr-4">attach_file</mat-icon>
+                                {{'Registration Certificate' | translate}}</button>
+
+                            <button mat-icon-button [style.display]="vehicleCertImageProp?.src ? 'block' : 'none'" (click)="fileInput.value='';filePaths.certificate='';clearImagesRegistration()">
+                                <mat-icon class="mb-4 grey-600-fg" >
+                                    highlight_off
+                                </mat-icon>
+                            </button>
+                        </div>
+
+                        <input [accept]="'image/*'" id="fileInput"
+                            (change)="imgChanged(fileInput.files,registrationInfoForm)" fxHide type="file" #fileInput>
+                        <div *ngIf="filePaths?.certificate; else form_value_cer" class="pt-4 primary-300-fg font-size-12 text-left pr-36 break-word">
+                            <a target="_blank" [href]="filePaths?.certificate">View Registration Certificate</a>
+                        </div>
+                        <ng-template #form_value_cer>
+                            <div [style.visibility]="registrationInfoForm?.value?.registrationCertAttachment?.fileName ? 'visible' : 'hidden'"
+                            class="pt-4 primary-300-fg font-size-12 text-left pr-36">
+                            {{registrationInfoForm?.value?.registrationCertAttachment?.fileName}}
+                        </div>
+                        </ng-template> 
+                    </div>
+                </div>
+
+                <div fxLayout="column" fxLayout.gt-sm="row" class="pt-sm-12" fxFlex="100">
+                    <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" class="icon-center">
+                        <mat-label #registeredDate translate>Registered Date</mat-label>
+                        <input matInput (keyup)="forceValidation('regDate',registrationInfoForm)"
+                            [matDatepicker]="regDate" formControlName="regDate" autocomplete="off">
+                        <mat-datepicker-toggle matSuffix [for]="regDate"></mat-datepicker-toggle>
+                        <mat-datepicker #regDate></mat-datepicker>
+                        <mat-error>
+                            <app-validation [labelName]='registeredDate.innerText'
+                                [validationControl]="registrationInfoForm.controls.regDate" [doValidate]="validate">
+                            </app-validation>
+                        </mat-error>
+                    </mat-form-field>
+
+
+                    <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50"
+                        class="pl-sm-20 icon-center">
+                        <mat-label #regExpiryDate translate>Registration Expiry Date</mat-label>
+                        <input matInput (keyup)="forceValidation('regExpDate',registrationInfoForm)"
+                            [matDatepicker]="regExpDate" formControlName="regExpDate"
+                            [min]="registrationInfoForm.controls.regDate.value" autocomplete="off">
+                        <mat-datepicker-toggle matSuffix [for]="regExpDate"></mat-datepicker-toggle>
+                        <mat-datepicker #regExpDate></mat-datepicker>
+                        <mat-error>
+                            <app-validation [labelName]='regExpiryDate.innerText'
+                                [validationControl]="registrationInfoForm.controls.regExpDate" [doValidate]="validate">
+                            </app-validation>
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+
+                <div fxLayout="row" fxLayoutAlign="end center" class="mt-16">
+                    <!-- <button #resetButtonStepper mat-raised-button id="resetButtonStepper" (click)="onCancel()"
+                        type="reset" class="text-uppercase mr-12">
+                        {{'Cancel' | translate}}
+                    </button> -->
+                    <button  mat-raised-button matStepperPrevious type="button" class="text-uppercase mr-12">{{'Previous' | translate}}</button>
+                    <button mat-raised-button matStepperNext type="button" color="accent" class="text-uppercase">
+                        {{'Next' | translate}}
+                    </button>
+                </div>
+            </form>
+        </mat-step>
+
+        <mat-step [stepControl]="additionalDetailsForm" [optional]="additionalDetailsForm.valid">
+            <form fxLayout="column" [formGroup]="additionalDetailsForm" #additionalDataForm="ngForm"  autocomplete="off">
+                <ng-template matStepLabel><span translate>Additional Details</span></ng-template>
+                <!-- <div class="pt-24 font-size-18"><span translate>Additional Details</span></div> -->
+                <div fxLayout="column" fxLayout.gt-sm="row" class="pt-24" fxFlex="100">
+                    <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+                        <mat-label #chassisNumber translate>Chassis Number</mat-label>
+                        <input (keyup)="preventSpace($event,'additionalDetailsForm','chassisNumber')" (blur)="trimTextBoxSpaces('additionalDetailsForm','chassisNumber')" formControlName="chassisNumber" matInput>
+                        <mat-error>
+                            <app-validation [labelName]='chassisNumber.innerText'
+                                [validationControl]="additionalDetailsForm.controls.chassisNumber"
+                                [doValidate]="validate">
+                            </app-validation>
+                        </mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50"
+                        class="pl-sm-20">
+                        <mat-label #engineNumber translate>Engine Number</mat-label>
+                        <input (keyup)="preventSpace($event,'additionalDetailsForm','engineNumber')" (blur)="trimTextBoxSpaces('additionalDetailsForm','engineNumber')" formControlName="engineNumber" matInput>
+                        <mat-error>
+                            <app-validation [labelName]='engineNumber.innerText'
+                                [validationControl]="additionalDetailsForm.controls.engineNumber"
+                                [doValidate]="validate">
+                            </app-validation>
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+
+                <div fxLayout="column" fxLayout.gt-sm="row" class="pt-sm-12" fxFlex="100">
+                    <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" class="icon-center">
+                        <mat-label #manufactureYearr translate>Manufacture Year</mat-label>
+                        <input matInput (keyup)="forceValidation('manufactureYear',additionalDetailsForm)" (blur)="trimTextBoxSpaces('registrationInfoForm','regDate')"
+                            [matDatepicker]="manufactureYear" formControlName="manufactureYear"
+                            [max]="registrationInfoForm.controls.regDate.value" autocomplete="off">
+                        <mat-datepicker-toggle matSuffix [for]="manufactureYear"></mat-datepicker-toggle>
+                        <mat-datepicker #manufactureYear></mat-datepicker>
+                        <mat-error>
+                            <app-validation [labelName]='manufactureYearr.innerText'
+                                [validationControl]="additionalDetailsForm.controls.manufactureYear"
+                                [doValidate]="validate">
+                            </app-validation>
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+
+                <div fxLayout="row" fxLayoutAlign="end center" class="mt-16">
+                    <!-- <button #resetButtonStepper mat-raised-button id="resetButtonStepper" (click)="onCancel()"
+                        type="reset" class="text-uppercase mr-12">
+                        {{'Cancel' | translate}}
+                    </button> -->
+                    <button  mat-raised-button matStepperPrevious type="button" class="text-uppercase mr-12">{{'Previous' | translate}}</button>
+                    <button mat-raised-button matStepperNext type="button" color="accent" class="text-uppercase">
+                        {{'Next' | translate}}
+                    </button>
+                </div>
+            </form>
+        </mat-step>
+
+        <mat-step [stepControl]="purchaseInfoForm" [optional]="purchaseInfoForm.valid">
+            <form fxLayout="column" [formGroup]="purchaseInfoForm" #purchaseForm="ngForm"  autocomplete="off">
+                <ng-template matStepLabel><span translate>Purchase Info</span></ng-template>
+                <!-- <div class="pt-24 font-size-18"><span translate>Purchase Info</span></div> -->
+                <div fxLayout="column" fxLayout.gt-sm="row" class="pt-24" fxFlex="100">
+                    <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+                        <mat-label #purchaseCost translate>Purchase Cost</mat-label>
+                        <input (keyup)="preventSpace($event,'purchaseInfoForm','purchaseCost')" (blur)="trimTextBoxSpaces('purchaseInfoForm','purchaseCost')" formControlName="purchaseCost" matInput>
+                        <mat-error>
+                            <app-validation [labelName]='purchaseCost.innerText'
+                                [validationControl]="purchaseInfoForm.controls.purchaseCost"
+                                [doValidate]="validate">
+                            </app-validation>
+                        </mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50"
+                        class="px-sm-20">
+                        <mat-label #purchaseOdometerReading translate>Purchase Odometer Reading</mat-label>
+                        <input (keyup)="preventSpace($event,'purchaseInfoForm','purchaseOdometerReading')"  (blur)="trimTextBoxSpaces('purchaseInfoForm','purchaseOdometerReading')" formControlName="purchaseOdometerReading" matInput>
+                        <mat-error>
+                            <app-validation [labelName]='purchaseOdometerReading.innerText'
+                                [validationControl]="purchaseInfoForm.controls.purchaseOdometerReading"
+                                [doValidate]="validate">
+                            </app-validation>
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+
+                <div fxLayout="column" fxLayout.gt-sm="row" class="pt-sm-12" fxFlex="100">
+                    <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" class="icon-center">
+                        <mat-label #purchasseDate translate>Purchase Date</mat-label>
+                        <input matInput (keyup)="forceValidation('purchaseDate',purchaseInfoForm)"
+                            [matDatepicker]="purchaseDate" formControlName="purchaseDate"
+                            [min]="additionalDetailsForm.controls.manufactureYear.value"
+                             autocomplete="off">
+                        <mat-datepicker-toggle matSuffix [for]="purchaseDate"></mat-datepicker-toggle>
+                        <mat-datepicker #purchaseDate></mat-datepicker>
+                        <mat-error>
+                            <app-validation [labelName]='purchasseDate.innerText'
+                                [validationControl]="purchaseInfoForm.controls.purchaseDate" [doValidate]="validate">
+                            </app-validation>
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+
+                <div fxLayout="row" fxLayoutAlign="end center" class="mt-16">
+                    <!-- <button #resetButtonStepper mat-raised-button id="resetButtonStepper" (click)="onCancel()"
+                        type="reset" class="text-uppercase mr-12">
+                        {{'Cancel' | translate}}
+                    </button> -->
+                    <button  mat-raised-button matStepperPrevious type="button" class="text-uppercase mr-12">{{'Previous' | translate}}</button>
+                    <button mat-raised-button matStepperNext type="button" color="accent" class="text-uppercase">
+                        {{'Next' | translate}}
+                    </button>
+                </div>
+            </form>
+        </mat-step>
+
+        <mat-step class="form-status">
+            <ng-template matStepLabel><span translate>Complete</span></ng-template>
+            <div fxFlex="80" class="text-center font-size-18 m-auto pt-24" translate>{{isUpdate ? 'onUpdateStaffEntries' : 'onCreateStaffEntries'}}</div>
+            <div fxFlex="80" class="text-center font-size-18 m-auto pb-20 pt-8" translate>{{isUpdate ? 'To Update Vehicle.':'To Create New Vehicle.'}}</div>
+            <div fxLayout="row" fxLayoutAlign="center center" class="mt-32 pt-24">
+                <button mat-raised-button matStepperPrevious type="submit" class="text-uppercase mr-12">{{'Previous' | translate}}</button>
+                <button mat-raised-button type="submit" class="text-uppercase" (click)="onSubmit()" color="accent">{{button | translate}}
+                </button>
+            </div>
+        </mat-step>
+    </mat-horizontal-stepper>
+</ng-template>

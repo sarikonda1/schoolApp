@@ -1,0 +1,64 @@
+<app-table [settings]="tableSettings" [closeRowForm]=closeForm [templateRef]="newClass"
+  (getTableData)='tableData($event)' (rowBasedAction)='actions($event)' (openAddForm)='openForm()'
+  (selectedRows)='selectedRows($event)' (deleteAllRows)="deleteWarning()">
+</app-table>
+
+<ng-template #newClass>
+  <form [formGroup]="classForm"  #class="ngForm">
+
+    <div fxFlexFill fxLayout="column" fxLayoutAlign="start center" fxLayout.gt-xs="row" class="pt-24">
+      <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-xs="34">
+        <mat-label translate #classReference>Class Reference</mat-label>
+        <mat-select formControlName="classReferenceTypeId" required>
+          <mat-option *ngFor="let classreference of classReferences" [value]="classreference.value">
+            {{ classreference.label }}</mat-option>
+        </mat-select>
+        <mat-error>
+          <app-validation [labelName]="classReference.innerText"
+            [validationControl]="classForm.controls.classReferenceTypeId" [doValidate]="isFormSubmitted">
+          </app-validation>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-xs="34" class="px-sm-20">
+        <mat-label translate #className>Class Name</mat-label>
+        <input (keyup)="preventSpace($event,'classForm','name')" matInput formControlName="name" required (blur)="trimTextBoxSpaces('name')" autocomplete="off" #focusField>
+        <mat-error>
+          <app-validation [labelName]="className.innerText" [validationControl]="classForm.controls.name"
+            [doValidate]="isFormSubmitted">
+          </app-validation>
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-xs="32">
+        <mat-label translate #code>Code</mat-label>
+        <input type="text" (keyup)="preventSpace($event,'classForm','code')" matInput formControlName="code" (blur)="trimTextBoxSpaces('code')" >
+        <mat-error>
+          <app-validation [labelName]="code.innerText" [validationControl]="classForm.controls.code"
+            [doValidate]="isFormSubmitted">
+          </app-validation>
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div fxFlexFill fxLayout="row" fxLayoutAlign="start center">
+      <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-xs="68" class="pr-sm-20">
+        <mat-label translate #description>Description</mat-label>
+        <textarea matInput formControlName="description" (blur)="trimTextBoxSpaces('description')"></textarea>
+        <mat-error>
+          <app-validation [labelName]="description.innerText" [validationControl]="classForm.controls.description"
+            [doValidate]="isFormSubmitted">
+          </app-validation>
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div fxLayout="row" fxLayoutAlign="end center" class="pt-16 pb-8">
+      <button class="mr-12 text-uppercase" mat-raised-button type="button" (click)="onCancel()" translate>{{'Cancel' | translate}}</button>
+      
+      <button mat-raised-button (click)="createOrUpdateClass(classForm.value)" type="submit" class="mr-12 text-uppercase theme-test" color="accent" [disabled]="isdisableBtn">{{ (showCreateBtn ? 'Create':'Update') | translate}}</button>
+
+      <button mat-raised-button (click)="createOrUpdateClass(classForm.value, true); focusField.focus()" *ngIf="showCreateBtn" type="submit" class="text-uppercase" color="primary" [disabled]="isdisableBtn">{{'Create and Continue' | translate}}</button>
+    </div>
+  </form>
+ 
+</ng-template>

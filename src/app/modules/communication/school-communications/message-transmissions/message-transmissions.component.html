@@ -1,0 +1,37 @@
+<div class="px-40">
+  <div class="mat-elevation-z8 simple-table-container radius-t-20">
+    <div fxLayout="column" fxLayout.gt-sm="row" class="p-24" *ngIf="commData">
+      <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="30">
+        <mat-label translate>Communication Type</mat-label>
+        <input matInput required [(ngModel)]="commData.communicationType" readonly>
+      </mat-form-field>
+
+      <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" class="px-sm-20">
+        <mat-label translate>Title</mat-label>
+        <input matInput required [(ngModel)]="commData.title" readonly>
+      </mat-form-field>
+
+      <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="20">
+        <mat-label translate>Status</mat-label>
+        <input matInput required [(ngModel)]="commData.communicationStatus" readonly>
+      </mat-form-field>
+
+    </div>
+    <mat-divider></mat-divider>
+  </div>
+</div>
+<mat-tab-group class="manage-institue mt-24">
+    <mat-tab label="{{'STUDENT TRANSMISSIONS' | translate}}">
+      <div>
+        <app-table [settings]='studenttabSettings' (getTableData)='tableData($event)'>
+        </app-table>
+      </div>
+    </mat-tab>
+
+    <mat-tab label="{{'STAFF TRANSMISSIONS' | translate}}">
+      <div>
+        <app-table [settings]='stafftabSettings' (getTableData)='tableStaffData($event)'>
+        </app-table>
+      </div>
+    </mat-tab>
+  </mat-tab-group>

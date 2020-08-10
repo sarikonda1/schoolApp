@@ -1,0 +1,32 @@
+<app-table [settings]="tabSettings" [closeRowForm]='closeAddPanel' (rowSelect)='onTableRowSelect($event)'
+    (rowUnselect)='onTableRowUnSelect($event)' (rowBasedAction)="rowWiseActions($event)"
+    (getTableData)='getAllCategories($event)' [templateRef]="addCategories"
+    (deleteAllRows)="deleteAll()" (selectedRows)='allRowSelectForDelete($event)' (openAddForm)="onAddFormClick()">
+</app-table>
+
+
+<ng-template #addCategories>
+    <form [formGroup]="categoryForm" (ngSubmit)="applicationCategories(categoryForm)" #appForm="ngForm">
+        <div fxFlexFill fxLayout="column" fxLayout.gt-xs="row" class="pt-24" fxLayoutAlign="center center">
+            <mat-form-field appearance="outline" fxLayout="column" fxFlex.gt-xs="50" fxFlex="100">
+                <mat-label #categoryName translate>Name</mat-label>
+                <input autocomplete="off" (keyup)="preventSpace($event,'categoryForm', 'categoryName')" matInput formControlName="categoryName" required (blur)="trimTextBoxSpaces('categoryForm', 'categoryName')">
+
+                <mat-error>
+                    <app-validation [labelName]="categoryName.innerText"
+                        [validationControl]="categoryForm.controls.categoryName"
+                        class="error-msg messages text-left text-danger" [doValidate]="validateForm">
+                    </app-validation>
+                </mat-error>
+            </mat-form-field>
+        </div>
+
+        <div fxLayout="row" fxLayoutAlign="end center" class="pt-16 pb-8">
+            <button class="mr-12 text-uppercase" mat-raised-button type="button"
+                (click)="closeAddForm()">{{'Cancel' | translate}}</button>
+            <button class="mr-12 text-uppercase" *ngIf="!updateButton" mat-raised-button color="accent"
+            [disabled]="disbleSubmitBtn">{{'Create' | translate}}</button>
+            <button class="mr-12 text-uppercase" *ngIf="updateButton" mat-raised-button color="accent">{{'Update' | translate}}</button>
+        </div>
+    </form>
+</ng-template>

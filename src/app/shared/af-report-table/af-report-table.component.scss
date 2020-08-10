@@ -1,0 +1,100 @@
+   /* #########################Table related css ############### */
+   .attendance {
+    width: 100%;
+    border-spacing: 0;
+
+    border-collapse: collapse,
+}
+
+.attendance thead {
+    background: #5f5f5f;
+    color: #fff;
+}
+
+.attendance tr th,
+.attendance tr td {
+    padding: 15px 5px;
+    text-align: center;
+    min-width: 130px;
+}
+
+.table-border.attendance tr th,
+.table-border.attendance tr td {
+    border-right: 1px solid rgba(0, 0, 0, .30);
+}
+
+.attendance tr td:not(:first-child) {
+    width: 20%;
+    word-break: break-all;
+}
+
+.attendance tr th:first-child {
+    min-width: 150px;
+    max-width: 150px;
+}
+
+.text-right {
+    text-align: right !important;
+}
+
+.b-t {
+    border-top: 1px solid rgba(0, 0, 0, .30);
+    border-collapse: collapse;
+}
+.b{
+    border: 1px solid rgba(0, 0, 0, .30);
+}
+
+.outer-line {
+    border: 1px solid rgba(0, 0, 0, .30);
+    margin: 5px 30px;
+}
+.outer-line .helper-table:first-child{
+    margin-top: 0px;
+    border-top: none;
+}
+
+.helper-table {
+    border-bottom: 1px solid rgba(0, 0, 0, .30);
+    margin-bottom: 0px;
+    margin-top: 20px;
+    padding: 9px;
+    width: 100%;
+    border-top: 1px solid rgba(0, 0, 0, .30);
+}
+
+.px-55 {
+    padding: 0px 13%;
+}
+
+.scroll-table {
+    overflow: auto;
+    overflow: overlay;
+}
+.total-table{
+    width: 100%;
+    border-top: 1px solid rgba(0, 0, 0, .30); 
+    padding: 13px;
+    margin-top: 20px;  
+}
+.total-table th:first-child{
+    text-align: left;
+    padding-left: 20px;
+    max-width: 55px;
+}
+.total-table th:last-child{
+    text-align: right;
+    padding-right: 20px;
+}
+.px-10{
+    padding: 0px 20px;
+}
+.terms {
+    padding: 20px 13% 5px;
+}
+.last-row-bg{
+    background: #039be5 !important;
+    color: white !important;
+}
+/* ######################### End Table related css ############### */
+

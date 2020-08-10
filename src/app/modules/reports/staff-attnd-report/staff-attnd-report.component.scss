@@ -1,0 +1,11 @@
+
+@import "../common-reports.scss";
+
+.scroll-tab{
+    overflow: auto;
+    overflow: overlay;
+}
+.staff-attendence th{
+min-width: 100px;
+max-width: 200px;
+}

@@ -1,0 +1,25 @@
+<div *ngIf="inputFilters?.length">
+    <form [formGroup]="inputFormGroup">
+      <div fxLayout="column" fxLayout.gt-sm="row wrap"  fxLayoutAlign="center center" class="px-24 pt-20 pb-12" >
+        <ng-container *ngFor="let filter of inputFilters; let i = index; let last = last">
+        <mat-form-field  appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="33.3"
+         [ngClass]="last ?'' : 'pr-sm-20'" *ngIf="filter?.type == 'search'">
+          <mat-label translate #reports>{{filter?.label}}</mat-label>
+          <mat-select (selectionChange)="onSelectFilter($event, filter?.label)" formControlName="{{filter?.name}}">
+            <mat-option *ngFor="let option of filter?.options" [value]="option?.value">
+              {{ option?.label }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
+      </div>
+    </form>
+    <div fxLayout="row" fxLayoutAlign="end center" class="mr-20 pb-20">
+      <button mat-raised-button translate color="primary" class="text-uppercase" (click)="reset()"
+        [disabled]="isResetDisabled">
+        Reset
+      </button>
+      <button mat-raised-button translate color="accent" class="text-uppercase ml-12" (click)="filterSearch()">
+        Search
+      </button>
+    </div>
+</div>

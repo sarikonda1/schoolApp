@@ -1,0 +1,302 @@
+<div class="px-32 pb-24">
+  <div class="mat-elevation-z8 simple-table-container radius-t-20">
+    <div class="p-24 border-bottom" id="toolbar" fxLayoutAlign="space-between center">
+      <span translate class="font-size-18 text-uppercase">SERVICE PROVIDER CONFIGURATION</span>
+      <button mat-icon-button (click)="getHelpText('Service Provider Configuration')">
+        <mat-icon>info</mat-icon>
+      </button>
+    </div>
+    <mat-accordion class="filter-accordian">
+      <mat-expansion-panel [expanded]="accordionStep" class="mobile-filter">
+        <div fxLayout.gt-sm="row" fxLayout="column" fxFlex="100">
+          <form [formGroup]="serviceProviderForm" #serviceForm="ngForm" fxLayout="column" fxFlex.gt-sm="60" fxFlex="100"
+            autocomplete="off">
+            <div fxLayout="row" fxLayoutAlign.gt-sm="center center">
+              <mat-form-field appearance="outline" fxLayout="column" fxFlexFill fxFlex="100" fxFlex.gt-sm="50"
+                class="p-20">
+                <mat-label #classId translate>Service Provider</mat-label>
+                <mat-select [disabled]="disableServiceType" formControlName="serviceProviderId"
+                  (selectionChange)="onProviderSelect($event.value)" required>
+                  <mat-option *ngFor="let provider of displayServiceProvidersList" [value]="provider.id">
+                    {{provider.name}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div *ngIf="configCode == 'Virtual Class'">
+              <p><span translate>Note: Please enter configuration information provided by Academy Front to enable Virtual Classrooms for this school.</span></p>
+              <p> <span translate>If we do not have this information please reachout to the Academy Front support for
+                assistance.</span></p>
+            </div>
+            <ng-container *ngIf="serviceConfigParams.length">
+              <div fxLayout="row wrap" fxFlex="100">
+                <ng-container *ngFor="let control of serviceConfigParams; let j=index">
+                  <mat-form-field *ngIf="control.inputType == 'Text' || control.inputType == 'Password'"
+                    appearance="outline" fxLayout="column" fxFlex="100" class="pr-sm-20">
+                    <mat-label translate>{{control.displayName}}</mat-label>
+                    <input (keyup)="preventSpaceForArray($event,serviceProviderForm.controls[control.key])"
+                      (blur)="trimTextBoxSpaces('serviceProviderForm',control.key)" matInput
+                      [required]="isFieldIsRequired(serviceProviderForm,control.key)"
+                      [type]="control.inputType.toLowerCase()" [formControlName]=control.key>
+                    <mat-error>
+                      <app-validation [labelName]="control.displayName"
+                        [validationControl]="serviceProviderForm.controls[control.key]" [doValidate]="validate">
+                      </app-validation>
+                    </mat-error>
+                  </mat-form-field>
+
+                  <div *ngIf="control.inputType == 'Radio'" fxLayout="column" fxFlex="100"
+                    fxLayoutAlign.gt-sm="center center" class="pr-sm-20 mb-12">
+                    <mat-label translate class="pb-8 pl-24">{{control.displayName}}?
+                      {{isFieldIsRequired(serviceProviderForm,control.key) ? '*' : ''}}</mat-label>
+                    <mat-radio-group class="grey-500-fg text-semibold" aria-label="Select an option"
+                      [formControlName]=control.key>
+                      <mat-radio-button class="ml-24" *ngFor="let radio of YesOrNo" [value]="radio.value">{{radio.label |
+                            translate}}</mat-radio-button>
+                    </mat-radio-group>
+                    <mat-error *ngIf="serviceProviderForm.controls[control.key]?.dirty">
+                      <app-validation [labelName]='control.displayName'
+                        [validationControl]="serviceProviderForm.controls[control.key]" [doValidate]="validate">
+                      </app-validation>
+                    </mat-error>
+                  </div>
+                  <div *ngIf="control.inputType == 'Color'" fxLayout="column" fxFlex="100" class="pr-sm-20 pb-20"
+                    fxLayoutAlign.gt-sm="center center">
+                    <mat-label class="pr-8 pb-4" translate>{{control.displayName}}
+                      {{isFieldIsRequired(serviceProviderForm,control.key) ? '*' : ''}}</mat-label>
+                    <fuse-material-color-picker *ngIf="colorCode != ''" [color]="colorCode"
+                      [(selectedClass)]="colorCode" (colorChanged)="onColorChanged($event,control.key)"
+                      [formControlName]="control.key">
+                    </fuse-material-color-picker>
+
+                    <fuse-material-color-picker *ngIf="colorCode == ''"
+                      (colorChanged)="onColorChanged($event,control.key)" [formControlName]="control.key">
+                    </fuse-material-color-picker>
+                  </div>
+                  <div *ngIf="control.inputType == 'HandlingFee'" fxLayout="column" fxFlex="100"
+                    fxLayoutAlign="center center" class="pr-sm-20 mb-12">
+                    <mat-label translate class="pb-8 pl-24">{{control.displayName}}?
+                      {{isFieldIsRequired(serviceProviderForm,control.key) ? '*' : ''}}</mat-label>
+                    <mat-radio-group class="grey-500-fg text-semibold" aria-label="Select an option"
+                      [formControlName]=control.key>
+                      <mat-radio-button class="ml-24" *ngFor="let handlingFeeMethod of handlingMethodOptions"
+                        [value]="handlingFeeMethod.value">{{handlingFeeMethod.label |
+                            translate}}</mat-radio-button>
+                    </mat-radio-group>
+                    <mat-error>
+                      <app-validation [labelName]='control.displayName'
+                        [validationControl]="serviceProviderForm.controls[control.key]" [doValidate]="validate">
+                      </app-validation>
+                    </mat-error>
+                  </div>
+                  <ng-container *ngIf="control.inputType == 'tax'">
+                    <div formArrayName="tax" fxLayout="column" fxLayout.gt-sm="row" fxFlex="100"
+                      *ngFor="let itemrow of addNewRowTaxform?.controls; let i=index,let f = first,let l = last">
+                      <ng-container [formGroupName]="i">
+                        <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="30"
+                          class="pr-sm-20">
+                          <mat-label #taxName translate>Tax Name</mat-label>
+                          <input matInput formControlName="name"
+                            (keyup)="preventSpaceForArray($event,itemrow?.controls?.name)"
+                            (blur)="trimSpaces(itemrow,'name')">
+                          <mat-error>
+                            <app-validation [labelName]='taxName.innerText'
+                              [validationControl]="itemrow?.controls?.name" [doValidate]="validate">
+                            </app-validation>
+                          </mat-error>
+                        </mat-form-field>
+                        <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="30"
+                          class="pr-sm-20">
+                          <mat-label #tax translate>Tax %</mat-label>
+                          <input matInput (blur)="trimSpaces(itemrow,'percentage')"
+                            (keyup)="preventSpaceForArray($event,itemrow?.controls?.percentage)"
+                            formControlName="percentage">
+                          <mat-error>
+                            <app-validation [labelName]='tax.innerText'
+                              [validationControl]="itemrow?.controls?.percentage" [doValidate]="validate">
+                            </app-validation>
+                          </mat-error>
+                        </mat-form-field>
+                        <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="30"
+                          class="pr-sm-12">
+                          <mat-label #cal translate>Calculate on</mat-label>
+                          <mat-select formControlName="applyOn">
+                            <mat-option *ngIf="taxCalculationOnOptions.length" [value]="null"></mat-option>
+                            <mat-option *ngFor="let taxCalculationOnOption of taxCalculationOnOptions"
+                              [value]="taxCalculationOnOption.value">
+                              {{taxCalculationOnOption.label | translate}}</mat-option>
+                          </mat-select>
+                          <mat-error>
+                            <app-validation [labelName]='cal.innerText' [validationControl]="itemrow?.controls?.applyOn"
+                              [doValidate]="validate"></app-validation>
+                          </mat-error>
+                        </mat-form-field>
+                        <div fxLayout="row" fxFlex="100" fxFlex.gt-sm="10" class="pt-12">
+                          <button *ngIf="i > 0 || addNewRowTaxform.controls.length > 1" mat-icon-button type="button"
+                            class="red-400-fg" (click)="deleteRow(i)">
+                            <mat-icon>delete</mat-icon>
+                          </button>
+                          <button *ngIf="l"
+                            [disabled]="!(serviceProviderForm.get('tax').valid && itemrow?.controls?.applyOn.value)"
+                            class="mr-8" mat-mini-fab type="button" (click)="addNewRow()">
+                            <mat-icon>add</mat-icon>
+                          </button>
+                        </div>
+                      </ng-container>
+                    </div>
+                  </ng-container>
+                </ng-container>
+              </div>
+              <div fxLayout="row" fxLayoutAlign="end center" class="p-24">
+                <button class="mr-12 text-uppercase" mat-raised-button type="button"
+                  (click)="closePanel()">{{'Cancel' | translate}}</button>
+
+                <button [disabled]="disbleSubmitBtn" (click)="addServiceConfig()" mat-raised-button type="submit"
+                  class="text-uppercase" color="accent">{{(isUpdateData ? 'Update':'Submit') | translate}}</button>
+              </div>
+            </ng-container>
+
+          </form>
+          <div fxLayout="column" fxFlex.gt-sm="40" fxFlex="100" class="p-32">
+
+          </div>
+        </div>
+      </mat-expansion-panel>
+      <mat-expansion-panel [expanded]="detailsShow" class="mobile-filter mt-0">
+        <div fxLayout="row" fxLayoutAlign="end center" class="pt-16">
+          <button mat-button [disabled]="!isEditDisabled" (click)="editConfig()">
+            <mat-icon class="grey-600-fg">edit</mat-icon>
+          </button>
+          <button mat-raised-button class="text-uppercase mr-8" (click)="changeStatus(isEditDisabled)"><span
+              translate>{{isEditDisabled ? 'Disabled':'Enable'}}</span></button>
+          <button mat-raised-button (click)="closePanel()" color="primary" class="text-uppercase"><span
+              translate>Close</span></button>
+        </div>
+
+        <app-table [settings]="tabSettings" [sticky]="false"></app-table>
+      </mat-expansion-panel>
+    </mat-accordion>
+
+    <div fxLayout.lt-sm="column" fxLayout="row" fxLayoutAlign="center start" class="mt-20 pb-24 dt">
+      <div fxLayout="column" fxFlexFill fxFlex.lt-sm="100" fxFlex="30" class="border-right config-card"
+        fxLayoutAlign="start center">
+        <div class="text-uppercase p-20 font-size-20 stickyx text-center w-100-p" translate>Payment</div>
+        <div (click)="openForm('Online')" *ngIf="isAvailableNewMethod('Online')"
+          class="h-160 w-160 text-center mb-20 grey-200-bg border border-dashed" fxLayout="column"
+          fxLayoutAlign="center center">
+          <div class="font-size-40">
+            <mat-icon class="s-56">add_circle</mat-icon>
+          </div>
+          <div class="h3 secondary-text font-weight-500" translate>Add Configuration</div>
+        </div>
+        <mat-card (click)="viewDetails(payment.code)" *ngFor="let payment of paymentProvidersList"
+          class="h-160 w-160 text-center mb-20 grey-200-bg border radius-5" fxLayoutAlign="center center">
+
+          <mat-card-content fxLayout="column">
+            <div class="font-size-40 mb-4">
+
+            </div>
+            <div class="h3 green-200-bg px-12 py-4 radius-5 green-fg status" *ngIf="payment?.isActive" translate>Active
+            </div>
+            <div *ngIf="!payment?.isActive" class="h3 red-fg red-200-bg px-12 py-4 radius-5 status" translate>InActive
+            </div>
+            <div class="h3 secondary-text font-weight-500 pt-8">
+              <img *ngIf="payment.name.toLowerCase() === 'razorpay'" src="https://razorpay.com/assets/razorpay-logo.svg"
+                [alt]="payment.name" />
+              <img *ngIf="payment.name.toLowerCase() === 'paypal'"
+                src="https://www.paypalobjects.com/webstatic/mktg/Logo/pp-logo-100px.png" [alt]="payment.name" />
+
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+      </div>
+      <div fxLayout="column" fxFlexFill fxFlex.lt-sm="100" fxFlex="30" class="border-right config-card"
+        fxLayoutAlign="start center">
+        <div class="text-uppercase p-20 font-size-20 stickyx text-center w-100-p" translate>Email</div>
+        <div *ngIf="isAvailableNewMethod('Mail')" (click)="openForm('Mail')"
+          class="h-160 w-160 text-center mb-20 grey-200-bg border border-dashed" fxLayout="column"
+          fxLayoutAlign="center center">
+          <div class="font-size-40 ">
+            <mat-icon class="s-56">add_circle</mat-icon>
+          </div>
+          <div class="h3 secondary-text font-weight-500" translate>Add Configuration</div>
+        </div>
+        <div *ngIf="mailProviders.length">
+          <mat-card *ngFor="let mailProviderItem of mailProviders" (click)="viewDetails(mailProviderItem.code)"
+            class="h-160 w-160 text-center mb-20 grey-200-bg radius-5" fxLayoutAlign="center center">
+            <mat-card-content fxLayout="column" fxLayoutAlign="center center">
+              <mat-icon class="grey-600-fg font-size-40 mb-16 w-48">email</mat-icon>
+              <div class="h3 green-200-bg px-12 py-4 radius-5 green-fg status" *ngIf="mailProviderItem?.isActive"
+                translate>Active
+              </div>
+              <div *ngIf="!mailProviderItem?.isActive" class="h3 red-200-bg px-12 py-4 radius-5 red-fg status"
+                translate>InActive
+              </div>
+              <div class="h3 secondary-text font-weight-500 pt-8">{{mailProviderItem.name}} </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </div>
+      <div fxLayout="column" fxFlexFill fxFlex.lt-sm="100" fxFlex="30" class="border-right config-card" fxLayoutAlign="start center">
+        <div class="text-uppercase p-20 font-size-20 stickyx text-center w-100-p" translate>SMS</div>
+        <div *ngIf="isAvailableNewMethod('SMS')" (click)="openForm('SMS')"
+          class="h-160 w-160 text-center mb-20 grey-200-bg border border-dashed" fxLayout="column"
+          fxLayoutAlign="center center">
+          <div class="font-size-40 ">
+            <mat-icon class="s-56">add_circle</mat-icon>
+          </div>
+          <div class="h3 secondary-text font-weight-500" translate>Add Configuration</div>
+        </div>
+        <div>
+          <mat-card *ngFor="let smsProviderItem of smsProviders" (click)="viewDetails(smsProviderItem.code)"
+            class="example-card h-160 w-160 text-center mb-20 grey-200-bg radius-5" fxLayoutAlign="center center">
+            <mat-card-content fxLayout="column" fxLayoutAlign="center center">
+              <!--<mat-icon class="grey-600-fg font-size-40 mb-16 w-48">sms</mat-icon>-->
+              <div class="h3 green-fg green-200-bg px-12 py-4 radius-5 green-fg status"
+                *ngIf="smsProviderItem?.isActive" translate>Active</div>
+              <div *ngIf="!smsProviderItem?.isActive" class="h3 red-200-bg px-12 py-4 radius-5 red-fg status" translate>
+                InActive
+              </div>
+              <div class="h3 secondary-text font-weight-500 pt-8">
+                <img *ngIf="smsProviderItem.name.toLowerCase() === 'msg91'"
+                  src="https://msg91.com/wp-content/themes/msg91/images/msg-logo-blue.svg"
+                  [alt]="smsProviderItem.name" />
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+        </div>
+      </div>
+
+      <div fxLayout="column" fxFlexFill fxFlex.lt-sm="100" fxFlex="30" class="config-card"
+        fxLayoutAlign="start center">
+        <div class="text-uppercase px-20 pb-12 font-size-20 stickyx text-center w-100-p " translate>Virtual Class Rooms</div>
+        <div *ngIf="isAvailableNewMethod('Virtual Class')" (click)="openForm('Virtual Class')"
+          class="h-160 w-160 text-center mb-20 grey-200-bg border border-dashed" fxLayout="column"
+          fxLayoutAlign="center center">
+          <div class="font-size-40 ">
+            <mat-icon class="s-56">add_circle</mat-icon>
+          </div>
+          <div class="h3 secondary-text font-weight-500" translate>Add Configuration</div>
+        </div>
+        <div *ngIf="classRoomProviders.length">
+          <mat-card *ngFor="let classRoomProviderItem of classRoomProviders"
+            (click)="viewDetails(classRoomProviderItem.code)" class="h-160 w-160 text-center mb-20 grey-200-bg radius-5"
+            fxLayoutAlign="center center">
+            <mat-card-content fxLayout="column" fxLayoutAlign="center center">
+              <mat-icon class="grey-600-fg font-size-40 mb-16 w-48">class</mat-icon>
+              <div class="h3 green-200-bg px-12 py-4 radius-5 green-fg status" *ngIf="classRoomProviderItem?.isActive"
+                translate>Active
+              </div>
+              <div *ngIf="!classRoomProviderItem?.isActive" class="h3 red-200-bg px-12 py-4 radius-5 red-fg status"
+                translate>InActive
+              </div>
+              <div class="h3 secondary-text font-weight-500 pt-8">{{classRoomProviderItem.name}} </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

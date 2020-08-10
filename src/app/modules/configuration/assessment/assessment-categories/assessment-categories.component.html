@@ -1,0 +1,58 @@
+<app-table [settings]="tabSettings" (getTableData)='getTableDetails($event)' (rowBasedAction)="rowWiseActions($event)"
+    [closeAddForm]="closeAddPanel" (openAddForm)="onAddFormClick()" [newFilterbuttonsDisable]="buttonDisable"
+    [closeRowForm]='closeAddPanel' [templateRef]="addAsssementCategoriesRef"></app-table>
+
+<ng-template #addAsssementCategoriesRef>
+    <form [formGroup]="assessmentSubCatryForm" (ngSubmit)="submitAssesmentForm(assessmentSubCatryForm)"
+        #assessmentForm="ngForm" fxLayout="column">
+        <div fxLayout="row wrap" fxFlex="100" class="pt-24">
+            <!-- <div fxLayout="row" fxFlex="100" fxFlex.gt-xs="46" class="mt-12"> -->
+            <mat-form-field appearance="outline" class="pr-sm-20" fxLayout="column" fxFlex="100" fxFlex.gt-xs="50">
+                <mat-label #assessmentCategory translate>assessmentcategory</mat-label>
+                <input (keyup)="preventSpace($event,'assessmentSubCatryForm','name')" matInput formControlName="name"
+                    (blur)="trimTextBoxSpaces('assessmentSubCatryForm','name')" autocomplete="off" required>
+                <mat-error>
+                    <app-validation [labelName]='assessmentCategory.innerText'
+                        [validationControl]="assessmentSubCatryForm.controls.name"
+                        [doValidate]="assessmentCategoryFormSubmitted">
+                    </app-validation>
+                </mat-error>
+            </mat-form-field>
+            <!-- </div> -->
+            <div formArrayName="assessmentSubCategorys"
+                *ngFor="let itemrow of addNewRowAssSubCatryform.controls; let i=index ; let l= last; let f= last" fxLayout="row wrap" fxFlex="100" fxFlex.gt-xs="50">
+                <ng-container [formGroupName]="i">
+                    <mat-form-field appearance="outline" class="pr-sm-10" fxLayout="column" fxFlex="74">
+                        <mat-label for="form-{{i}}" #assessmentSubCategory translate>assessmentsubcategory</mat-label>
+                        <input #myInput matInput id="form-{{i}}" (keyup)="preventSpaceForArray($event, itemrow?.controls?.name)" autocomplete="off" (blur)="preventSpaceForArray($event, itemrow?.controls?.name)"
+                            formControlName="name" (ngModelChange)="checkLength(itemrow,i)">
+                        <mat-error>
+                            <app-validation [labelName]='myInput.innerText' [validationControl]="itemrow.controls.name"
+                                 [doValidate]="true">
+                            </app-validation>
+                        </mat-error>
+                    </mat-form-field>
+                    <div fxLayout="row" fxFlex="26" class="pt-12">
+                        <button *ngIf="addNewRowAssSubCatryform.controls?.length > 1" mat-icon-button type="button"
+                            (click)="deleteRow(assessmentSubCatryForm,i)">
+                            <mat-icon aria-label="icon-button with a add delete" class="red-400-fg">delete</mat-icon>
+                        </button>
+                        <button class="ml-12" mat-mini-fab type="button" [disabled]="!itemrow.controls.name?.valid || !itemrow.value.name" (click)="addNewRow()" *ngIf="l">
+                            <mat-icon aria-label="icon-button with a add icon">add</mat-icon>
+                        </button>                                        
+                    </div>
+
+                </ng-container>
+            </div>
+
+        </div>
+        <div fxLayout="row" fxLayoutAlign="end center" class="pt-16 pb-8">
+            <button class="mr-12 text-uppercase" mat-raised-button type="reset" (click)="cancel()">
+                {{'cancel' | translate}}</button>
+            <button mat-raised-button type="submit" [disabled]="disbleSubmitBtn" class="text-uppercase" color="accent"
+                *ngIf="isCreate">{{'create' | translate}}</button>
+            <button mat-raised-button type="submit" [disabled]="disbleUpdateBtn" class="text-uppercase" color="accent"
+                *ngIf="isUpdate">{{'update' | translate}}</button>
+        </div>
+    </form>
+</ng-template>

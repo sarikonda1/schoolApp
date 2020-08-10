@@ -1,0 +1,68 @@
+<div class="mat-elevation-z8 simple-table-container radius-t-20 mx-40 mb-20">
+    <app-table [settings]="tabSettings" [closeRowForm]='closeAddPanel' (rowBasedAction)="rowWiseActions($event)"
+    (getTableData)='getAllLicense($event)' [templateRef]="addLicense" (openAddForm)="onAddFormClick()">
+  </app-table>
+  
+</div>
+
+
+<ng-template #addLicense>
+  <form [formGroup]="licenseForm" (ngSubmit)="saveInstituionLicense(licenseForm)" #appForm="ngForm">
+    <div fxFlexFill fxLayout="column" fxLayout.gt-xs="row" class="pt-24">
+      <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex.gt-xs="34" fxFlex="100">
+        <mat-label #noSchool translate>Number Of Schools</mat-label>
+        <input (keyup)="preventSpace($event,'licenseForm','noOfSchools')" matInput formControlName="noOfSchools" required autocomplete="off">
+
+        <mat-error>
+          <app-validation [labelName]="noSchool.innerText" [validationControl]="licenseForm.controls.noOfSchools"
+            [doValidate]="isValidate">
+          </app-validation>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field fxFlexFill appearance="outline" fxLayout="column" class="px-sm-20" fxFlex.gt-xs="32" fxFlex="100">
+        <mat-label #amount translate>Amount</mat-label>
+        <input (keyup)="preventSpace($event,'licenseForm','billingAmount')" matInput formControlName="billingAmount" required autocomplete="off">
+        <mat-error>
+          <app-validation [labelName]="amount.innerText" [validationControl]="licenseForm.controls.billingAmount"
+            [doValidate]="isValidate">
+          </app-validation>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex.gt-xs="34" fxFlex="100" class="icon-center">
+        <mat-label #date translate>Start Date</mat-label>
+        <input matInput (keyup)="forceValidation('billingStartDate',licenseForm)" [min]="minDate"
+          [matDatepicker]="start_date" required formControlName="billingStartDate">
+        <mat-datepicker-toggle matSuffix [for]="start_date"></mat-datepicker-toggle>
+        <mat-datepicker #start_date></mat-datepicker>
+        <mat-error>
+          <app-validation [labelName]="date.innerText" [validationControl]="licenseForm.controls.billingStartDate"
+            [doValidate]="isValidate">
+          </app-validation>
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div fxFlexFill fxLayout="column" fxLayout.gt-xs="row">
+      <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex.gt-xs="34" fxFlex="100">
+        <mat-label #billingType translate>Billing Cycle</mat-label>
+        <mat-select name="billingType" formControlName="billingTypeId" required>
+          <mat-option *ngFor="let license of commonViewModel" [value]="license.value">
+            {{ license.label }}</mat-option>
+        </mat-select>
+        <mat-error>
+          <app-validation [labelName]='billingType.innerText' [validationControl]="licenseForm.controls.billingTypeId"
+            [doValidate]="isValidate">
+          </app-validation>
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div fxLayout="row" fxLayoutAlign="end center" class="mt-sm-16">
+      <button class="mr-12 text-uppercase" mat-raised-button type="button" (click)="closeAddForm()">{{'Cancel' | translate}}</button>
+      <button class="mr-12 text-uppercase" mat-raised-button color="accent" type="submit"
+        [disabled]="disableSubmitBtn">{{'Create' | translate}}</button>
+    </div>
+  </form>
+</ng-template>

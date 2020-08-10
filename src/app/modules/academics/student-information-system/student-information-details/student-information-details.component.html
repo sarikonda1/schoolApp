@@ -1,0 +1,166 @@
+<div class="content p-sm-40">
+  <div fxLayout="row" fxLayoutAlign="space-between center " class="px-20 pb-8">
+    <div class="ml-20 p-8 text-uppercase font-size-18" translate>studentDetails</div>
+    <div>
+      <button mat-raised-button color="primary" translate (click)="back()" class="text-uppercase">{{'Back' | translate}}</button>
+    </div>
+  </div>
+
+  <div class="w-100-p mat-elevation-z2 simple-table-container radius-20 mb-20">
+    <!-- <mat-divider></mat-divider> -->
+    <form [formGroup]="dropoutForm" *ngIf="isDropoutOpen" class="px-sm-32"
+      [@animate]="{value:'*',params:{delay:'100ms',y:'-80px'}}">
+      <div fxFlexFill fxLayout="column" fxLayout.gt-sm="row" class="pt-24">
+        <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+          <mat-label #action translate>Action</mat-label>
+          <mat-select formControlName="studentActionTypeId" required>
+            <mat-option *ngFor="let action of dropoutActionTypeList" [value]="action.id">{{action.name}}
+            </mat-option>
+          </mat-select>
+          <mat-error>
+            <app-validation [labelName]='action.innerText'
+              [validationControl]="dropoutForm.controls.studentActionTypeId" [doValidate]="isValidate">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="pl-sm-20" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+          <mat-label #reason translate>Reason</mat-label>
+          <input matInput formControlName="details" (keyup)="preventSpace($event,'dropoutForm','details')"
+            (blur)="trimTextBoxSpaces('dropoutForm','details')" required>
+          <mat-error>
+            <app-validation [labelName]="reason.innerText" [validationControl]="dropoutForm.controls.details"
+              [doValidate]="isValidate">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div fxLayout="row" fxLayoutAlign="end start" class="mb-32 mt-12">
+        <button mat-raised-button type="reset" (click)="dropoutForm.reset();isDropoutOpen=false" class="text-uppercase">
+          {{'Cancel' | translate}}
+        </button>
+        <button mat-raised-button type="submit" (click)="onSubmitDropout()" color="accent" class="text-uppercase ml-20">
+          {{'Submit' | translate}}
+        </button>
+      </div>
+    </form>
+
+    <form [formGroup]="studentRequestForm" *ngIf="isStudentRequestOpen" class="px-sm-32"
+      [@animate]="{value:'*',params:{delay:'100ms',y:'-80px'}}">
+      <div fxFlexFill fxLayout="column" fxLayout.gt-sm="row" class="pt-24" fxLayoutAlign="start center">
+        <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+          <mat-label #type translate>Request Type</mat-label>
+          <mat-select required formControlName="requestTypeId">
+            <mat-option *ngFor="let type of requestTypeList" [value]="type.id">{{type.name}}
+            </mat-option>
+          </mat-select>
+          <mat-error>
+            <app-validation [labelName]='type.innerText' [validationControl]="studentRequestForm.controls.requestTypeId"
+              [doValidate]="isValidate">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+
+
+        <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" class="pl-sm-24 pb-sm-20">
+          <div fxLayout="row" fxLayoutAlign="start center">
+            <button mat-raised-button color="primary" type="button" (click)="image.value='';image.click()">{{'Upload File' | translate}}</button>
+            <button *ngIf="studentRequestForm.value?.attachment?.fileName" mat-icon-button type="button">
+              <mat-icon class="mb-4 grey-600-fg" (click)="image.value='';clearImages()">
+                highlight_off</mat-icon>
+            </button>
+          </div>
+          <input [accept]="AcceptImagesApplicationType" id="image" (change)="imgChanged(image.files)" fxHide type="file"
+            #image>
+          <div [style.visibility]="studentRequestForm?.value?.attachment?.fileName ? 'visible' : 'hidden'"
+            class="pt-4 primary-300-fg font-size-12 text-left pr-36">
+            {{studentRequestForm?.value?.attachment?.fileName}}
+          </div>
+        </div>
+      </div>
+      <div fxFlexFill fxLayout="column" class="pt-12">
+        <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" class="reject-comment">
+          <mat-label translate #reasonn>Request Notes</mat-label>
+          <textarea (keyup)="preventSpace($event,'studentRequestForm','requestNote')" (blur)="trimTextBoxSpaces('studentRequestForm','requestNote')"
+            matInput formControlName="requestNote" placeholder="Leave a comment"></textarea>
+          <mat-error>
+            <app-validation [labelName]='reasonn.innerText'
+              [validationControl]="studentRequestForm.controls.requestNote" [doValidate]="isValidate">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+      </div>
+      <div fxLayout="row" fxLayoutAlign="end center" class="mb-32 mt-12">
+        <button mat-raised-button type="reset" (click)="studentRequestForm.reset();isStudentRequestOpen=false"
+          class="text-uppercase">
+          {{'Cancel' | translate}}
+        </button>
+        <button mat-raised-button (click)="onSubmitRequest()" type="submit" color="accent" class="text-uppercase ml-20">
+          {{'Submit' | translate}}
+        </button>
+      </div>
+    </form>
+    <div *ngIf="isUpdateSiblingOpen" [@animate]="{value:'*',params:{delay:'100ms',y:'-80px'}}">
+      <app-student-sibling [currentStudentId]="studentId" (siblingIds)="siblingsDetails($event)"></app-student-sibling>
+      <div fxLayout="row" fxLayoutAlign="end center" class="m-20">
+        <button mat-raised-button type="button" class="text-uppercase mx-16" (click)="onSiblingCancel()">
+          {{'Cancel' | translate}}
+        </button>
+        <button mat-raised-button type="button" color="accent" class="text-uppercase" (click)="updateSiblingsSubmit()"
+          [disabled]="siblingIds == undefined || siblingIds.length==0">
+          {{'Update' | translate}}
+        </button>
+      </div>
+
+    </div>
+    <mat-divider *ngIf="studentSettings()"></mat-divider>
+    <div fxLayout.gt-sm="row" fxLayout="column" fxLayoutAlign="space-between start" class="p-24">
+      <div fxLayout="column" fxFlex="60">
+        <div fxLayout="row" fxLayoutAlign="center start">
+          <div class="profile-image border m-12 radius-10" fxLayout="column">
+            <img *ngIf="profileImage" [src]="profileImage ? profileImage : ''" class="w-200 h-200 radius-10"
+              alt="No Image" />
+            <div *ngIf="!profileImage" fxLayoutAlign="center center" class="w-200 h-200">No Image</div>
+          </div>
+
+          <div fxLayout="column" fxFlex="100">
+            <div class="h2 primary-900-fg-custom mb-16 break-word">{{applicantInfo?.studentName}}</div>
+            <div fxLayout="row" fxLayoutAlign="start center">
+              <div class="w-140 py-4 primary-300-fg" translate>Admission Number</div> : <div class="ml-24 break-word">
+                {{applicantInfo?.admissionNumber ? applicantInfo.admissionNumber : "-"}}</div>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="start center">
+              <div class="w-140 py-4 primary-300-fg" translate>mobilenumber</div> : <div class="ml-24 break-word">
+                {{applicantInfo?.studentDetails?.mobileTel ? applicantInfo?.studentDetails?.mobileTel : "-"}}</div>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="start center">
+              <div class="w-140 py-4 primary-300-fg" translate>email</div> : <div class="ml-24 break-word">
+                {{applicantInfo?.studentDetails?.email1 ? applicantInfo?.studentDetails?.email1 : "-"}}</div>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="start center">
+              <div class="w-140 py-4 primary-300-fg" translate>Class</div> : <div class="ml-24 break-word">
+                {{applicantInfo?.className ? applicantInfo?.className : "-"}}</div>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="start center">
+              <div class="w-140 py-4 primary-300-fg" translate>status</div> : <div class="ml-24 break-word">
+                {{ applicantInfo?.statusName ? applicantInfo?.statusName  : "-"}}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div fxLayout="column" class="mr-sm-32">
+        <button mat-mini-fab [matMenuTriggerFor]="moreMenu" aria-label="More" (click)="$event.stopPropagation();" [disabled]="isUpdateSiblingOpen || isStudentRequestOpen || isDropoutOpen">
+          <mat-icon>more_vert</mat-icon>
+        </button>
+        
+      </div>
+    </div>
+  </div>
+  <mat-menu #moreMenu="matMenu">
+    <button mat-menu-item aria-label="remove" *ngFor="let operation of operations"
+      (click)="actions(operation.name)">{{operation.name}}
+    </button>
+  </mat-menu>
+  <app-student-details [studentDetails]="applicantInfo"></app-student-details>
+</div>

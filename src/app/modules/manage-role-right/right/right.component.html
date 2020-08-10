@@ -1,0 +1,100 @@
+<app-table [settings]="tableSettings" [closeRowForm]=closeForm [templateRef]="newRight"
+  (getTableData)='tableData($event)' (openAddForm)='openForm()' (rowBasedAction)='actions($event)'>
+</app-table>
+
+
+<ng-template #newRight>
+  <form [formGroup]="rightForm" (ngSubmit)="createOrUpdateRight(rightForm.value)" #right="ngForm">
+
+    <div fxFlexFill fxLayout="column" fxLayout.gt-sm="row" class="pt-24" fxLayoutAlign="center center">
+      <mat-form-field appearance="outline" fxFlex.gt-sm="35" fxLayout="column" fxFlex="100" class="pr-sm-20"
+        fxLayout="column">
+        <mat-label translate #module>Module</mat-label>
+        <mat-select required placeholder="Module" formControlName="moduleId">
+          <mat-option *ngFor="let module of modules" [value]="module.value">
+            {{ module.label }}</mat-option>
+        </mat-select>
+        <mat-error>
+          <app-validation [labelName]="module.innerText" [validationControl]="rightForm.controls.moduleId"
+            [doValidate]="isFormSubmitted">
+          </app-validation>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" fxFlex.gt-sm="35" fxLayout="column" fxFlex="100" class="pr-sm-20"
+        fxLayout="column">
+        <mat-label translate #role>Role</mat-label>
+        <mat-select required placeholder="Role" formControlName="roleId">
+          <mat-option *ngFor="let role of roles" [value]="role.value">
+            {{ role.label }}</mat-option>
+        </mat-select>
+        <mat-error>
+          <app-validation [labelName]="role.innerText" [validationControl]="rightForm.controls.roleId"
+            [doValidate]="isFormSubmitted">
+          </app-validation>
+        </mat-error>
+      </mat-form-field>
+    </div>
+    <div fxFlexFill fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign="center center">
+      <mat-form-field appearance="outline" fxFlex.gt-sm="35" fxLayout="column" fxFlex="100" class="pr-sm-20"
+        fxLayout="column">
+        <mat-label translate #parentRight>Parent Right</mat-label>
+        <mat-select required placeholder="Parent Right" formControlName="parentRightId">
+          <mat-option *ngFor="let parentRight of parentRights" [value]="parentRight.value">
+            {{ parentRight.label }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="pr-sm-20" fxLayout="column" fxFlex.gt-sm="35" fxFlex="100">
+        <mat-label translate #menuName>Menu Name</mat-label>
+        <input required matInput formControlName="name" autocomplete="off" (keyup)="preventSpace($event,'rightForm','name')" (blur)="trimTextBoxSpaces('rightForm','name')">
+        <mat-error>
+          <app-validation [labelName]="menuName.innerText" [validationControl]="rightForm.controls.name"
+            [doValidate]="isFormSubmitted">
+          </app-validation>
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div fxFlexFill fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign="center center">
+      <mat-form-field appearance="outline" class="pr-sm-20" fxLayout="column" fxFlex.gt-sm="35" fxFlex="100">
+        <mat-label translate #url>Url</mat-label>
+        <input matInput formControlName="url" autocomplete="off" (keyup)="preventSpace($event,'rightForm','url')" (blur)="trimTextBoxSpaces('rightForm','url')">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="pr-sm-20" fxLayout="column" fxFlex.gt-sm="35" fxFlex="100">
+        <mat-label translate #displayOrder>Display Order</mat-label>
+        <input required matInput formControlName="displayOrder" autocomplete="off" (keyup)="preventSpace($event,'rightForm','displayOrder')" (blur)="trimTextBoxSpaces('rightForm','displayOrder')">
+        <mat-error>
+          <app-validation [labelName]="displayOrder.innerText" [validationControl]="rightForm.controls.displayOrder"
+            [doValidate]="isFormSubmitted">
+          </app-validation>
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div fxFlexFill fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign="center center">
+      <mat-form-field appearance="outline" fxFlex.gt-sm="35" fxLayout="column" fxFlex="100" class="pr-sm-20"
+        fxLayout="column">
+        <mat-label translate #isMenu>Is Menu</mat-label>
+        <mat-select placeholder="IsMenu" formControlName="isMenu">
+          <mat-option *ngFor="let isMenu of isMenus" [value]="isMenu.value">
+            {{ isMenu.label }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class=" pr-sm-20" fxLayout="column" fxFlex.gt-sm="35" fxFlex="100">
+        <mat-label translate #icon>Icon</mat-label>
+        <input matInput formControlName="icon" autocomplete="off" (keyup)="preventSpace($event,'rightForm','icon')" (blur)="trimTextBoxSpaces('rightForm','icon')">
+      </mat-form-field>
+    </div>
+
+    <div fxLayout="row" fxLayoutAlign="end center">
+      <button class="mr-12 text-uppercase" mat-raised-button type="button" (click)="onCancel()">Cancel</button>
+      <button *ngIf="showCreateBtn" mat-raised-button type="submit" class="text-uppercase"
+        color="accent">Create</button>
+      <button *ngIf="!showCreateBtn" mat-raised-button type="submit" class="text-uppercase"
+        color="accent">Update</button>
+    </div>
+  </form>
+</ng-template>

@@ -1,0 +1,154 @@
+<div class="px-24 pb-20">
+  <div class="simple-table-container radius-t-20 mat-elevation-z8" fxLayout="column">
+    <div fxLayoutAlign="end center" class="border-bottom p-20">
+      <button mat-button (click)="editVehhicle()">
+        <mat-icon>edit</mat-icon>
+      </button>
+      <!-- <button mat-raised-button [routerLink]="['/transportation/inventory/vehicle-inventory']" color="primary" class="text-uppercase mx-4"> 
+        {{'Back' | translate}}
+      </button> -->
+      <button mat-button class="text-uppercase" (click)="getHelpText('Vehicle Basic Details')">
+        <mat-icon>info</mat-icon>
+      </button>
+    </div>
+
+
+    <mat-list fxLayout.gt-xs="row wrap" fxFlex="100" fxLayout.lt-sm="column"
+      class="institution-details pt-0 confirm-table" *ngIf="vehicleInformationView && isEdit === false">
+      <mat-list-item fxLayout="column" fxFlex.gt-xs="50" *ngFor="let column of vehicleInformationHeaders">
+        <div fxLayout="row" fxFlex="50" ><span translate>{{column}}</span></div>
+        <div fxLayout="row" fxFlex="50"
+          *ngIf="column != 'registrationCertAttachment' && column != 'photoAttachment' && vehicleInformationView[column] != null">
+          <span class="px-4">:</span>{{vehicleInformationView[column]}}</div>
+        <div fxLayout="row" fxFlex="50"
+          *ngIf="column == 'registrationCertAttachment' && vehicleInformationView[column] != null"><a
+            [href]="docUrl"><span class="px-4">:</span><span translate>downloadDocument</span></a></div>
+          <div fxLayout="row" fxFlex="50"
+        *ngIf="column == 'photoAttachment' && vehicleInformationView[column]"><span class="px-4">:</span><span translate><a
+          [href]="vechileImageUrl" target="_blank">View Photo Attachment</a></span></div>
+        <div fxLayout="row" *ngIf="vehicleInformationView[column] == null" fxFlex="50"><span class="px-4">:</span>--
+        </div>
+      </mat-list-item>
+    </mat-list>
+    <!-- <mat-expansion-panel [class.tabs-table-padding0]="matExpansioncustomClass" [expanded]="accordionStep === 1"> -->
+      <ng-template  *ngIf="isEdit === true" [ngTemplateOutlet]="myTemplate"></ng-template>
+     <!-- </mat-expansion-panel> -->
+  </div>
+</div>
+
+
+
+<ng-template #myTemplate>
+  <form fxLayout="column" [formGroup]="vehicleForm" #vehicle="ngForm" class="p-20"  autocomplete="off">
+    <div fxLayout="roe" fxLayout.gt-sm="row" class="pt-12" fxFlex="100">
+      <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="25" class="pr-sm-20">
+        <mat-label #name translate>Vehicle Name</mat-label>
+        <input (keyup)="preventSpace($event,'vehicleForm','name')" (blur)="trimTextBoxSpaces('vehicleForm','name')" formControlName="name" matInput required>
+        <mat-error>
+          <app-validation [labelName]='name.innerText' [validationControl]="vehicleForm.controls.name"
+            [doValidate]="validate">
+          </app-validation>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="500" fxFlex.gt-sm="25" class="pr-sm-20">
+        <mat-label #model translate>Vehicle Model</mat-label>
+        <input (keyup)="preventSpace($event,'vehicleForm','model')" (blur)="trimTextBoxSpaces('vehicleForm','model')" formControlName="model" matInput required>
+        <mat-error>
+          <app-validation [labelName]='model.innerText' [validationControl]="vehicleForm.controls.model"
+            [doValidate]="validate">
+          </app-validation>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="25" class="pr-sm-20">
+        <mat-label #chassisNumber translate>Chassis Number</mat-label>
+        <input (keyup)="preventSpace($event,'vehicleForm','chassisNumber')" (blur)="trimTextBoxSpaces('vehicleForm','chassisNumber')" formControlName="chassisNumber" matInput>
+        <mat-error>
+          <app-validation [labelName]='chassisNumber.innerText' [validationControl]="vehicleForm.controls.chassisNumber"
+            [doValidate]="validate">
+          </app-validation>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="25" >
+        <mat-label #regNumber translate>Registration Number</mat-label>
+        <input (keyup)="preventSpace($event,'vehicleForm','regNumber')" (blur)="trimTextBoxSpaces('vehicleForm','regNumber')" formControlName="regNumber" matInput>
+        <mat-error>
+          <app-validation [labelName]='regNumber.innerText' [validationControl]="vehicleForm.controls.regNumber"
+            [doValidate]="validate">
+          </app-validation>
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div fxLayout="row" fxLayout.gt-sm="row" class="pt-sm-12" fxFlex="100">
+
+      <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="25" class="pr-sm-20">
+        <mat-label #engineNumber translate>Engine Number</mat-label>
+        <input (keyup)="preventSpace($event,'vehicleForm','engineNumber')" (blur)="trimTextBoxSpaces('vehicleForm','engineNumber')" formControlName="engineNumber" matInput>
+        <mat-error>
+          <app-validation [labelName]='engineNumber.innerText' [validationControl]="vehicleForm.controls.engineNumber"
+            [doValidate]="validate">
+          </app-validation>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="25"
+        class="pr-sm-20 icon-center">
+        <mat-label #manufactureYearr translate>Manufacture Year Date</mat-label>
+        <input matInput (keyup)="forceValidation('manufactureYear',vehicleForm)" [matDatepicker]="manufactureYear"
+          formControlName="manufactureYear" autocomplete="off">
+        <mat-datepicker-toggle matSuffix [for]="manufactureYear"></mat-datepicker-toggle>
+        <mat-datepicker #manufactureYear></mat-datepicker>
+        <mat-error>
+          <app-validation [labelName]='manufactureYearr.innerText'
+            [validationControl]="vehicleForm.controls.manufactureYear" [doValidate]="validate">
+          </app-validation>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="25" class="pr-sm-20">
+        <mat-label #maxCapacity translate>Max Capacity</mat-label>
+        <input (keyup)="preventSpace($event,'vehicleForm','maxCapacity')" (blur)="trimTextBoxSpaces('vehicleForm','maxCapacity')" formControlName="maxCapacity" numbersOnly matInput>
+        <mat-error>
+          <app-validation [labelName]='maxCapacity.innerText' [validationControl]="vehicleForm.controls.maxCapacity"
+            [doValidate]="validate">
+          </app-validation>
+        </mat-error>
+      </mat-form-field>
+
+      <!-- <div fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="25" class="px-sm-20 pt-16"> -->
+        <div fxLayout="column" class="w-260 pt-12">
+          <div fxLayout="row">
+            <button mat-raised-button type="button" color="primary"
+              (click)="logoImgInput.value='';logoImgInput.click()">
+              <mat-icon class="mr-8">attachment</mat-icon>{{'Registration Certificate' | translate}}
+            </button>
+            <button mat-icon-button type="button" [style.visibility]="logoImgProp?.src ? 'visible' : 'hidden'">
+              <mat-icon class="mb-4 grey-600-fg" 
+                (click)="logoImgInput.value='';clearImages(true)">highlight_off</mat-icon>
+            </button>
+          </div>
+          <input [accept]="'.doc,.docx,image/jpeg,image/jpg,image/png,application/pdf,image/*'" id="logoImgInput"
+            (change)="imgChanged(logoImgInput.files)" fxHide type="file" #logoImgInput>
+          <div class="pt-8 logo-name break-word"
+            [style.visibility]="vehicleForm?.value?.registrationCertAttachment?.fileName ? 'visible' : 'hidden'"
+            [style.display]="logoImgProp?.src ? 'block' : 'none'">
+            {{vehicleForm?.value?.registrationCertAttachment?.fileName}}</div>
+        </div>
+      <!-- </div> -->
+
+    </div>
+
+    <div fxLayout="row" fxLayoutAlign="end center" class="m-16">
+      <button mat-raised-button (click)="onCancel()" type="reset" class="text-uppercase mr-12">
+        {{'Cancel' | translate}}
+      </button>
+      <button mat-raised-button type="button" color="accent" class="text-uppercase" (click)="onSubmit(vehicleForm)">
+        {{'Update' | translate}}
+      </button>
+    </div>
+
+  </form>
+</ng-template>

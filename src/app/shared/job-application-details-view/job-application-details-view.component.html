@@ -1,0 +1,28 @@
+<mat-accordion class="student-details-app" multi>
+  <mat-expansion-panel *ngFor="let acitem of applicantInfo; first as isFirst" [expanded]="isFirst" class="px-12">
+    <mat-expansion-panel-header>
+      <mat-panel-title class="font-size-18" translate>{{acitem.AccordianName}}</mat-panel-title>
+    </mat-expansion-panel-header>
+    <div fxLayout="column" fxFlex.gt-sm="80" fxFlex="100" class="mx-auto mb-20">
+      <mat-list *ngFor="let item of acitem.Items" fxLayout="row wrap" fxFlex="100"
+        class="pt-0 confirm-table border-bottom" [ngClass]="item.length>0 ? 'border cborder-list': 'bx'" >
+        <mat-list-item fxLayout="column" fxFlex="50" *ngIf="!item.length">
+          <span translate>{{item.Label}}</span>
+        </mat-list-item>
+        <mat-list-item *ngIf="!item.length" fxLayout="column" fxFlex="50">
+          {{item?.Value?item?.Value :"-"}}
+        </mat-list-item>
+        <div *ngIf="item.length>0" fxLayout="column" fxFlex="100">
+          <div *ngFor="let subItem of item" class="pt-0 clist-items">
+            <mat-list-item fxLayout="column" fxFlex="50">
+              <span translate>{{subItem.Label}}</span>
+            </mat-list-item>
+            <mat-list-item fxLayout="column" fxFlex="50">
+              <span>{{subItem?.Value?subItem?.Value :"-"}}</span>
+            </mat-list-item>
+          </div>
+        </div>
+      </mat-list>
+    </div>
+  </mat-expansion-panel>
+</mat-accordion>

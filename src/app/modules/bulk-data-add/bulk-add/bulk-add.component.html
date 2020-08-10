@@ -1,0 +1,61 @@
+<div class="px-sm-40 pt-sm-20">
+  <div class="py-8 px-20 font-size-18 text-uppercase" translate>Upload School Data</div>
+  <div class="mat-elevation-z8 simple-table-container radius-t-20">
+    <div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign="start center">
+      <div fxLayout="row" fxLayoutAlign="center center" fxFlex="100">
+        <mat-form-field fxFlexFill appearance="outline" fxFlex.gt-sm="30" fxFlex="100" class="pt-20 icon-center">
+          <mat-label translate #options translate>Type</mat-label>
+          <mat-select [formControl]="option" (selectionChange)="onChange($event)">
+            <mat-option *ngFor="let addOption of addOptions" [value]="addOption.value">{{addOption.label}}</mat-option>
+          </mat-select>
+          <mat-error>
+            <app-validation [labelName]='options.innerText' [validationControl]="option" [doValidate]="true">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+        <div *ngIf="showLink" fxLayoutAlign="end center" class="ml-8">
+          <button mat-button fxShow.gt-xs class="language-button" color="accent" aria-label="More" [matMenuTriggerFor]="menu">
+            Sample Templates
+          </button>
+        </div>
+        <mat-menu #menu="matMenu">
+          <ng-container *ngFor="let item of templates">
+            <button mat-menu-item (click)="exportToExcel(item)">
+            {{item.label}}
+            </button>
+          </ng-container>
+        </mat-menu>
+      </div>
+      <div fxLayout="column" fxLayoutAlign="center end" class="mr-8">
+        <button mat-raised-button color="primary" type="button" [disabled]="option.invalid"
+          (click)="logoImgInput.value='';logoImgInput.click()">{{'Select File' | translate}}</button>
+        <input accept=" .xls, .xlsx, .csv, .ods" id="logoImgInput" fxHide type="file" #logoImgInput
+          (change)="uploadFile($event)">
+      </div>
+      <div fxLayout="row" fxLayoutAlign="center end" class="mr-8">
+        <button mat-button type='button' (click)="getHelpText('Upload School Data')">
+          <mat-icon class="grey-600-fg">info</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-table *ngIf="rows && rows.length > 0" [settings]="tableSettings" (getTableData)='tableData($event)'
+  (selectedRows)='selectedRows($event)' [massActionTemplateRef]="massActions" (headerButtonClick)="reset()" (additionalButtonClick)="checkUrl()">
+</app-table>
+
+<app-custom-card *ngIf="(rows && rows.length == 0) && (option.invalid)" [title]="header" [inputMessage]="'Select Import Type'">
+</app-custom-card>
+
+<ng-template #massActions>
+  <button type="button" mat-raised-button class="text-uppercase mx-8" color="accent"
+    (click)="submit()">{{'Process' | translate}}</button>
+</ng-template>
+
+<app-table *ngIf="(importLogs && importLogs.length > 0) && (rows && rows.length == 0)" [settings]="logSettings" (getTableData)='tableData($event)'
+  (rowBasedAction)='rowWiseActions($event)'>
+</app-table>
+
+<app-custom-card *ngIf="(importLogs && importLogs.length == 0) && (option.valid)  && (rows && rows.length == 0)" [title]="header" [inputMessage]="'No Import Logs'">
+</app-custom-card>

@@ -1,0 +1,89 @@
+<div class="p-32">
+  <div class="text-uppercase font-size-18 p-12">Syllabus Details</div>
+  <div class="w-100-p simple-table-container radius-t-20 mat-elevation-z3 mb-16">
+    <div fxLayout="row" fxLayoutAlign="end center" class="border-bottom p-16">
+      <button mat-raised-button class="text-uppercase" color="primary" (click)="back()" translate>Back</button>
+      <button mat-button (click)="getHelpText('Manage Syllabus')">
+        <mat-icon class="grey-600-fg">info</mat-icon>
+      </button>
+    </div>
+
+    <div class="p-24" fxLayout="column">
+      <form [formGroup]="syllabusForm" fxLayout.gt-sm="row">
+        <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100">
+          <div fxLayout="column" fxLayout.gt-sm="row" class="pt-12">
+            <mat-form-field appearance="outline" fxFlexFill fxFlex.gt-xs="33" fxFlex="100" fxLayout="column">
+              <mat-label #announcedDate translate>Board</mat-label>
+              <input matInput formControlName="board" readonly>
+            </mat-form-field>
+
+            <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="34"
+              class="px-sm-20">
+              <mat-label #fromDate translate>Class</mat-label>
+              <input matInput formControlName="class" readonly>
+            </mat-form-field>
+
+            <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="33"
+              class="pr-sm-20">
+              <mat-label #toDate translate>Course</mat-label>
+              <input matInput formControlName="course" readonly>
+            </mat-form-field>
+
+          </div>
+
+          <div fxLayout="row" fxLayoutAlign="start center">
+           <div class="break-word font-size-18" *ngIf="syllabusForm?.value.name || syllabusForm?.value.code">{{syllabusForm?.value.name}} <span *ngIf="syllabusForm?.value.code">({{syllabusForm?.value.code}})</span>
+
+           </div>
+            <div *ngIf="syllabusData?.fileName"  class="pl-12 pt-4">
+              <a class="cursor-pointer" [href]="getFileNamewithPath(syllabusData?.fileName)" target="_blank"><h>Attachment</h></a>
+            </div>  
+
+          </div>
+        
+        </div>
+      </form>
+    </div>
+
+
+    <div class="border border-top"  fxLayout="column" *ngIf="syllabusDataList?.length">
+      <table class="simple table">
+        <thead class="font-weight-600">
+          <tr>
+            <th class="bold-text" translate>Chapter</th>
+            <th class="bold-text" translate>Topic</th>
+            <th class="bold-text" translate>Sub Topic</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of syllabusDataList; let i = index" [class]="item?.syllabusCheckPointId ? 'accent' : ''">
+            <ng-container *ngIf="!item?.syllabusCheckPointId">
+              <td><span class="p-4">
+                  {{ item?.chapter }} </span> <span *ngIf="item?.chapterCode"
+                  class="secondary-text pr-20">({{item?.chapterCode}})</span> <a *ngIf="item?.chapterFileName" class="cursor-pointer" [href]="getFileNamewithPath(item?.chapterFileName)" target="_blank">Attachment</a>
+              </td>
+              <td><span class="p-4"> {{ item?.topic }}
+                </span> <span *ngIf="item?.topicCode"
+                class="secondary-text pr-20">({{item?.topicCode}})</span> <a *ngIf="item?.topicFileName" class="cursor-pointer" [href]="getFileNamewithPath(item?.topicFileName)" target="_blank">Attachment</a>
+              </td>
+              <td><span class="p-4"> {{item?.subTopic}} </span> <span *ngIf="item?.subTopicCode"
+                class="secondary-text pr-20">({{item?.subTopicCode}})</span>
+                <a *ngIf="item?.subTopicFileName" class="cursor-pointer" [href]="getFileNamewithPath(item?.subTopicFileName)" target="_blank">Attachment</a>
+              </td>
+            </ng-container>
+            <ng-container *ngIf="item?.syllabusCheckPointId">
+              <td><span class="p-4">   {{ item?.syllabusCheckPoint }} </span>
+              </td>
+              <td><span class="p-4">
+                {{ item?.checkPointTestType }} </span>
+              </td>
+              <td><span class="p-4" translate>
+                {{item?.isCumulative ? 'Cumulative' : 'InCremental'}}
+                </span>
+              </td>
+            </ng-container>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>

@@ -1,0 +1,12 @@
+@import "src/@fuse/scss/fuse";
+@include media-breakpoint('gt-xs'){
+.mx-height-auto{
+    max-height: 723px;
+    overflow-y:auto;
+}
+}
+.events-icon{
+    width: 12px;
+    height: 12px;
+    border-radius: 100%;
+}

@@ -1,0 +1,112 @@
+@import "src/@fuse/scss/fuse";
+
+
+#boards {
+    width: 100%;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+
+    .header {
+        h1 {
+            font-size: 40px;
+            font-weight: 300;
+        }
+    }
+
+    .board-list {
+        padding: 32px 0;
+        max-height: none !important;
+
+        .board-list-item {
+            min-width: 190px;
+            min-height: 190px;
+            width: 190px;
+            height: 190px;
+            padding: 24px 0;
+            margin: 16px;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.12);
+            transition: box-shadow 150ms ease-in;
+            cursor: pointer;
+
+            &:hover:not(.add-new-board) {
+                @include mat-elevation(8);
+            }
+
+            .board-name {
+                padding: 16px 32px 0 32px;
+                font-weight: 300;
+                font-size: 16px;
+                text-align: center;
+                word-break: break-word;
+            }
+
+            &.add-new-board {
+                background: rgba(0, 0, 0, 0.06);
+                border: 2px dashed rgba(255, 255, 255, 0.37);
+            }
+        }
+    }
+}
+
+.add-building {
+    .card {
+        width: 340px;
+        min-width: 340px;
+
+        ::ng-deep .mat-card-header {
+            .mat-card-header-text {
+                width: 100%;
+                margin: 0px;
+            }
+            // .mat-card-title{
+            //     margin-bottom: 0;
+            // }
+
+        }
+        .mat-card-content {
+            border-radius: 5px;
+
+            .mat-list {
+                .mat-list-item {
+                    height: auto;
+                    word-break: break-word;
+
+                    .secondary-text {
+                        padding: 13px 0px;
+                    }
+                }
+            }
+           
+        }
+
+        .mat-card-content.edit-floor {
+            margin: 2px;
+        }
+    }
+
+    overflow: auto;
+    -ms-overflow-style: scrollbar;
+}
+
+.add-floor-error {
+    // position: relative;
+     .mat-error {
+         position: absolute;
+         top: 41px;
+         font-size: 13px;
+         left: 16px;
+     }
+     input{
+         background-color: transparent;
+     }
+ }
+
+// .add-edit-overlay{
+//     .mat-card, .events{
+//         pointer-events: none;
+//     }
+//     .add-overlay{
+//         pointer-events:auto;
+//     }
+// }

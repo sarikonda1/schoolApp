@@ -1,0 +1,34 @@
+<div fxLayout="row" fxLayoutAlign="space-between center" class="p-20 border-vertical" *ngIf="showHeader">
+  <div fxLayout="column" class="font-size-18">
+    {{tableCaption | translate}}</div>
+  <div fxLayout="row">
+    <button *ngIf="showPdfGeneration" mat-stroked-button class="mr-12" (click)="export('generatePdfReport')">
+      <mat-icon class="mr-4">save_alt</mat-icon>Download PDF
+    </button>
+    <button *ngIf="showExcelGeneration" mat-stroked-button (click)="export('generateExcelReport')">
+      <mat-icon class="mr-4">save_alt</mat-icon> Download EXCEL
+    </button>
+  </div>
+
+</div>
+<div class="simple-table-container simple-scroll-table">
+  <table mat-table [dataSource]="inputData" class="simple" id={{tableId}}>
+    <ng-container matColumnDef="{{column.field}}" *ngFor="let column of definedColumns">
+      <th mat-header-cell *matHeaderCellDef> {{column.header}} </th>
+      <td mat-cell *matCellDef="let element;let j=index"
+        [attr.rowspan]="isRowGroupingRequired ? getRowSpan(column.field,j) : ''"
+        [style.display]="isRowGroupingRequired ? getRowSpan(rowGroupingColumn, j) ? '' : 'none' : ''">
+        <mdt-table-cell [row]="element" [column]="column">
+          <p matTooltipClass="matTool-tip" matTooltipPosition="above" [matTooltip]="element[column.field]"
+            class="text-truncate pl-4">
+            {{element[column.field]}}
+          </p>
+        </mdt-table-cell>
+      </td>
+
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
+    <tr mat-row *matRowDef="let row; columns: columnsToDisplay;"></tr>
+  </table>
+</div>
+<mat-paginator *ngIf="isPaginationReq" class="mb-20" [pageSizeOptions]="[1000]" showFirstLastButtons></mat-paginator>

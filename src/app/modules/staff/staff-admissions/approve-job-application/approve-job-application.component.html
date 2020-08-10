@@ -1,0 +1,52 @@
+<div class="content px-sm-40 pt-sm-40">
+  <div class="w-100-p mat-elevation-z2 simple-table-container radius-10">
+    <div fxLayout="row" fxLayoutAlign="start center" class="p-20">
+      <div fxlayout="column" fxFlex="40">
+        <div class="h3 secondary-text" translate>Application Reference Number :<strong>&nbsp;&nbsp;{{applicantInfo?.applicationReferenceNo}}</strong></div>
+      </div>
+      <div fxLayout="column" fxFlex="40" class="accent-fg" fxLayoutAlign="center end" translate>Please Verify the Staff Details
+        for approving the application</div>
+      <div fxLayout="column" fxFlex="20">
+        <div fxLayout="row" fxLayoutAlign="end center">
+          <button mat-raised-button color="primary" translate (click)="back()">{{'Back' | translate}}</button>
+          <button mat-button type="button" (click)="getHelpText('Job Applications')">
+            <mat-icon class="grey-600-fg">info</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+    <mat-divider></mat-divider>
+    <div fxLayout="row" fxLayoutAlign="start center" class="ml-24">
+      <div class="profile-image border m-24 radius-10">
+        <img *ngIf="profileImage" [src]="profileImage ? profileImage : ''" class="w-200 h-200 radius-10" />
+        <div *ngIf="!profileImage" fxLayoutAlign="center center" class="w-200 h-200" translate>No Image</div>
+      </div>            
+      <div fxLayout="column" fxFlex="60">
+          <div class="h2 primary-900-fg-custom mb-16">{{staffName}}</div>          
+          <div *ngFor="let item of staffApplicantInfo">           
+              <div fxLayout="row" fxLayoutAlign="start center">
+                <div class="w-68 py-4 primary-300-fg" translate>{{item.Label}}</div> : <div fxLayout="row" fxLayoutAlign="center center" class="ml-24" [ngClass]="{'accent-fg  cursor-pointer': item.Label == 'resumeFile'}" (click)="item.Label == 'resumeFile';viewAttachment(item.Label)">
+                  <mat-icon *ngIf="item.Value && item.Label == 'resumeFile'" (click)="item.Label == 'resumeFile';viewAttachment()" class="pt-2 accent-fg">attachment</mat-icon>&nbsp;{{item?.Value? item?.Value : "-"}}</div>               
+              </div>
+          </div>
+        </div>             
+
+      <form [formGroup]="approveForm" fxLayout="column" fxFlex="40" class="pr-36">
+        <label class="font-weight-800 pb-12" translate>Admission Comments</label>
+        <mat-form-field appearance="outline" class="example-full-width">
+          <mat-label #comments translate>Comments</mat-label>
+          <textarea id="comment-field" formControlName="processedComments" matInput placeholder="Leave a comment" (keyup)="preventSpace($event,'approveForm','processedComments')" (blur)="trimTextBoxSpaces('approveForm','processedComments')"
+            [(ngModel)]='approveComments' required></textarea>
+          <mat-error>
+            <app-validation [labelName]='comments.innerText'
+              [validationControl]="approveForm.controls.processedComments" [doValidate]="validate">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+        <small class="text-right max-caters" translate>max 180 Characters</small>
+      </form>
+    </div>
+  </div>
+</div>
+<app-add-staff-admission-form [inputJobApplicationDetails]="applicantInfo" [comments]="approveComments">
+</app-add-staff-admission-form>

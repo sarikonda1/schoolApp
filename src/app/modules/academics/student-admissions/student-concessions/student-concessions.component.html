@@ -1,0 +1,143 @@
+<div class="p-sm-40">
+  <div class="py-8 px-20 font-size-18 text-uppercase" translate>Student Concessions</div>
+  <div class="w-100-p mat-elevation-z8 simple-table-container radius-t-20">
+    <form [formGroup]="studentConcessionSearchForm"
+      (ngSubmit)="studentConcessionSearchForm.valid && search(studentConcessionSearchForm.value)"
+      #studentConcessionSearch="ngForm">
+      <div class="px-24 pt-24 pb-4">
+        <div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign="start center">
+          <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="28"
+            class="px-sm-20">
+            <mat-label translate #class>Class</mat-label>
+            <mat-select required formControlName="classId" (selectionChange)="onSelectClass($event)">
+              <mat-option *ngFor="let class of classes" [value]="class.value">
+                {{ class.label }}</mat-option>
+            </mat-select>
+            <mat-error>
+              <app-validation [labelName]='class.innerText'
+                [validationControl]="studentConcessionSearchForm.controls.classId" [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="28">
+            <mat-label translate #section>Section</mat-label>
+            <mat-select required formControlName="sectionId">
+              <mat-option *ngFor="let section of sections" [value]="section.value">
+                {{ section.label }}</mat-option>
+            </mat-select>
+            <mat-error>
+              <app-validation [labelName]='section.innerText'
+                [validationControl]="studentConcessionSearchForm.controls.sectionId" [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="28"
+          class="px-sm-20">
+            <mat-label translate #concessionGroup>Concession Group</mat-label>
+            <mat-select formControlName="concessionGroup">
+              <mat-option *ngIf="feeConcessionGroups?.length"></mat-option>
+              <mat-option *ngFor="let feeConcessionGroup of feeConcessionGroups" [value]="feeConcessionGroup.id">
+                {{feeConcessionGroup.name}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <div fxFlexFill fxLayout="column" fxFlex.gt-xs="55" fxFlex="100" fxLayoutAlign="end">
+            <div fxLayout="row" fxLayoutAlign="end center" class="mb-24">
+              <button type="button" mat-raised-button class="text-uppercase mx-8" color="primary" (click)="reset()">{{'Reset'| translate}}</button>
+              <button mat-button type="button" (click)="getHelpText('Student Concessions')">
+                <mat-icon class="grey-600-fg">info</mat-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<app-table *ngIf="studentConcessionSearchForm.valid" [settings]="tableSettings" (getTableData)='tableData($event)'
+  (rowBasedAction)='actions($event)' (resetFilter)="resetFilter()" (anchorDialogClick)="showConcessionInfo($event)">
+</app-table>
+<app-custom-card *ngIf="!studentConcessionSearchForm.valid" [title]="'Students'" [inputMessage]="'Please Select Class And Section'">
+</app-custom-card>
+
+<!-- Coustom Dialog for Edit Building -->
+<ng-template #myTemplate>
+  <form [formGroup]="studentConcessionForm"
+    (ngSubmit)="studentConcessionForm.valid && addStudentFeeConcesion(studentConcessionForm.value)"
+    #addStudentConcession="ngForm" class="mh-85vh">
+    <div class="pb-12 font-size-18" *ngIf="!hideDropDown;else elseBolck"> Select Fee Concession Group</div>
+    <ng-template #elseBolck><div class="pb-12 font-size-18">Fee Concession Group</div></ng-template>
+    <div fxLayout.gt-sm="row" fxLayout="column" class="mb-20" *ngIf="!hideDropDown">
+      <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100">
+        <mat-label #studentFeeConcession translate>Fee Concession Group</mat-label>
+        <mat-select formControlName="feeConcessionGroupId" (selectionChange)="onselectFeeConcessionGroup($event.value)"
+          required>
+          <mat-option *ngFor="let feeConcessionGroup of feeConcessionGroups" [value]="feeConcessionGroup.id">
+            {{feeConcessionGroup.name}}</mat-option>
+        </mat-select>
+        <mat-error>
+          <app-validation [labelName]='studentFeeConcession.innerText'
+            [validationControl]="studentConcessionForm.controls.feeConcessionGroupId" [doValidate]="validate">
+          </app-validation>
+        </mat-error>
+      </mat-form-field>
+    </div>
+    <!-- <mat-divider *ngIf="feeConcessionDetails"></mat-divider> -->
+   
+      <table class="simple clickable" *ngIf="feeConcessionDetails">
+        <thead>
+          <tr>
+            <th translate>Fee Type</th>
+            <th translate>Concession Type</th>
+            <th translate>Term</th>
+            <th translate>Concession</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let feeConcessionDetail of feeConcessionDetails">
+            <ng-container *ngIf="feeConcessionDetail?.feeConcessionGroupTermDiscountDataViewModel?.length == 0">
+              <td>
+                {{feeConcessionDetail?.feeTypeName}}</td>
+              <td>
+                {{feeConcessionDetail?.concessionTypeName}}</td>
+              <td>{{'Each'}}</td>
+                <td *ngIf="feeConcessionDetail?.concessionTypeName == 'Discount %'" class="text-right">
+                  {{feeConcessionDetail?.discount}}{{'%'}}
+                </td>
+                <td *ngIf="feeConcessionDetail?.concessionTypeName == 'Term Discount'" class="text-right">
+                  {{currencySymbol}}{{feeConcessionDetail?.discount}}
+                </td>
+            </ng-container>
+          </tr>
+          <tr *ngFor="let feeConcessionDetail of feeConcessionDetails">
+            <td *ngIf="feeConcessionDetail?.feeConcessionGroupTermDiscountDataViewModel?.length > 0">
+              {{feeConcessionDetail?.feeTypeName}}</td>
+            <td *ngIf="feeConcessionDetail?.feeConcessionGroupTermDiscountDataViewModel?.length > 0">
+              {{feeConcessionDetail?.concessionTypeName}}</td>
+
+              <td *ngIf="feeConcessionDetail?.feeConcessionGroupTermDiscountDataViewModel?.length" colspan="2" class="last-child">
+                <div *ngFor="let term of feeConcessionDetail?.feeConcessionGroupTermDiscountDataViewModel" class="py-8 border-bottom" fxLayoutAlign="space-between start">
+                  <span>{{term.feeTermName}}</span>  <span>{{currencySymbol}}{{term.termConcessionAmt}}</span>
+                </div>
+              </td>
+            <!-- <ng-template ngFor let-term [ngForOf]="feeConcessionDetail.feeConcessionGroupTermDiscountDataViewModel"
+              let-i="index">
+              <td>{{term.feeTermName}}</td>
+              <td>{{currencySymbol}}{{term.termConcessionAmt}}</td>
+            </ng-template> -->
+          </tr>
+        </tbody>
+      </table>
+   
+    
+    <div fxLayout="row" fxLayoutAlign="end center" class="pt-20">
+      <button class="mr-12 text-uppercase" mat-raised-button color="primary" type="button" (click)="cancelFeeconcession()"
+        matDialogClose>{{'Close' | translate}}</button>
+      <button *ngIf="!hideDropDown" mat-raised-button type="submit" class="text-uppercase" color="accent"
+        [disabled]="!feeConcessionDetails">{{'Submit' | translate}}</button>
+    </div>
+  </form>
+</ng-template>
+<!-- End Coustom Dialog  -->

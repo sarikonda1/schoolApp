@@ -1,0 +1,50 @@
+<app-custom-card *ngIf="!(originalItems?.classes?.length)" [inputMessage]="'No Record Found'">
+</app-custom-card>
+<div fxLayout="row" fxLayoutAlign="end center" class="px-32 py-12" *ngIf="originalItems?.classes?.length">
+    <button mat-stroked-button class="mr-12" (click)="generateReport('generatePdfReport')">
+        <mat-icon class="mr-4">save_alt</mat-icon>Download PDF
+    </button>
+    <button mat-stroked-button (click)="generateReport('generateExcelReport')">
+        <mat-icon class="mr-4">save_alt</mat-icon> Download EXCEL
+    </button>
+</div>
+<div class='invoice-container' *ngIf="originalItems?.classes?.length" id="admitted-std" style="padding: 25px; padding-top: 0px;">
+    <span class="dark-theme-color" style="color:#fff">A</span>
+    <div class='b flex-d-c invoice-body' style='overflow: hidden; '>
+        <h2 class="text-center text-uppercase">Student Strength Report</h2>
+        <div class="p-20 mb-20 main-title">
+            <div class="left-align">Report Generated On : {{ date }}</div>
+            <div class="right-align flex" *ngIf="acadmicSession">
+                {{acadmicSession?.name}} ({{acadmicSession?.startDate | date: 'MMM d, y'}} -
+                {{acadmicSession?.endDate | date: 'MMM d, y'}})
+            </div>
+        </div>
+
+        <div class="outer-line scroll-table">
+            <ng-container *ngFor="let item of originalItems?.classes">
+                <table class="helper-table">
+                    <thead>
+                        <th>{{item.name}}</th>
+                        <th> Current Strength:{{item.strength}} </th>
+                        <th> Total Capacity : {{item.capacity}}</th>
+                    </thead>
+                </table>
+                <div class="px-55 scroll-table">
+                    <app-af-report-table [inputData]="item.sections" [tableId]="'pnd-std-app'" [columns]="columns">
+                    </app-af-report-table>
+                </div>
+            </ng-container>
+            <table class="total-table" *ngFor="let item of originalItems?.boardAdmissions">
+                <thead>
+                    <tr>
+                        <th>Total School strength</th>
+                        <th>{{item.classesCount}} Class</th>
+                        <th>{{item.sectionsCount}} Sections</th>
+                        <th>{{item.strength}}</th>
+                        <th>{{item.capacity}}</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>

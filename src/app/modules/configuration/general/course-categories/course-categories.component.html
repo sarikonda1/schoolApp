@@ -1,0 +1,152 @@
+<app-table [settings]="tabSettings" (getTableData)='courseCategories($event)'
+    (rowBasedAction)='onEditDeleteClick($event)' [closeRowForm]='closeAddPanel' [templateRef]="addcourseCategories"
+    (openAddForm)="onAddFormClick()"></app-table>
+<ng-template #addcourseCategories>
+    <form [formGroup]="courseCategoryForm" (ngSubmit)="onSetValues();onSaveClick(courseCategoryForm)"
+        #courseCategory="ngForm">
+        <div class="sm-table-form m-auto">
+            <div fxLayout.lt-sm="column" class="pt-24" fxLayout.gt-xs="row">
+
+                <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" class="example-full-width mr-sm-80">
+                    <mat-label #courseType translate>Course Type</mat-label>
+                    <mat-select name="courseType" formControlName="courseTypeId" required>
+                        <mat-option *ngFor="let course of courseTypesList" [value]="course.value">
+                            {{ course.label }}</mat-option>
+                    </mat-select>
+                    <mat-error>
+                        <app-validation [labelName]='courseType.innerText'
+                            [validationControl]="courseCategoryForm.controls.courseTypeId"
+                            [doValidate]="isFormValidate">
+                        </app-validation>
+                    </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" class="example-full-width">
+                    <mat-label #courseCategoryName translate>Course Category</mat-label>
+                    <input matInput formControlName="name" autocomplete="off" (keyup)="preventSpace($event,'courseCategoryForm','name')" (blur)="trimTextBoxSpaces('courseCategoryForm','name')" required>
+                    <mat-error>
+                        <app-validation [labelName]='courseCategoryName.innerText'
+                            [validationControl]="courseCategoryForm.controls.name" [doValidate]="isFormValidate">
+                        </app-validation>
+                    </mat-error>
+                </mat-form-field>
+            </div>
+
+            <div *ngIf="allRequired" fxFlexFill fxLayout="column" class="pt-24" fxLayoutAlign="center center">
+
+                <div appearance="outline" fxLayout="column" fxFlex="100" class="example-full-width mb-sm-24" translate>Are All Courses in this Category Mandatory for Students ?</div>
+                <mat-radio-group fxLayout="row" fxFlex="100" formControlName="areAllRequired">
+                    <mat-radio-button class="ml-24" *ngFor="let radio of areAllRequiredOptions" [value]="radio.value"
+                        (change)="areAllRequiredClick(radio.label)">{{radio.label | translate}}</mat-radio-button>
+                </mat-radio-group>
+
+            </div>
+
+            <div *ngIf="allOptional" fxFlexFill fxLayout="column" class="pt-24" fxLayoutAlign="center center">
+                <div appearance="outline" class="mb-sm-24 secondary-text" translate>
+
+                    <button mat-mini-fab class="green-bg white-fg sm-btn mr-12" type="button"
+                        (click)="allOptional=true;onPrevButtonClick()">
+                        <mat-icon>check</mat-icon>
+                    </button>
+
+                   <span translate>Are All Courses in this Category Mandatory for Students ?</span>  :
+                    <span translate class="pl-8 font-weight-800">{{courseCategoryForm.value.areAllRequired ==1?'Yes':'No'}}</span></div>
+                <div fxFlexFill fxLayout="row" fxFlex="100" fxLayoutAlign="center center"
+                    class="mb-24 fuse-black-500-fg" translate>Are All The Courses in this Category Optional for Students
+                    ?</div>
+                <mat-radio-group fxLayout="row" fxFlex="100" formControlName="areAllOptional">
+                    <mat-radio-button class="ml-24" *ngFor="let radio of areAllOptionalOptions" [value]="radio.value"
+                        (change)="areAllOptionalClick(radio.label)">{{radio.label | translate}}</mat-radio-button>
+                </mat-radio-group>
+            </div>
+
+
+
+            <ng-container *ngIf="Counts">
+                <div fxLayoutAlign="center center" class="my-sm-24 secondary-text">
+                    <button mat-mini-fab class="green-bg white-fg sm-btn mr-12"
+                    type="button" (click)="allOptional=true;onPrevButtonClick()">
+                        <mat-icon>check</mat-icon>
+                    </button><span translate> Are All Courses in this Category Mandatory for Students ? </span>:<span translate class="pl-8 font-weight-800" translate>
+                        {{courseCategoryForm.value.areAllRequired ==1?'Yes':'No'}}</span>
+                </div>
+                <div fxLayoutAlign="center center" class="secondary-text">
+                    <button mat-mini-fab class="green-bg white-fg sm-btn mr-12"
+                       type="button" (click)="Counts=true;onPrevButtonClick()">
+                        <mat-icon>check</mat-icon>
+                    </button><span translate>Are All The Courses in this Category Optional for Students
+                        ?</span>:<span translate class="pl-8 font-weight-800" translate>
+                            {{courseCategoryForm.value.areAllOptional ==1?'Yes':'No'}}</span>
+                </div>
+                <div fxFlexFill fxLayout="column" fxLayout.gt-xs="row" class="pt-24" fxLayoutAlign="center center">
+
+                    <div fxLayout="row" fxFlex="50" fxLayoutAlign="end center" class="custom-error">
+
+                        <div class="fuse-black-500-fg" fxFlex="79" fxLayoutAlign="start center" translate>Please Enter
+                            the
+                            Number of Required Courses of this Category</div>
+
+                        <mat-form-field appearance="outline" class="example-full-width course-number" fxFlex="21"
+                            fxLayoutAlign="end">
+                            <mat-label translate #requiredCount fxHide>RequiredCount</mat-label>
+                            <input (keyup)="preventSpace($event,'courseCategoryForm','requiredCount')" (blur)="trimTextBoxSpaces('courseCategoryForm','requiredCount')" matInput formControlName="requiredCount"
+                                autocomplete="off" (input)="updateCount($event,'optionalCount')">
+
+                        </mat-form-field>
+                        <mat-error>
+                            <app-validation [labelName]='requiredCount.innerText'
+                                [validationControl]="courseCategoryForm.controls.requiredCount"
+                                [doValidate]="isFormValidate">
+                            </app-validation>
+                        </mat-error>
+                    </div>
+                    <small fxLayout="row" fxFlex="8" fxLayoutAlign="center center" class="font-weight-600 text-uppercase"
+                        translate>OR</small>
+                    <div fxLayout="row" fxFlex="50" fxLayoutAlign="start center" class="custom-error">
+                        <div class="fuse-black-500-fg" fxFlex="79" fxLayoutAlign="start center" translate>Please Enter
+                            the
+                            Number of Optional Courses of this Category</div>
+                        <mat-form-field appearance="outline" class="example-full-width course-number" fxFlex="21"
+                            fxLayoutAlign="end">
+                            <mat-label translate #optionalCount fxHide>OptionalCount</mat-label>
+                            <input  matInput formControlName="optionalCount"
+                                (input)="updateCount($event,'requiredCount')" autocomplete="off" (keyup)="preventSpace($event,'courseCategoryForm','optionalCount')" (blur)="trimTextBoxSpaces('courseCategoryForm','optionalCount')">
+
+                        </mat-form-field>
+                        <mat-error>
+                            <app-validation [labelName]='optionalCount.innerText'
+                                [validationControl]="courseCategoryForm.controls.optionalCount"
+                                [doValidate]="isFormValidate">
+                            </app-validation>
+                        </mat-error>
+                    </div>
+                </div>
+            </ng-container>
+
+
+        </div>
+        <div fxFlexFill fxLayout="row" fxLayoutAlign="center center" class="py-24 my-18">
+            <div>
+                <button class="mr-12 text-uppercase" mat-raised-button type="button"
+                    (click)="onCancelClick()">{{'Cancel' | translate}}</button>
+            </div>
+            <div *ngIf="prevBtn">
+                <button class="mr-12 text-uppercase" color="primary" mat-raised-button type="button"
+                    (click)="onPrevButtonClick()">{{'Previous' | translate}}</button>
+            </div>
+            <div *ngIf="nextBtn">
+                <button mat-raised-button type="button" color="accent" class="mr-12text-uppercase"
+                    (click)="onNextButtontnClick()">{{'Next' | translate}}</button>
+            </div>
+            <div *ngIf="updateBtn">
+                <button class="mr-12 text-uppercase" mat-raised-button color="accent" type="submit"
+                    [disabled]="isUpdateDisabled|| disbleSubmitBtn">{{'Update' | translate}}</button>
+            </div>
+            <div *ngIf="saveBtn">
+                <button class="mr-12 text-uppercase" mat-raised-button color="accent" type="submit"
+                    [disabled]="isSaveDisabled || disbleSubmitBtn">{{'Save' | translate}}</button>
+            </div>
+        </div>
+    </form>
+</ng-template>

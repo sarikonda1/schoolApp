@@ -1,0 +1,33 @@
+<div matDialogTitle fxLayoutAlign="space-between center" class="accent-bg fuse-white-fg">
+  <h1 translate class="pl-20">Choose Payment Method</h1>
+  <button id="matDialogCloseBtn" class="mr-12" mat-icon-button mat-dialog-close>
+    <mat-icon class="">close</mat-icon>
+  </button>
+</div>
+
+
+<div mat-dialog-content fxLayout="column">
+  <ng-container *ngFor="let payment of availablePayments">
+    <div fxFlex="100" fxLayout="row" class="border radius-5 mb-20">
+      <div fxLayout="column" fxFlex="60" class="border-right p-20">
+        <div fxLayout="row" class="py-4">
+           <div class="w-168"> <strong translate>Invoice  No </strong></div>:
+            <span class="pl-8">#{{ data?.razorpayViewModel?.invoiceNumber }}</span>
+        </div>
+        <ng-container *ngFor="let payment of payment.breakUpChargesView">
+            <div fxLayout="row" class="py-4" *ngIf="payment.isDisplayed && payment.amount" [ngClass]="payment.key == 'total_amount' ? 'accent-fg font-weight-600' : ' ' ">
+                <div class="w-168"><strong translate>{{payment.title}} </strong></div> :
+                <span class="pl-8"> {{getFormattedCurrency(payment.amount)}}</span>
+            </div>
+        </ng-container>      
+      </div>
+      <div fxLayout="column" fxFlex="40" class="p-20" fxLayoutAlign="start center">
+          <af-razorpay *ngIf="displayPaymentMethod(payment.code, 'RazorPay')" (updateInvoices)="updateInvoices()"
+                       (closeDialog)="updateInvoices(false)"
+          [configuration]="payment.razorpayViewModel"></af-razorpay>
+          <af-paypal *ngIf="displayPaymentMethod(payment.code, 'PAYPAL')" (updateInvoices)="updateInvoices()"
+                     [configuration]="payment.paypalViewModel" (closeDialog)="updateInvoices(false)"></af-paypal>
+      </div>
+    </div> 
+  </ng-container>
+</div>

@@ -1,0 +1,28 @@
+<app-custom-card *ngIf="((resultApplicationReports) && !(resultApplicationReports?.admissionApplictionSummaryView?.length))"
+  [inputMessage]="'No Record Found'">
+</app-custom-card>
+
+<div fxLayout="row" fxLayoutAlign="end center" class="px-32 py-12" *ngIf="resultApplicationReports?.admissionApplictionSummaryView?.length > 0">
+  <button mat-stroked-button class="mr-12" (click)="generateReport('generatePdfReport')">
+    <mat-icon class="mr-4">save_alt</mat-icon>Download PDF
+  </button>
+  <button mat-stroked-button (click)="generateReport('generateExcelReport')">
+    <mat-icon class="mr-4">save_alt</mat-icon> Download EXCEL
+  </button>
+</div>
+<div class='invoice-container' id="adm-app-summary" *ngIf="resultApplicationReports?.admissionApplictionSummaryView?.length > 0" style="padding: 25px; padding-top: 0px;">
+  <span class="dark-theme-color" style="color:#fff">A</span>
+  <div class='b flex-d-c invoice-body' style='overflow: hidden; '>
+    <h3 class="text-center text-uppercase">Admission Applications Summary Report</h3>
+    <div class="p-10 mb-20 main-title">
+      <div class="left-align">Report Generated On : {{ date }}</div>
+      <div class="right-align flex" *ngIf="acadmicSession">
+        {{acadmicSession?.name}} ({{acadmicSession?.startDate | date: 'MMM d, y'}} - {{acadmicSession?.endDate | date: 'MMM d, y'}})
+      </div>
+    </div>
+    <div style="font-size: 18px;" class="px-20 pt-20">Admission Applications Summary Details</div>
+    <div *ngIf="resultApplicationReports">
+      <app-af-report-table [inputData]="resultApplicationReports?.admissionApplictionSummaryView" [tableId]="'adm-report'" [columns]="columns"></app-af-report-table>
+    </div>
+  </div>
+</div>

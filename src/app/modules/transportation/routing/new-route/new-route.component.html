@@ -1,0 +1,164 @@
+<div class="p-32 content allTable-grid">
+  <div class="text-uppercase font-size-18 pl-12" translate>new route</div>
+  <div class="simple-table-container radius-t-20 mat-elevation-z3" id="route-form">
+    <form [formGroup]="routeForm" #class="ngForm" fxLayout="column">
+      <div fxFlexFill fxLayout="column" fxLayout.gt-sm="row" class="pt-24 pb-12 px-20">
+        <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="25">
+          <mat-label translate #routeName>Route Name</mat-label>
+          <input (keyup)="preventSpace($event,'routeForm','name')"  matInput required formControlName="name" (blur)="trimTextBoxSpaces('routeForm','name')">
+          <mat-error>
+            <app-validation [labelName]="routeName.innerText" [validationControl]="routeForm.controls.name"
+              [doValidate]="validate">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="25"
+          class="px-sm-20">
+          <mat-label translate #type>Type</mat-label>
+          <mat-select placeholder="Select Type" formControlName="routeTypeId" required>
+            <mat-option *ngFor="let type of routeTypeList" [value]="type.id">
+              {{ type.name }}</mat-option>
+          </mat-select>
+          <mat-error>
+            <app-validation [labelName]="type.innerText" [validationControl]="routeForm.controls.routeTypeId"
+              [doValidate]="validate">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="20">
+          <mat-label translate #routeNumber>Route Number</mat-label>
+          <input (keyup)="preventSpace($event,'routeForm','routeNumber')" matInput required formControlName="routeNumber" (blur)="trimTextBoxSpaces('routeForm','routeNumber')">
+          <mat-error>
+            <app-validation [labelName]="routeNumber.innerText" [validationControl]="routeForm.controls.routeNumber"
+              [doValidate]="validate">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="30" class="pl-sm-20">
+          <mat-label translate #description>Route Description</mat-label>
+          <textarea matInput required formControlName="routeDescription"
+          (blur)="trimTextBoxSpaces('routeForm','routeDescription')"></textarea>
+          <mat-error>
+            <app-validation [labelName]="description.innerText"
+              [validationControl]="routeForm.controls.routeDescription" [doValidate]="validate">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+      </div> 
+      <mat-divider></mat-divider>
+      <div fxLayout.gt-sm="row" fxLayout="column" fxFlex="100" fxLayoutAlign.gt-sm="space-between center" class="mt-32 px-sm-12">
+        <mat-form-field fxlayout="column" fxFlex="40">               
+          <input (keyup)="preventSpaceForArray($event,searchControl)" id="inputId" matInput placeholder="{{'Search Place' | translate}}" [formControl]="searchControl" #search>
+        </mat-form-field>
+        <h3 class="px-16 break-word" translate>Use the map to click on and build the route</h3>
+        <div fxLayout="row" *ngIf="duration && distance">
+          <div fxLayout="row" fxLayoutAlign="center center" class="w-140">
+            <mat-icon class="mr-4 grey-600-fg">access_time</mat-icon>
+            <div fxLayout="column">
+              <span class="grey-500-fg" translate>Travel Time</span>
+              <span>{{duration}}</span>
+            </div>
+          </div>
+          <div fxLayout="row" fxLayoutAlign="center center" class="px-24" class="w-140">
+              <mat-icon class="mr-4 grey-600-fg">place</mat-icon>
+              <div fxLayout="column">
+                <span class="grey-500-fg" translate>Total Distance</span>
+                <span>{{distance}} km</span>
+              </div>
+            </div>
+        </div>
+      </div>
+      <agm-map appDirectionsMap (getDirections)="getDirections($event)" [streetViewControl]="false" [latitude]="latitude" [longitude]="longitude" class="h-600 mat-elevation-z3 mx-20 radius-10"  [showDirection]="true" (mapClick)="mapClicked($event)"  travelMode="DRIVING"
+       [clickableIcons]="false" [streetViewControl]="false" (dblclick)="mapDoubleClicked($event)" maxZoom="16"
+       [disableDefaultUI]="true" [markers]="markers"
+       [zoom]="markers?.length ? 10 : 8"  [fitBounds]="(markers?.length || currentLocation) ? true : false"> 
+       
+      <agm-marker *ngFor="let m of markers;let i = index;" [agmFitBounds]="true"
+      [latitude]="m.latitude" [markerDraggable]="m.draggable"
+      [longitude]="m.longitude" [label]="(m.label)?.toString()" [agmFitBounds]="true" (dragEnd)="markerDragEnd(i, $event)" [animation]="'DROP'">
+      <agm-info-window [isOpen]="m.openInfoWindow">
+      {{m.pointAddress}} 
+      </agm-info-window>
+      </agm-marker>
+      
+      <agm-marker [agmFitBounds]="markers?.length ? false : true" *ngIf="currentLocation"
+      [latitude]="currentLocation?.latitude" [markerDraggable]="currentLocation?.draggable"
+      [longitude]="currentLocation?.longitude" [label]="(currentLocation?.label)?.toString()" [agmFitBounds]="true" [iconUrl]="'assets/images/custom-icons/currentlocation.png'" > 
+      </agm-marker>
+
+      <agm-marker *ngIf="selectedPoint?.latitude" [latitude]="selectedPoint?.latitude"
+      [longitude]="selectedPoint?.longitude" [label]="(selectedPoint?.label)?.toString()" [agmFitBounds]="true" [markerDraggable]="true" (dragEnd)="markerAction($event)">
+        <agm-info-window [isOpen]="true" (infoWindowClose)="selectedPoint = null">
+          <div class="font-size-14 pr-4"> {{selectedPoint?.pointAddress}} </div> 
+          <div fxLayoutAlign="end center" class="py-12 min-width-400"> 
+              <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="50">
+                  <mat-label translate #infoWindo>Add At Stop</mat-label>
+                  <input [formControl]="infoWindow" type="number" (keyup)="preventSpaceForArray($event,infoWindow)"  matInput required >               
+                </mat-form-field>
+                <mat-error class="p-absolute">
+                  <app-validation labelName="Add at Stop"
+                                  [validationControl]="infoWindow" [doValidate]="true">
+                  </app-validation>
+                </mat-error>
+                <button (click)="addSelectedPoint(selectedPoint)" class="ml-8 mb-16" mat-raised-button color="accent" type="button" [disabled]="infoWindow.invalid">
+                  {{'Add Stop' | translate}}
+                </button>      
+          </div>
+         
+        </agm-info-window>
+      </agm-marker>
+
+    </agm-map>
+      <div class="scrolltable mb-12">
+        <mat-table #table *ngIf="markers?.length" formArrayName="routePointsView" class="tableBar mt-28" mat-table
+          [dataSource]="rows | async" matSort matSortDisable cdkDropList
+          [cdkDropListData]="rows | async"
+          (cdkDropListDropped)="dropTable($event)" [cdkDropConnectedTo]="[table]">
+          <ng-container *ngFor="let column of columns; let i = index" matColumnDef="{{column.field}}">
+            <mat-header-cell *matHeaderCellDef>
+              <div class="headerTitle w-100-p"  mat-sort-header disableClear
+                [disabled]="!column.sort || (rows && rows.length == 0)">
+                <strong class="mb-0 title mat-subheading-2" translate >{{column.header}}</strong>
+              </div>
+            </mat-header-cell>
+            <mat-cell cdkDragHandle *matCellDef="let row; let i = index" [row]="row" [column]="column" [formGroupName]="i">     
+                <mat-form-field *ngIf="column.field == 'name';else elseBlock" class="pb-28 pt-12">       
+                  <mat-label translate #name>Name</mat-label>
+                  <input required (blur)="trimTextBoxSpacesForTable(i)"  (keyup)="preventSpaceForArray($event, routeForm.get('routePointsView')?.controls[i]?.controls?.name)" matInput #name formControlName="name">
+                  <mat-error>
+                    <app-validation labelName="name"
+                      [validationControl]="routeForm.get('routePointsView')?.controls[i]?.controls?.name"
+                      [doValidate]="validate">
+                    </app-validation>
+                  </mat-error>
+                </mat-form-field>
+              <ng-template #elseBlock>
+                <button mat-icon-button type="button" *ngIf="column.field == 'delete';else fieldValue">
+                  <mat-icon (click)="deleteAction(i)" class="red-300-fg">delete</mat-icon>
+                </button>
+              </ng-template>
+              <ng-template #fieldValue>
+                <p>
+                  {{row[column.field]}}
+                </p>
+              </ng-template>
+            </mat-cell>
+          </ng-container>
+          <mat-header-row *matHeaderRowDef="displayedColumns" class="grey-header"></mat-header-row>
+          <mat-row class="cursor-drag" cdkDragHandle cdkDrag [cdkDragData]="row" *matRowDef="let row; columns: displayedColumns;">
+          </mat-row>
+        </mat-table>
+      </div>
+      <div *ngIf="!markers.length" class="errorMsg">
+        <h2 class="red-text text-center mb-0 font-weight-bold p-24" translate>Add locations to create a route</h2>
+      </div>
+
+      <div fxLayout="row" fxLayoutAlign="end center" class="p-20">
+        <button (click)="onAction()" mat-raised-button type="button" class="text-uppercase mr-12">{{'cancel' | translate}}</button>
+        <button mat-raised-button type="submit" class="text-uppercase" color="accent" (click)="onAction(true)">
+        {{(updateRouteId ? 'update' : 'submit') | translate}}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

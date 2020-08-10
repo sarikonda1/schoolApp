@@ -1,0 +1,168 @@
+<div class="px-sm-40 pt-sm-24">
+  <div class="py-8 px-20 font-size-18 text-uppercase" translate>Syllabus Schedule</div>
+  <div class="mat-elevation-z3 simple-table-container radius-t-20">
+    <form [formGroup]="syllabusSearchForm" (ngSubmit)="syllabusDropDownList=[];onSyllabusSearch(syllabusSearchForm)">
+      <div fxLayout="row" fxLayoutAlign="end end" class="p-20">
+        <button type="button" mat-icon-button translate (click)="getHelpText('Syllabus Schedule')">  <mat-icon >info</mat-icon></button>
+      </div>
+      <mat-divider></mat-divider>
+      <div class="p-20">
+        <div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign="start center">
+           <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="25"
+            class="pr-sm-20">
+            <mat-label translate #board>Board</mat-label>
+            <mat-select formControlName="boardId" (selectionChange)="boardChanged($event)" required>
+              <mat-option *ngFor="let board of availableSchoolBoards" [value]="board.value">
+                {{ board.label }}</mat-option>
+            </mat-select>
+            <mat-error>
+              <app-validation [labelName]='board.innerText' [validationControl]="syllabusSearchForm.controls.boardId"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="25"
+            class="pr-sm-20">
+            <mat-label translate #class>Class</mat-label>
+            <mat-select  (selectionChange)="classChanged($event)" formControlName="classId" required>
+              <mat-option *ngFor="let class of availableClasses" [value]="class.value">
+                {{ class.label }}</mat-option>
+            </mat-select>
+            <mat-error>
+              <app-validation [labelName]='class.innerText' [validationControl]="syllabusSearchForm.controls.classId"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="25" class="pr-sm-20">
+            <mat-label translate #course>Course</mat-label>
+            <mat-select required formControlName="courseId" required>
+              <mat-option *ngFor="let course of coursesList" [value]="course.value">
+                {{ course.label }}</mat-option>
+            </mat-select>
+            <mat-error>
+              <app-validation [labelName]='course.innerText' [validationControl]="syllabusSearchForm.controls.courseId"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="25">
+            <mat-label translate #section>Section</mat-label>
+            <mat-select formControlName="sectionId">
+              <mat-option [value]="null" *ngIf="availableSections?.length"> </mat-option>
+              <mat-option *ngFor="let section of availableSections" [value]="section.value">
+                {{ section.label }}</mat-option>
+            </mat-select>
+            <mat-error>
+              <app-validation [labelName]='section.innerText' [validationControl]="syllabusSearchForm.controls.sectionId"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="end center" class="my-12">
+          <button mat-raised-button type="reset" color="primary" class="text-uppercase mx-12" (click)="onClear()">
+            {{'Reset' | translate}}
+          </button>
+          <button mat-raised-button type="submit" color="accent" class="text-uppercase">
+            {{'Search' | translate}}
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="px-sm-40 pt-sm-24" *ngIf="syllabusSearchForm.valid && !tabSettings?.rows?.length">
+  <div class="mat-elevation-z3 simple-table-container radius-5" >
+    <div *ngIf="onSearchHeader && !syllabusDropDownList?.length" class="font-size-16 text-center p-20">There is no syllabus schedule for selected options. Click next to assign a Syllabus schedule</div>
+    <div *ngIf="onSearchHeader && !syllabusDropDownList?.length" fxLayout="row"  fxLayoutAlign="center center" class="pb-12">
+      <button (click)="onNoScheduleNext()" mat-raised-button type="submit" color="accent" class="text-uppercase">
+        {{'Next' | translate}}
+      </button>
+    </div>
+    <div class="p-20" fxLayoutAlign="center center" *ngIf="onSearchHeader && syllabusDropDownList?.length > 1">
+      <div fxLayout="column" fxFlex.gt-sm="60" fxFlex="100" class="border">
+        <div class="p-20 primary font-size-18">Syllabus Selection</div>
+        <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" class="px-24 pt-28 pb-12">
+          <mat-label translate #syllabus>Syllabus</mat-label>
+          <mat-select required [formControl]="syllabusFormController">
+            <mat-option *ngFor="let syllabus of syllabusDropDownList" [value]="syllabus.id">
+              {{ syllabus.name }}</mat-option>
+          </mat-select>
+          <mat-error>
+            <app-validation [labelName]='syllabus.innerText' [validationControl]="syllabusFormController"
+              [doValidate]="validate">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+        <div fxLayout="row"  fxLayoutAlign="center center" class="pb-12">
+          <button (click)="addSyllabusSchedule()" mat-raised-button type="submit" color="accent" class="text-uppercase">
+            {{'Next' | translate}}
+          </button>
+        </div>
+      </div>
+     
+    </div>
+   
+  </div>
+</div>
+
+<app-table *ngIf="tabSettings?.rows?.length" [settings]="tabSettings" 
+  [massActionTemplateRef]="massActions" (selectedRows)='selectedRows($event)' (rowBasedAction)="rowWiseActions($event)"
+  [disabled]="disbleSubmitBtn" [templateRef]="addCourseTemplate" [closeAddForm]="closeAddPanel"
+   [closeRowForm]='closeAddPanel'>
+</app-table>
+
+
+<ng-template #massActions>
+  <form #completionDateForm="ngForm" (ngSubmit)="scheduleController?.valid ? onSchedule() : ''">
+    <div fxLayout="row" fxFlex="100" fxLayoutAlign="center center">
+      <mat-form-field class="px-20 w-200">
+        <mat-label #actions translate>Actions</mat-label>
+        <mat-select (selectionChange)="onSchedule()" [formControl]="scheduleController" required>
+          <mat-option [value]="true">
+           set Schedule Completion Date
+          </mat-option>
+        </mat-select>
+        <mat-error>
+          <app-validation [labelName]='actions.innerText' [validationControl]="scheduleController"
+            [doValidate]="validate">
+          </app-validation>
+        </mat-error>
+      </mat-form-field>
+    </div>
+  </form>
+</ng-template>
+
+
+<ng-template #scheduleDateTemp>
+  <div>
+    <div fxLayoutAlign="space-between center" class="font-size-20"><span translate>Enter Scheduled Completion Date</span> 
+      <button  
+        mat-icon-button type="reset" (click)="closeDialog()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    <form [formGroup]="scheduleForm" (ngSubmit)="onSubmitDate()"
+      #scheduleDateFormPopUp="ngForm">
+      <div fxFlexFill fxLayout="column" class="pt-24" fxLayoutAlign="center center">
+        <mat-form-field appearance="outline" fxFlexFill>
+          <mat-label #scheduleDatee translate>Scheduled Completion Date</mat-label>
+          <input required matInput (keyup)="forceValidation('scheduleDate', scheduleForm)" [matDatepicker]="scheduleDate" [min]="academicSession?.startDate"  [max]="academicSession?.endDate"
+          formControlName="scheduleDate">
+          <mat-datepicker-toggle matSuffix [for]="scheduleDate"></mat-datepicker-toggle>
+          <mat-datepicker #scheduleDate></mat-datepicker>
+          <mat-error>
+            <app-validation [labelName]='scheduleDatee.innerText'
+              [validationControl]="scheduleForm.controls.scheduleDate" [doValidate]="true">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+      </div>
+      <div fxFlexFill fxLayoutAlign="end center" fxLayout="row" class="pb-20">
+        <button id="submit-button" mat-raised-button type="submit" class="text-uppercase accent-fg" cdkFocusInitial autofocus>{{'Submit' | translate}}</button>
+      </div>
+    </form>
+  </div>
+</ng-template>

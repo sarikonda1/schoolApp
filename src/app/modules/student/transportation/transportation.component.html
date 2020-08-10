@@ -1,0 +1,113 @@
+<div class="text-uppercase font-size-20 px-52 pt-40" translate>Transportation</div>
+<ng-container *ngIf="routeDetails?.inbound || routeDetails?.outBound">
+    <div class="px-sm-20">
+        <div fxLayout.gt-sm="row" fxLayout="column">
+            <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" class="p-24" *ngIf="routeDetails?.inbound"
+                id="map-grid">
+                <div translate class="font-size-18 p-12">In-Bound</div>
+                <table class="simple mat-elevation-z3 radius-5 simple-table-container transport">
+                    <tr>
+                        <td translate>Route Number</td>
+                        <td translate>{{routeDetails?.inbound?.routeNumber}}</td>
+                        <td align="right"><img class="cursor-pointer" width="50" height="50" (click)="onSelect()"
+                                src="assets/images/custom-icons/maps-icon.jpeg" /></td>
+                    </tr>
+                    <tr>
+                        <td translate>Route Name</td>
+                        <td translate colspan="2">{{routeDetails?.inbound?.name}}</td>
+                    </tr>
+                    <tr>
+                        <td translate>Route Start Time</td>
+                        <td translate colspan="2">{{routeDetails?.inbound?.startTime}}</td>
+                    </tr>
+                    <tr>
+                        <td translate>Route Starting Point</td>
+                        <td translate colspan="2">{{routeDetails?.inbound?.startingPoint}}</td>
+                    </tr>
+                    <tr>
+                        <td translate>Your Pickup Point</td>
+                        <td translate colspan="2">{{routeDetails?.inbound?.point?.name}}</td>
+                    </tr>
+                    <tr >
+                        <td translate>Status</td>
+                        <td translate colspan="2">{{routeDetails?.inbound?.routeTripId ? 'In-Progress' : 'Scheduled'}}</td>
+                    </tr>
+                    <tr>
+                        <td translate>Track Your Journey</td>
+                        <td translate *ngIf="!routeDetails?.inbound?.tripStartTime; else navii" colspan="2">{{'Waiting To Start'}}</td>
+                        <ng-template #navii>
+                            <td *ngIf="routeDetails?.inbound?.tripStartTime && !routeDetails?.inbound?.tripEndTime; else ended" align="right" class="cursor-pointer" width="50" height="50" (click)="onClickNavigation(routeDetails?.inbound)"> 
+                                <mat-icon color="accent">navigation</mat-icon>
+                            </td>
+                        </ng-template>
+                        <ng-template #ended>
+                            <td translate colspan="2">{{'Trip has been Ended'}}</td>
+                        </ng-template>
+                    </tr>
+                </table>
+            </div>
+            <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" class="p-24" *ngIf="routeDetails?.outBound">
+                <div translate class="font-size-18 p-12">Out-Bound</div>
+                <table class="simple mat-elevation-z3 radius-5 simple-table-container transport">
+                    <tr>
+                        <td translate>Route Number</td>
+                        <td translate>{{routeDetails?.outBound?.routeNumber}}</td>
+                        <td align="right"><img class="cursor-pointer" width="50" height="50" (click)="onSelect(false)"
+                                src="assets/images/custom-icons/maps-icon.jpeg" /></td>
+                    </tr>
+                    <tr>
+                        <td translate>Route Name</td>
+                        <td translate colspan="2">{{routeDetails?.outBound?.name}}</td>
+                    </tr>
+                    <tr>
+                        <td translate>Route Start Time</td>
+                        <td translate colspan="2">{{routeDetails?.outBound?.startTime}}</td>
+                    </tr>
+                    <tr>
+                        <td translate>Your Drop-off Point</td>
+                        <td translate colspan="2">{{routeDetails?.outBound?.point?.name}}</td>
+                    </tr>
+                    <tr>
+                        <td translate>Route Ending Point</td>
+                        <td translate colspan="2">{{routeDetails?.outBound?.endingPoint}}</td>
+                    </tr>
+                    <tr >
+                        <td translate>Status</td>
+                        <td translate colspan="2">{{routeDetails?.outBound?.routeTripId ? 'In-Progress' : 'Scheduled'}}</td>
+                    </tr>
+                    <tr>
+                        <td translate>Track Your Journey</td>
+                        <td translate *ngIf="!routeDetails?.outBound?.tripStartTime; else navi" colspan="2">{{'Waiting To Start'}}</td>
+                        <ng-template #navi>
+                            <td *ngIf="routeDetails?.outBound?.tripStartTime && !routeDetails?.outBound?.tripEndTime; else endedd"  align="right" class="cursor-pointer" width="50" height="50" (click)="onClickNavigation(routeDetails?.outBound)"> 
+                                <mat-icon color="accent">navigation</mat-icon>
+                            </td>
+                        </ng-template>
+                        <ng-template #endedd>
+                            <td translate colspan="2">{{'Trip has been Ended'}}</td>
+                        </ng-template>
+                    </tr>
+                </table>
+            </div>
+        </div>
+</div>
+<div id="accordion-map" [style.visibility]="openMap ? 'visible' : 'hidden'">
+    <app-view-route (onClosePanel)="onClosePanel()" [fromStudentTransport]="true" [routeName] =routeName
+        [routePoints]="openMap ? (clickedOnInBound ? routeDetails?.inbound?.pointDetails : routeDetails?.outBound?.pointDetails) : []">
+    </app-view-route>
+</div>
+<!-- <mat-accordion id="accordion-map">
+    <div *ngIf="openMap === true" id="accordion-map" [style.visibility]="openMap ? 'visible' : 'hidden'">
+        <app-view-route (onClosePanel)="onClosePanel()" [fromStudentTransport]="true"
+            [routePoints]="clickedOnInBound ? routeDetails?.inbound?.pointDetails : routeDetails?.outBound?.pointDetails">
+        </app-view-route>
+    </div>
+    <mat-accordion id="accordion-map">
+    <mat-expansion-panel [expanded]="openMap" >
+            <app-view-route (onClosePanel)="onClosePanel()" [fromStudentTransport]="true" [routePoints]="clickedOnInBound ? routeDetails?.inbound?.pointDetails : routeDetails?.outBound?.pointDetails"></app-view-route>
+    </mat-expansion-panel>
+</mat-accordion> -->
+
+</ng-container>
+<h2 class="text-center pt-60" *ngIf="!routeDetails?.inbound && !routeDetails?.outBound && onLoadApi">No Route Found for
+    this Student</h2>

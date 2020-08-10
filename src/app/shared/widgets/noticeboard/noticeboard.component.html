@@ -1,0 +1,28 @@
+<!-- <div fxLayout="row" fxLayout.gt-sm="row" fxLayoutAlign="start center" *ngIf="noticeBoardInfo?.length">
+  <div fxLayout="row wrap" fxFlexFill fxFlex="100" class="border-left section-assignament px-8">
+    <div *ngFor="let item of noticeBoardInfo">
+      <p *ngIf="item.Date != null" class="text-center text-uppercase font-size-16" translate>
+        <b>{{item.Date}}</b></p>
+      <p *ngIf="item.Message" class="text-center text-uppercase font-size-16" translate> {{item.Message}}</p>
+      <mat-divider></mat-divider>
+    </div>
+  </div>
+</div> -->
+<div *ngIf="noticeBoardInfo && noticeBoardInfo.length > 0 && !isLoading" fxLayout="row wrap">
+  <div fxLayout="column" fxFlex="100" *ngFor="let item of noticeBoardInfo" class="dashed-border">
+
+    <!-- <div class="px-20 pt-12" *ngIf="item.Date != null"><span>{{item.Date | date:'EEEE'}}</span>
+      {{item.Date | date:'dd'}} {{item.Date | date:'LLL'}} {{item.Date | date:'yyyy'}} </div> -->
+    <div class="px-20 py-8 accent">{{item.Date}}</div>
+    <div class="px-20 py-12" *ngIf="item.Message"> {{item.Message}} </div>
+
+  </div>
+</div>
+
+<div *ngIf="noticeBoardInfo && noticeBoardInfo.length === 0 && !isLoading" fxLayoutAlign="center center" fxFlexFill>
+  <p class="text-center text-uppercase font-size-16 secondary-text" translate>No Data To Display</p>
+</div>
+
+<div *ngIf="isLoading" fxFlexFill fxLayoutAlign="center center">
+  <app-af-loader></app-af-loader>
+</div>

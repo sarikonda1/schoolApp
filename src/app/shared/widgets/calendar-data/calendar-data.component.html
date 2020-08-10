@@ -1,0 +1,92 @@
+<div class="p-12" fxLayout="column" fxLayout.gt-sm="row" fxFlex="100" *ngIf="!isLoading">
+  <div fxLayout="column" fxFlex.gt-sm="60" fxFlex="100">
+    <div class="mat-elevation-z3 radius-10 mb-12" *ngIf="isResLoaded | async">
+      <af-calendar [isWidget]="true" [addNewEvent]="false" [cellHeight]="true" [events]="events" [title]="title"
+                   [selectedCalenderDay]="selectedDay" [viewCalenderDate]="viewDate" [startDate]="startDate" [endDate]="endDate"
+                   (dateChange)="dateChange($event)" (dateSelect)="dateSelect($event)" [customCellTemplate]="descriptiveCell" >
+      </af-calendar>
+    </div>
+    <div fxLayout="row wrap" class="primary-50 px-16 pt-16 pb-8 radius-5" *ngIf="events?.length">
+      <div fxLayoutAlign="start center" fxFlex="25" *ngFor="let calenderColor of colors; let i=index;"
+           class="pb-12"><span class="p-12 mr-8 mat-elevation-z1 radius-2" [style.background]="calenderColor.code"></span>
+           <div class="text-truncate" [matTooltip]="calenderColor.name" matTooltipClass="matTool-tip">{{calenderColor.name}}</div></div>
+    </div>
+  </div>
+
+
+  <div fxLayout="column" fxFlex.gt-sm="40" fxFlex="100" class="pl-sm-12 overflow-y-auto" *ngIf="displayCal && displayCal.length > 0 && !isLoading">
+    <ng-container *ngFor="let cal of displayCal;let i = index">
+      <div *ngIf="currentIndex === i" fxLayout="column" class="border radius-5 mb-12" >
+
+        <div id={{i}} class="h3 text-center p-20 border-bottom">{{cal.dateTitle}}</div>
+
+        <div fxLayout="column" fxFlex="90" class="pl-12 my-8" *ngFor="let e of cal.events">
+          <div class="font-weight-600 pt-8" fxLayout="row" fxLayoutAlign="start center">
+            <span class="events-icon mr-12" [style.background]="e.color"></span>{{ e.title }}
+            <button mat-icon-button [matMenuTriggerFor]="classSection" class="mr-16"
+                    *ngIf=" e?.classSections &&  e?.classSections.length">
+            <mat-icon>info</mat-icon>
+          </button></div>
+          <div *ngIf="e?.courseName" class="secondary-text py-8 px-20">{{ e?.courseName}}</div>
+          <div *ngIf="e?.description" class="px-20">{{ e?.description}}</div>
+          <div *ngIf="e?.className" class="py-8 px-20">{{ e?.className}}</div>
+          <div *ngIf="e?.sectionName" class="px-20">{{ e?.sectionName}}</div>
+
+          <mat-menu #classSection="matMenu">
+            <div *ngFor="let class of e?.classSections" class="p-8" fxLayout="row wrap">
+              <strong>{{class.className}}-</strong>
+              <div *ngFor="let section of class.groups;let l = last" class="pl-4">
+                {{section.sectionName}}<span *ngIf="!l">,</span>
+              </div>
+            </div>
+          </mat-menu>
+        </div>
+
+      </div>
+    </ng-container>
+    <div *ngIf="currentIndex === -1" fxLayout="column" class="border radius-5 mb-12" >
+      <div class="h3 text-center p-20 border-bottom">{{currentDateTitle}}</div>
+      <div fxLayout="column" fxFlex="90" class="pl-12 my-8 text-center text-uppercase font-size-16 secondary-text" translate>
+        {{'No Calendar Entries To Be Displayed' | translate}}
+      </div>
+    </div>
+    <!--<mat-card class="mb-12 p-0" *ngIf="!displayCal?.length">
+      <div class="border-bottom h2 text-center p-20">
+        {{'No Calendar Entries To Be Displayed' | translate}}
+      </div>
+    </mat-card>-->
+  </div>
+</div>
+<!--<div *ngIf="events.length <= 0">
+  <p class="text-center text-uppercase font-size-16" translate>No Data To Display</p>
+</div>-->
+<ng-template #descriptiveCell let-day="day" let-openDay="openDay" let-locale="locale"
+             let-tooltipPlacement="tooltipPlacement" let-highlightDay="highlightDay" let-unhighlightDay="unhighlightDay"
+             let-eventClicked="eventClicked" let-tooltipTemplate="tooltipTemplate"
+             let-tooltipAppendToBody="tooltipAppendToBody" let-tooltipDelay="tooltipDelay"
+             let-trackByEventId="trackByEventId" let-validateDrag="validateDrag">
+  <div class="cal-cell-top">
+            <span class="cal-day-number">{{
+              day.date | calendarDate: 'monthViewDayNumber':locale
+              }}</span>
+  </div>
+  <div class="cal-events" *ngIf="(day.events.length > 0 && showEvents(day)) && !isLoading">
+    <!--<ng-container *ngFor="let event of day.events; trackBy: trackByEventId">
+      <div class="text-truncate"
+           [ngStyle]="{ color: event.color?.primary }" [ngClass]="event?.cssClass"
+           (mwlClick)="eventClicked.emit({ event: event })">
+        <div  class="cal-event" [ngStyle]="{ background: event.color?.primary }"></div>
+      </div>
+    </ng-container>-->
+    <ng-container *ngFor="let color of day.colors;">
+      <div class="text-truncate"
+           [ngStyle]="{ color: color }">
+        <div  class="cal-event" [ngStyle]="{ background: color }"></div>
+      </div>
+    </ng-container>
+  </div>
+</ng-template>
+
+<div *ngIf="isLoading" fxFlexFill fxLayoutAlign="center center">
+  <app-af-loader></app-af-loader>
+</div>

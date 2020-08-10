@@ -1,0 +1,81 @@
+
+<div class="content px-sm-40 py-sm-20">
+  <div class="w-100-p mat-elevation-z2 simple-table-container radius-t-20 mb-20">
+    <div fxLayout="row" fxLayoutAlign="start center" class="p-20">
+        <div fxlayout="column" fxLayoutAlign="start center" fxFlex="100">
+            <div class="h3 secondary-text"><span translate>Application Reference Number :</span>
+              <strong>{{applicantInfo?.applicationReferenceNo}}</strong></div>
+          </div>
+      <button mat-raised-button color="primary" translate (click)="back()">{{'Back' | translate}}</button>
+    </div>
+    <mat-divider></mat-divider>
+    <div fxLayout="row" fxLayoutAlign="start center" class="ml-24">
+      <div class="profile-image border m-24 radius-10">
+        <img *ngIf="profileImage" [src]="profileImage ? profileImage : ''" class="w-200 h-200 radius-10" alt="No Image"/>
+        <div *ngIf="!profileImage" fxLayoutAlign="center center" class="w-200 h-200" translate>No Image</div>
+      </div>
+      <div fxLayout="column" fxFlex="60">
+        <div class="font-size-18 primary-900-fg-custom mb-16">{{applicantInfo?.studentName}}</div>
+        <div fxLayout="row" fxLayoutAlign="start center">
+          <div class="w-140 py-4 primary-300-fg" translate>mobilenumber</div> : <div class="ml-24 break-word">
+            {{applicantInfo?.studentDetails?.mobileTel ? applicantInfo?.studentDetails?.mobileTel : "-"}}</div>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="start center">
+          <div class="w-140 py-4 primary-300-fg" translate>email</div> : <div class="ml-24 break-word">
+            {{applicantInfo?.studentDetails?.email1 ? applicantInfo?.studentDetails?.email1 : "-"}}</div>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="start center">
+          <div class="w-140 py-4 primary-300-fg" translate>Class</div> : <div class="ml-24 break-word">
+            {{applicantInfo?.className ? applicantInfo?.className : "-"}}</div>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="start center">
+          <div class="w-140 py-4 primary-300-fg" translate>status</div> : <div class="ml-24 break-word">
+          {{ applicantInfo?.statusName ? applicantInfo?.statusName  : "-"}}</div>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="start center"
+          *ngIf="applicantInfo?.processedComments !=null && applicantInfo?.processedComments !=''">
+          <div class="w-140 py-4 primary-300-fg" translate>processedComments</div> : <div class="ml-24 break-word">
+            {{ applicantInfo?.processedComments }}</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  
+  <app-student-details [studentDetails]="applicantInfo"></app-student-details>
+
+  <div *ngIf="statusName == applicantInfo?.statusCode" fxLayout="row" fxLayoutAlign="end center" class="mt-32 pr-32">
+    <button (click)="submitApplication(false)" mat-raised-button type="button" class="text-uppercase mr-12">{{'reject' | translate}}</button>
+    <button mat-raised-button type="submit" class="text-uppercase" color="accent" (click)="submitApplication(true)">{{'approve' | translate}}
+    </button>
+  </div>
+</div>
+
+<ng-template #rejectPopup>
+  <div fxLayout="row" class="pb-24 font-size-16 font-weight-600" translate>Please confirm to reject this Application </div>
+
+
+  <div fxLayout="row" fxLayoutAlign="start center" class="mb-8">Rejection Comments:</div>
+  <form [formGroup]="approveForm" >
+  <div fxLayout="row">
+    <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" class="reject-comment">
+      <mat-label translate #comments>Comments</mat-label>
+      <textarea required matInput (keyup)="preventSpace($event,'approveForm','commentText')" (blur)="trimTextBoxSpaces()" formControlName="commentText"  placeholder="Leave a comment"></textarea>
+      <mat-error class="pt-28">
+        <app-validation [labelName]="comments.innerText"
+            [validationControl]="approveForm.controls.commentText" [doValidate]="true">
+        </app-validation>
+      </mat-error>
+    </mat-form-field>
+  </div>
+  <small class="pr-8" fxLayoutAlign="end">Max 180 characters</small>
+
+  <div fxLayout="row" fxLayoutAlign="end center" class="mt-32">
+    <button (click)="onPopUpSelect()" mat-raised-button type="submit" class="mr-12">{{'Yes' | translate}}</button>
+    <button (click)="onPopUpSelect(false)" mat-raised-button type="reset" color="accent">{{'No' | translate}}
+    </button>
+  </div>
+</form>
+
+
+</ng-template>

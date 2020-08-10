@@ -1,0 +1,17 @@
+.custom-horizontal-step {
+  .mh-424 {
+    min-height: 424px;
+  }
+}
+
+.ovrflowy-auto {
+  overflow-y: auto;
+  max-height: 300px;
+}
+.manage-institue .mat-tab-label{
+  text-transform: uppercase;
+}
+
+::ng-deep .mat-step-optional{
+  display: none !important;
+}

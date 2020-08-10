@@ -1,0 +1,546 @@
+<ng-template #commForm>
+  <mat-vertical-stepper [linear]="true" #stepper (animationDone)="onStepperAnimationDone(stepper.selectedIndex)">
+    <mat-step [stepControl]="communicationForm">
+      <form [formGroup]="communicationForm" fxLayout="column" #commuForm="ngForm">
+        <ng-template matStepLabel><span translate>Communication Type</span></ng-template>
+        <div fxFlexFill fxLayout="column" class="pt-24" fxLayout.gt-sm="row">
+          <mat-form-field appearance="outline" class="pr-sm-20" fxFlexFill fxFlex="100" fxFlex.gt-sm="40"
+            fxLayout="column">
+            <mat-label #CommunicationTypeId translate>Communication Type</mat-label>
+            <mat-select formControlName="communicationTypeId" required
+              (selectionChange)="onCommunicationTypeSelect($event)">
+              <mat-option *ngFor="let commType of communicationTypesDropDown" [value]="commType" ngDefaultControl>
+                {{ commType.label }}</mat-option>
+            </mat-select>
+            <mat-error>
+              <app-validation [labelName]='CommunicationTypeId.innerText'
+                [validationControl]="communicationForm.controls.communicationTypeId" [doValidate]="true">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="60">
+            <mat-label #title translate>Title</mat-label>
+            <input id="step-title" (keyup)="preventSpace($event,'communicationForm','title')"
+              (blur)="trimTextBoxSpaces('communicationForm','title')" matInput formControlName="title"
+              autocomplete="off" required>
+            <mat-error>
+              <app-validation [labelName]='title.innerText' [validationControl]="communicationForm.controls.title"
+                [doValidate]="true">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div translate>This communication will be delivered through communicationType delivery options.</div>
+        <div fxLayout="row" fxLayoutAlign="center center" class="mt-12">
+          <button #resetButtonStepper mat-raised-button id="resetButtonStepper" (click)="onCancel()" type="reset"
+            class="text-uppercase mr-12">
+            {{'Cancel' | translate}}
+          </button>
+          <button mat-raised-button matStepperNext type="button" color="accent" class="text-uppercase">
+            {{'Next' | translate}}</button>
+        </div>
+      </form>
+    </mat-step>
+
+    <mat-step [stepControl]="messageForm">
+      <form [formGroup]="messageForm" fxLayout="column" #messageContent="ngForm">
+        <ng-template matStepLabel><span translate>Message Content</span></ng-template>
+        <div class="pt-4" translate>Please enter the content for each form of message delivery</div>
+        <div *ngIf="emailEnable">
+          <div class="mt-16 mb-4"><span translate>Email Content</span></div>
+          <div fxLayout="column" class="p-20 border mb-20">
+            <mat-form-field appearance="outline" fxLayout="column" fxFlex="100">
+              <mat-label #subject translate>Subject</mat-label>
+              <input matInput autocomplete="off" formControlName="subject"
+                (keyup)="preventSpace($event,'messageForm','subject')"
+                (blur)="trimTextBoxSpaces('messageForm','subject')" required>
+              <mat-error>
+                <app-validation [labelName]='subject.innerText' [validationControl]="messageForm.controls.subject"
+                  [doValidate]="true">
+                </app-validation>
+              </mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="outline" fxLayout="column" fxFlex="100">
+              <mat-label #Message translate>Message</mat-label>
+              <textarea matInput autocomplete="off" formControlName="message"
+                (keyup)="preventSpace($event,'messageForm','message')"
+                (blur)="trimTextBoxSpaces('messageForm','message')" required></textarea>
+              <mat-error>
+                <app-validation [labelName]='Message.innerText' [validationControl]="messageForm.controls.message"
+                  [doValidate]="true">
+                </app-validation>
+              </mat-error>
+            </mat-form-field>
+
+            <div fxLayout="column" class="mt-12" fxFlex.gt-sm="32" fxFlex="100">
+              <div fxLayout="row">
+                <button mat-raised-button type="button" color="primary"
+                  (click)="logoImgInput.value='';logoImgInput.click()">
+                  <mat-icon class="mr-8">attach_file</mat-icon>{{'Upload Attachment' | translate}}
+                </button>
+                <button (click)="logoImgInput.value='';clearImages(true)" mat-icon-button type="button" *ngIf="logoImgProp?.src">
+                  <mat-icon class="mb-4 grey-600-fg" [style.visibility]="logoImgProp?.src ? 'visible' : 'hidden'"
+                    >highlight_off</mat-icon>
+                </button>
+              </div>
+              <input [accept]="'.doc,.docx,image/jpeg,image/jpg,image/png,application/pdf,image/*'" id="logoImgInput"
+                (change)="imgChanged(logoImgInput.files)" fxHide type="file" #logoImgInput>
+              <div class="pt-8 logo-name break-word"
+                [style.visibility]="messageForm?.value?.attachment?.fileName ? 'visible' : 'hidden'"
+                [style.display]="logoImgProp?.src ? 'block' : 'none'">
+                {{messageForm?.value?.attachment?.fileName}}</div>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="smsEnable">
+          <div class="mt-16 mb-4"><span translate>SMS Content</span></div>
+          <div fxLayout="column" class="p-20 border mb-20">
+            <mat-form-field appearance="outline" fxLayout="column" fxFlex="100">
+              <mat-label #Sms translate>Sms</mat-label>
+              <textarea matInput autocomplete="off" formControlName="sms"
+                (keyup)="preventSpace($event,'messageForm','sms')" (blur)="trimTextBoxSpaces('messageForm','sms')"
+                required></textarea>
+              <mat-error>
+                <app-validation [labelName]='Sms.innerText' [validationControl]="messageForm.controls.sms"
+                  [doValidate]="true">
+                </app-validation>
+              </mat-error>
+            </mat-form-field>
+            <small class="secondary-text text-right" translate>Max 255 Characters</small>
+          </div>
+        </div>
+
+        <div *ngIf="notificationEnable">
+          <div class="mt-16 mb-4"><span translate>Push Notification Content</span></div>
+          <div fxLayout="column" class="p-20 border mb-20">
+
+            <mat-form-field appearance="outline" fxLayout="column" fxFlex="100">
+              <mat-label #title translate>Title</mat-label>
+              <input matInput autocomplete="off" formControlName="notificationTitle" (keyup)="preventSpace($event,'messageForm','notificationTitle')"
+                (blur)="trimTextBoxSpaces('messageForm','notificationTitle')" required>
+              <mat-error>
+                <app-validation [labelName]='title.innerText'
+                  [validationControl]="messageForm.controls.notificationTitle" [doValidate]="true">
+                </app-validation>
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" fxLayout="column" fxFlex="100">
+              <mat-label #notification translate>Push Message</mat-label>
+              <textarea matInput autocomplete="off" formControlName="notification"
+                (keyup)="preventSpace($event,'messageForm','notification')"
+                (blur)="trimTextBoxSpaces('messageForm','notification')" required></textarea>
+              <mat-error>
+                <app-validation [labelName]='notification.innerText'
+                  [validationControl]="messageForm.controls.notification" [doValidate]="true">
+                </app-validation>
+              </mat-error>
+            </mat-form-field>
+            <small class="secondary-text text-right" translate>Max 225 Characters</small>
+          </div>
+        </div>
+
+        <div *ngIf="noticeEnable">
+          <div class="mt-16 mb-4"><span translate>Notice Board Content</span></div>
+          <div fxLayout="column" class="p-20 border mb-20">
+            <mat-form-field appearance="outline" fxLayout="column" fxFlex="100">
+              <mat-label #noticeBoard translate>Notice Board</mat-label>
+              <textarea matInput autocomplete="off" formControlName="noticeBoard"
+                (keyup)="preventSpace($event,'messageForm','noticeBoard')"
+                (blur)="trimTextBoxSpaces('messageForm','noticeBoard')" required></textarea>
+              <mat-error>
+                <app-validation [labelName]='noticeBoard.innerText'
+                  [validationControl]="messageForm.controls.noticeBoard" [doValidate]="true">
+                </app-validation>
+              </mat-error>
+            </mat-form-field>
+            <small class="secondary-text text-right" translate>Max 225 Characters</small>
+          </div>
+        </div>
+
+        <div fxLayout="row" fxLayoutAlign="center center" class="mt-12">
+          <button mat-raised-button matStepperPrevious type="button" class="text-uppercase mr-12">
+            {{'Previous' | translate}}
+          </button>
+          <button mat-raised-button matStepperNext type="button" color="accent" class="text-uppercase">
+            {{'Next' | translate}}</button>
+        </div>
+      </form>
+    </mat-step>
+
+    <mat-step [stepControl]="recipients">
+      <div fxLayout="column" fxLayout.gt-sm="row" fxFlexFill>
+        <form [formGroup]="recepientsForm" fxLayout="column" fxFlex="70" #recForm="ngForm">
+          <ng-template matStepLabel><span translate>Recipients</span></ng-template>
+          <div class="py-8" translate>Please Select the Recipients of this Communication</div>
+          <mat-checkbox class="mr-20" (change)="checkAllStudents($event)" [checked]="isAllStudentsChecked"
+            #studentSelect><span translate>Check here to
+              send Communication to All Students of school</span></mat-checkbox>
+          <div fxLayout="column" fxLayout.gt-sm="row" class="pt-24">
+            <div fxFlex="100" fxLayout="row">
+              <mat-form-field appearance="outline" class="mr-12" fxFlex="100">
+                <mat-label #Board translate>Board</mat-label>
+                <mat-select formControlName="boards" (selectionChange)="onRecipientsBoardSelect($event)"
+                  [disabled]="isAllStudentsChecked">
+                  <mat-option *ngFor="let board of schoolBoardsList" [value]="board">
+                    {{ board.label }}</mat-option>
+                </mat-select>
+                <mat-error>
+                  <app-validation [labelName]='Board.innerText' [validationControl]="recepientsForm.controls.boards"
+                    [doValidate]="true">
+                  </app-validation>
+                </mat-error>
+              </mat-form-field>
+            </div>
+
+            <div fxFlex="100" fxLayout="row">
+              <af-select [disabled]="isAllStudentsChecked" [isValueIsObject]="isValueIsObject" class="mr-12"
+                fxFlex="100" appearance="outline" [optionGroupRequired]="true" [groups]="classSections"
+                placeholder="Class And Sections" [multiple]="true" [value]="selectedItems" formControlName="classes">
+              </af-select>
+            </div>
+          </div>
+
+          <div fxLayout="column" fxLayout.gt-sm="row" class="pt-sm-12">
+            <div fxFlex="100" fxFlex.gt-sm="50" fxLayout="row">
+              <div class="pt-16 mr-sm-20">
+                <button mat-raised-button type="button" [disabled]="!(recepientsForm.controls['boards'].value)"
+                  (click)="onSectionButtonSelect()" color="accent"
+                  class="text-uppercase">{{'Select' | translate}}</button>
+              </div>
+            </div>
+            <mat-form-field appearance="outline" fxLayout="column" fxFlex.gt-sm="50" fxFlex="100" class="pr-sm-20">
+              <mat-label #studentId translate>Search Student Name</mat-label>
+              <input #studentName matInput placeholder="Search Students" formControlName="studentIds"
+                aria-label="StudentName" matInput [matAutocomplete]="studentNameSearch">
+              <mat-icon class="grey-400-fg" matSuffix>search</mat-icon>
+              <mat-autocomplete #studentNameSearch="matAutocomplete"
+                (optionSelected)='getSelectedStudent($event.option.value)' [displayWith]="displayFn">
+                <mat-option *ngFor="let option of filterdSearchStudents" [value]="option">
+                  {{option.studentName}}
+                  <span class="grey-400-fg"> {{option.currentClassName}} {{option.currentSectionName}} </span>
+                </mat-option>
+              </mat-autocomplete>
+            </mat-form-field>
+
+          </div>
+          <mat-checkbox class="mr-20 pt-24" (change)="checkAllStaff($event)" [checked]="isAllStaffChecked" #staffSelect>
+            <span translate>Check here to send Communication to All the Staff Members of School</span></mat-checkbox>
+
+          <div fxLayout="column" class="pt-12">
+            <div fxFlex="60" fxLayout="row">
+              <mat-form-field appearance="outline" class="mr-12" fxFlex="70" fxLayout="column">
+                <mat-label #staffTypeIds translate>Staff Type</mat-label>
+                <mat-select formControlName="staffType" (selectionChange)="onStaffTypeSelect($event)"
+                  [disabled]="isAllStaffChecked">
+                  <mat-option *ngFor="let staffType of staffTypes" [value]="staffType" ngDefaultControl>
+                    {{ staffType.label }}</mat-option>
+                </mat-select>
+                <mat-error>
+                  <app-validation [labelName]='staffTypeIds.innerText'
+                    [validationControl]="recepientsForm.controls.staffType" [doValidate]="true">
+                  </app-validation>
+                </mat-error>
+              </mat-form-field>
+            </div>
+            <div fxFlex="60" fxLayout="row">
+              <div class="mr-12" fxFlex="70" fxLayout="column">
+                <af-select appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="40"
+                  [disabled]="isAllStaffChecked" [optionGroupRequired]="false" [options]="staffs?.length ? staffs : []"
+                  [showChips]="1" placeholder="Staff" [multiple]="true" formControlName="staffList"></af-select>
+              </div>
+              <div class="pt-16 w-92" fxFlex="30">
+                <button mat-raised-button type="button" [disabled]="!(recepientsForm.controls['staffType'].value)"
+                  (click)="onStaffButtonSelect()" color="accent"
+                  class="text-uppercase">{{'Select' | translate}}</button>
+              </div>
+            </div>
+          </div>
+          <div fxLayout="row" fxLayoutAlign="center center">
+            <button mat-raised-button matStepperPrevious type="button" class="text-uppercase mr-12">
+              {{'Previous' | translate}}
+            </button>
+            <button mat-raised-button matStepperNext type="button" color="accent"
+              class="text-uppercase" (click)="onSelectRecepients()" >{{'Next' | translate}}</button>
+          </div>
+        </form>
+        <ng-template *ngTemplateOutlet="sideBarData"></ng-template>
+      </div>
+    </mat-step>
+
+    <mat-step [stepControl]="scheduleForm">
+      <span translate>Please select the Schedule for this communication.the message will be processed starting from the
+        schedule date and time.</span>
+      <form [formGroup]="scheduleForm" fxLayout="column" fxFlex="100" #schForm="ngForm">
+        <ng-template matStepLabel><span translate>Schedule</span></ng-template>
+        <div fxFlexFill fxLayout="column" class="pt-24" fxLayout.gt-sm="row">
+          <mat-form-field appearance="outline" class="icon-center" fxFlexFill fxFlex="100" fxFlex.gt-sm="40"
+            fxLayout="column">
+            <mat-label #entryDate translate>Date</mat-label>
+            <input matInput (keyup)="forceValidation('scheduleDate',scheduleForm)" [matDatepicker]="entryDatePicker"
+              formControlName="scheduleDate" [min]="currentDate" required>
+            <mat-datepicker-toggle matSuffix [for]="entryDatePicker"></mat-datepicker-toggle>
+            <mat-datepicker #entryDatePicker></mat-datepicker>
+            <mat-error>
+              <app-validation [labelName]='entryDate.innerText' [validationControl]="scheduleForm.controls.scheduleDate"
+                [doValidate]="true">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="30" class="formfield-pb-0 px-sm-20">
+            <app-custom-timepicker [label]="'Schedule Time'" appearance="outline" formControlName="scheduleTime"
+              [is24HoursFormat]="true" [showLabel]="true" [isRequired]="true" [errorClass]="'pt-20'"
+              [requiredValidator]=true></app-custom-timepicker>
+          </div>
+
+        </div>
+        <div fxLayout="row" fxLayoutAlign="center center" class="pt-20">
+          <button mat-raised-button matStepperPrevious type="button" class="text-uppercase mr-12">
+            {{'Previous' | translate}}
+          </button>
+          <button mat-raised-button matStepperNext type="button" color="accent" class="text-uppercase">
+            {{'Next' | translate}}</button>
+        </div>
+      </form>
+
+    </mat-step>
+
+    <mat-step class="form-status">
+      <ng-template matStepLabel><span translate>Done</span></ng-template>
+      <div fxFlex="80" class="text-center font-size-18 m-auto pb-20 pt-8" translate>Please verify the entered
+        information before your final submit</div>
+
+      <mat-list fxLayout="row wrap" fxFlex="100" class="pt-0 confirm-table border">
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <strong class="w-180"><span translate>Communication Type</span><span class="px-4">:</span></strong>
+          <span flexLayout="row">{{communicationForm?.value?.communicationTypeId?.label}}</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <strong class="w-80"><span translate>Title</span>  <span
+            class="px-4">:</span></strong>
+            <span flexLayout="row"> {{communicationForm.controls?.title?.value}}</span>
+        </mat-list-item>
+
+        <mat-list-item fxLayout="row" fxLayout.gt-sm="column" fxFlex="100" class="recipients">
+          <strong translate class="w-120 pt-20">Recipients</strong><span class="px-4 pt-20">:</span>
+          <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="0 1 auto" class="min-w-300 my-12 border mh-424 "
+            *ngIf="displayResults.length > 0">
+            <div class="p-8" [ngClass]="last ? ' ':'border-bottom'"
+              *ngFor="let item of displayResults; let last = last">{{item.boardName}} <span
+                *ngIf="item.className">,</span> {{item.className}}<span *ngIf="item.sectionName">,</span>
+              {{item.sectionName}} {{item.studentName}} {{item.label}}</div>
+          </div>
+          <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="0 1 auto" class="ml-12 min-w-300 my-12 border mh-424 "
+            *ngIf="selectedList.length > 0">
+            <div class="p-8" [ngClass]="last ? ' ':'border-bottom'" *ngFor="let item of selectedList; let last = last">
+              {{item.staffTypeName}} <span *ngIf="item.staffName && item.staffTypeName">,</span> {{item.staffName}}
+              {{item.label}}</div>
+          </div>
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex="100">
+          <div fxLayout="column" fxFlex="100">
+            <ng-container *ngIf="smsEnable">
+              <div class="mt-16 mb-4"><span translate>SMS Content</span></div>
+              <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" class="formfield-pb-0 pb-4">
+                <mat-label translate>Sms</mat-label>
+                <textarea matInput readonly> {{messageForm.controls?.sms?.value}}</textarea>
+              </mat-form-field>
+            </ng-container>
+
+            <ng-container *ngIf="notificationEnable">
+              <div class="mt-16 mb-4"><span translate>Push Notification Content</span></div>
+              <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" class="formfield-pb-0 pb-4">
+                <mat-label translate>Title</mat-label>
+                <textarea matInput  readonly>{{messageForm.controls?.notificationTitle?.value}}</textarea>
+              </mat-form-field>
+              <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" class="formfield-pb-0 pb-4">
+                <mat-label translate>Push Notification</mat-label>
+                <textarea matInput readonly>{{messageForm.controls?.notification?.value}}</textarea>
+              </mat-form-field>
+            </ng-container>
+
+            <ng-container *ngIf="noticeEnable">
+              <div class="mt-16 mb-4"><span translate>Notice Board Content</span></div> 
+              <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" class="formfield-pb-0 pb-4">
+                <mat-label translate>Notice Board</mat-label>
+                <textarea matInput readonly>{{messageForm.controls?.noticeBoard?.value}}</textarea>
+              </mat-form-field>
+            </ng-container>
+
+            <ng-container *ngIf="emailEnable">
+              <div class="mt-16 mb-4"><span translate>Email Content</span></div>
+              <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" class="formfield-pb-0 pb-4">
+                <mat-label translate>Subject</mat-label>
+                <input matInput readonly value="{{messageForm.controls?.subject?.value}}">
+              </mat-form-field>
+              <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" class="formfield-pb-0 pb-4">
+                <mat-label translate>Message</mat-label>
+                <textarea matInput readonly>{{messageForm.controls?.message?.value}}</textarea>
+              </mat-form-field>
+              <div class="py-8" *ngIf="messageForm.controls?.attachment?.value.fileName"> <strong translate
+                  class="w-200" translate>Attached Document </strong><span class="px-4">:</span>
+                <span>{{messageForm.controls?.attachment?.value.fileName}}</span>
+              </div>
+            </ng-container>
+          </div>
+        </mat-list-item>
+
+        <mat-list-item fxFlex="100" fxLayout="column">
+          <strong><span translate class="pr-12">Schedule Date</span></strong><span class="px-4">:</span>
+          {{showDate(scheduleForm.controls?.scheduleDate?.value)}}
+          <strong> <span class="px-12" translate>Time</span></strong><span class="px-4">:</span>
+          {{scheduleForm.controls?.scheduleTime?.value}}
+
+        </mat-list-item>
+      </mat-list>
+
+      <div fxLayout="row" fxLayoutAlign="center center" class="mt-12 pt-24">
+        <button class="mr-8 text-uppercase" mat-raised-button matStepperPrevious
+          type="button">{{'Previous' | translate}}</button>
+        <button mat-raised-button type="submit" class="text-uppercase" [disabled]="disbleSubmitBtn" color="accent"
+          (click)="onSubmitForm()">{{'submit' | translate}}</button>
+      </div>
+    </mat-step>
+  </mat-vertical-stepper>
+</ng-template>
+
+<ng-template #sideBarData>
+  <div fxLayout="column" fxFlex="30" class="border-left my-28 px-20 mh-424">
+    <div class="font-size-16 accent-fg" *ngIf="displayResults?.length > 0" translate>Selected Student Recipients</div>
+    <mat-list class="pt-0 border mt-16 rm-height" fxLayout.gt-sm="row wrap" fxLayoutAlign="center start"
+      *ngFor="let item of displayResults; let i = index">
+      <mat-list-item fxLayout="column" fxFlex="100">
+        <div fxLayoutAlign="space-between center" fxFlexFill>
+          <div class="break-word"><span>{{item.boardName}}<span *ngIf="item.className">,</span> {{item.className}}<span *ngIf="item.sectionName">,</span> {{item.sectionName}} {{item.studentName}} {{item.label}}</span></div>
+          <button mat-icon-button (click)="deleteStudentSelection(i)">
+            <mat-icon class="red-300-fg">delete</mat-icon>
+          </button>
+        </div>
+      </mat-list-item>
+    </mat-list>
+  <div *ngIf="selectedList?.length > 0" class="font-size-16 accent-fg mt-20" translate>Selected Staff Recipients</div>
+  <mat-list class="pt-0 border mt-16 rm-height" fxLayout.gt-sm="row wrap" fxLayoutAlign="center start" *ngFor="let item of selectedList; let i = index">
+    <mat-list-item fxLayout="column" fxFlex="100" >
+      <div fxLayoutAlign="space-between center" fxFlexFill>
+        <div class="break-word"><span>{{item.staffTypeName}}<span *ngIf="item.staffName">,</span> {{item.staffName}} {{item.label}}</span></div>
+        <button mat-icon-button (click)="deleteStaffSelection(i)">
+          <mat-icon  class="red-300-fg">delete</mat-icon>
+        </button>
+      </div>
+    </mat-list-item>
+  </mat-list>
+  </div>
+</ng-template>
+
+<div class="px-sm-40 pt-sm-20">
+  <div class="py-8 px-20 font-size-18 text-uppercase">{{'School Communications' | translate}}</div>
+  <div class="w-100-p mat-elevation-z3 simple-table-container radius-t-20">
+    <div fxLayoutAlign="end center" class="border-bottom p-20">
+      <button mat-button (click)="getHelpText('School Communications')">
+        <mat-icon class="grey-600-fg">info</mat-icon>
+      </button>
+    </div>
+    <form [formGroup]="searchForm" (ngSubmit)="onSearch(searchForm.value)" class="p-24">
+      <fieldset class="border p-20 mx-12">
+        <legend>{{'Search by Student Name' | translate}}</legend>
+        <div fxLayout="column" fxLayout.gt-sm="row" class="pt-12"  fxLayoutAlign="space-between center">
+          <mat-form-field appearance="outline" fxLayout="column" fxFlex.gt-sm="40" fxFlex="100" class="pr-sm-20">
+            <mat-label #studentId translate>Search Student Name</mat-label>
+            <input #studentNamee matInput placeholder="Search Students" formControlName="studentName"
+              aria-label="StudentName" matInput [matAutocomplete]="studentNameSearch">
+            <!-- <mat-icon class="grey-400-fg" matSuffix>search</mat-icon> -->
+            <mat-autocomplete #studentNameSearch="matAutocomplete" [displayWith]="displayFn"
+              (optionSelected)='selectedStudent($event.option.value)'>
+              <mat-option *ngFor="let option of filterdStudents" [value]="option">
+                {{option.studentName}}
+                <span class="grey-400-fg"> {{option.currentClassName}} {{option.currentSectionName}} </span>
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+      </fieldset>
+      <div fxLayout="column" fxLayout.gt-sm="row" class="pt-24">
+
+        <mat-form-field appearance="outline" class="pr-sm-20" fxLayout="column" fxFlex="100" fxFlex.gt-sm="20"
+          fxFlexFil>
+          <mat-label #board translate>Board</mat-label>
+          <mat-select formControlName="schoolBoardId" (selectionChange)="onBoardSelect($event)">
+            <mat-option *ngIf="schoolBoardsList?.length"></mat-option>
+            <mat-option *ngFor="let board of schoolBoardsList" [value]="board.value">
+              {{board.label}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="20"
+          class="pr-sm-20">
+          <mat-label translate #class>Class</mat-label>
+          <mat-select name="classId" formControlName="classIds" (selectionChange)="onClassSelect($event)">
+            <mat-option *ngIf="classNames?.length"></mat-option>
+            <mat-option *ngFor="let class of classNames" [value]="class?.value">
+              {{class.label}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="20"
+          class="pr-sm-20">
+          <mat-label translate #section>Section</mat-label>
+          <mat-select formControlName="sectionIds">
+            <mat-option *ngIf="sectionNames?.length"></mat-option>
+            <mat-option *ngFor="let section of sectionNames" [value]="section?.value">
+              {{ section.label }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="pr-sm-20" fxFlexFill fxLayout="column" fxFlex="100"
+          fxFlex.gt-sm="20">
+          <mat-label translate #communicationType translate>Communication Type</mat-label>
+          <mat-select name="communicationType" formControlName="communicationTypeId">
+            <mat-option *ngIf="communicationTypesDropDown?.length"></mat-option>
+            <mat-option *ngFor="let commType of communicationTypesDropDown" [value]="commType.value">
+              {{commType.label}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="pr-sm-20" fxFlexFill fxLayout="column" fxFlex="100"
+          fxFlex.gt-sm="20">
+          <mat-label translate #status>Status</mat-label>
+          <mat-select name="statusId" formControlName="statusIds">
+            <mat-option *ngIf="statusViewModel?.length"></mat-option>
+            <mat-option *ngFor="let item of statusViewModel" [value]="item.value">
+              {{item.label}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+      </div>
+
+
+      <div fxLayout="row" fxLayoutAlign="end center" class="mb-12" id="com-dt">
+        <button color="accent" mat-raised-button type="button" class="text-uppercase mr-12" (click)="onAdd()">
+          {{'New' | translate}}
+        </button>
+
+        <button mat-raised-button type="reset" class="text-uppercase mr-12" (click)="onClear()">
+          {{'Reset' | translate}}
+        </button>
+        <button mat-raised-button type="submit" color="primary" class="text-uppercase">
+          {{'Search' | translate}}
+        </button>
+      </div>
+    </form>
+  </div>
+  <mat-accordion class="filter-accordian">
+    <mat-expansion-panel [expanded]="onSelectNew" class="mt-20" (afterExpand)="focusForm(addPanelForm)" #addPanelForm>
+      <ng-template [ngTemplateOutlet]="commForm"></ng-template>
+    </mat-expansion-panel>
+  </mat-accordion>
+</div>
+
+<app-table *ngIf="!showCustomCard" [settings]="tabSettings" [templateRef]="commForm" (getTableData)='tableData($event)'
+  (rowBasedAction)='rowWiseActions($event)' [closeRowForm]='closeAddPanel' (openAddForm)="openForm()">
+</app-table>
+<app-custom-card *ngIf="showCustomCard" [title]=customCardDetails.title [inputMessage]=customCardDetails.message>
+</app-custom-card>

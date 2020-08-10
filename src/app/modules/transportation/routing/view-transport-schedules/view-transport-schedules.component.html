@@ -1,0 +1,26 @@
+<div class="content p-sm-40">
+  <div class="mat-elevation-z3 simple-table-container radius-t-20 mb-20" fxLayout="column">
+    <div fxLayout="row" fxLayoutAlign="space-between center" class="p-20">
+      <div class="p-8 text-uppercase font-size-18" translate>Transport Schedule Details</div>
+      <div>
+        <button mat-raised-button color="primary" translate (click)="onBackButtonClick()" class="text-uppercase"><span translate>Back</span></button>
+        <button mat-button (click)="getHelpText('Schedules')">
+          <mat-icon class="grey-600-fg">info</mat-icon>
+        </button>
+      </div>
+    </div>
+    <mat-divider></mat-divider>
+
+    <div fxLayout="row wrap" fxFlex="100" class="w-90-p m-auto p-20">
+      <div fxLayout="column" fxFlex="20" *ngFor="let item of transportSchedules;">
+        <div class="grey-500-fg pb-4" translate>{{item.label}}</div>
+        <div class="break-word pr-8">{{item?.value ? item?.value : "---"}}</div>
+      </div>
+    </div>
+   
+
+    <div class="px-28 py-20 mt-28 text-uppercase font-size-18 border-vertical" translate>Routes in this transport schedule</div>
+  
+    <app-table *ngIf="loaded | async" [settings]="transportScheduleTab"></app-table>
+  </div>
+</div>

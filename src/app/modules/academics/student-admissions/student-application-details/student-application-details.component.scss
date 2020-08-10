@@ -1,0 +1,20 @@
+.profile-image img{
+    object-fit: cover;
+}
+
+
+.student-details{
+    // .labelName{
+    // max-width: 350px;
+    // }
+    .labelValue{
+        max-width: 500px !important;
+        font-weight: 600;
+    }
+}
+
+.reject-comment{
+   ::ng-deep .mat-form-field-wrapper{
+        padding-bottom: 0;
+    }
+}

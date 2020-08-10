@@ -1,0 +1,38 @@
+
+<app-table [settings]="tabSettings" (rowBasedAction)='rowActions($event)' (openAddForm)="addForm()" [closeRowForm]='closeAddPanel'
+  [templateRef]="addAssessmentGradeTemplate" (getTableData)='getAssessmentGrades($event)'></app-table>
+
+<ng-template #addAssessmentGradeTemplate>
+  <form [formGroup]="assessmentgradeForm" (ngSubmit)="addUpdateAssessmentGrade(assessmentgradeForm)" #assessmentGrade="ngForm">
+    <div fxFlexFill fxLayout="column" fxLayout.gt-xs="row" class="pt-24">
+
+      <mat-form-field appearance="outline" fxLayout="column" fxFlexFill fxFlex="100">
+        <mat-label #gradeIndicator translate>GradeIndicator</mat-label>
+        <input (keyup)="preventSpace($event,'assessmentgradeForm','gradeIndicator')" matInput autocomplete="off" formControlName="gradeIndicator" (blur)="trimTextBoxSpaces('assessmentgradeForm','gradeIndicator')"
+          required>
+        <mat-error>
+          <app-validation [labelName]="gradeIndicator.innerText" [validationControl]="assessmentgradeForm.controls.gradeIndicator"
+            [doValidate]="assessmentGradeFormSubmitted">
+          </app-validation>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="pl-sm-20" fxLayout="column" fxFlexFill fxFlex="100">
+        <mat-label #evaluation translate>Evaluation</mat-label>
+        <input (keyup)="preventSpace($event,'assessmentgradeForm','evaluation')" matInput autocomplete="off" formControlName="evaluation" (blur)="trimTextBoxSpaces('assessmentgradeForm','evaluation')"
+          required>
+        <mat-error>
+          <app-validation [labelName]="evaluation.innerText" [validationControl]="assessmentgradeForm.controls.evaluation"
+            [doValidate]="assessmentGradeFormSubmitted">
+          </app-validation>
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div fxLayout="row" fxLayoutAlign="end center" class="pt-16 pb-8">
+      <button mat-raised-button type="button" class="text-uppercase" (click)="onCancelClick()">{{'Cancel' | translate}}</button>
+        <button [disabled]="disbleSubmitBtn" mat-raised-button type="submit" color="accent" class="text-uppercase ml-12"
+        mat-button>{{this.buttonName | translate}}</button>
+    </div>
+  </form>
+</ng-template>

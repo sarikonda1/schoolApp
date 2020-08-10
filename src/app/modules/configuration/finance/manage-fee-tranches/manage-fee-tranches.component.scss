@@ -1,0 +1,10 @@
+.feetype-Error{
+    position: relative;
+    .mat-error{
+        position: absolute;
+        right: 0px;
+        top: 48px;
+        font-size: 13px;
+    }
+}
+.scroll-y-auto{overflow-y: auto}

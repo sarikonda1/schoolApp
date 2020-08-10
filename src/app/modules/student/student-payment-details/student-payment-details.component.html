@@ -1,0 +1,20 @@
+<app-af-details [keyValues]="studentBasicDataView" [title]="'Student Information'" [isBackButtonRequired]=true
+  [header]="'Payment Details'">
+</app-af-details>
+<span *ngIf="isCorrection">
+  <app-add-edit-payment-correction [isAddCorrection]="isAddCorrection" [paymentId]="paymentId"
+    [paymentCorrectionId]="paymentCorrectionId">
+  </app-add-edit-payment-correction>
+</span>
+<app-af-details [keyValues]="paymentDetails" [title]="'Payment Information'" 
+  (action)=operations($event)></app-af-details>
+<ng-container>
+
+  <ng-container *ngIf="paymentCorrectionDetails.length">
+    <app-af-details [keyValues]="paymentCorrectionDetails" [title]="'Pending Payment Correction'"
+      [actions]="paymentCorrectionActions" (action)=operations($event)></app-af-details>
+  </ng-container>
+
+  <app-table [settings]="settingTableData" (rowBasedAction)='onRowActions($event)'>
+  </app-table>
+ 

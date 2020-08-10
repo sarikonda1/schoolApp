@@ -1,0 +1,32 @@
+<app-table [settings]="tabSettings" (rowBasedAction)='rowActions($event)'
+    (getTableData)='getAllAssessmentGroups($event)' [closeRowForm]='closeAddPanel' (openAddForm)="addForm()"
+    [templateRef]="addTemplateRef" (deleteAllRows)='deleteAll()'
+    (selectedRows)='selectedRows($event)'>
+</app-table>
+
+<ng-template #addTemplateRef>
+    <form #assessmentgroupForm="ngForm" [formGroup]="assmentGrpForm"
+        (ngSubmit)="submitAssesmentGroupForm(assmentGrpForm)">
+        <!-- text field -->
+        <div fxFlexFill fxLayout="row" class="pt-24" fxLayoutAlign="center center">
+            <mat-form-field appearance="outline" class="example-full-width mr-sm-20" fxLayout="column" fxFlex.gt-xs="50"
+                fxFlex="100">
+                <mat-label #assessmentGroupName translate>Name</mat-label>
+                <input matInput formControlName="assessmentGroupName" autocomplete="off" required (keyup)="preventSpace($event,'assmentGrpForm', 'assessmentGroupName')" (blur)="trimTextBoxSpaces('assmentGrpForm', 'assessmentGroupName')">
+                <mat-error>
+                    <app-validation [labelName]="assessmentGroupName.innerText"
+                        [validationControl]="assmentGrpForm.controls.assessmentGroupName"
+                        class="error-msg messages text-left text-danger" [doValidate]="doValidate">
+                    </app-validation>
+                </mat-error>
+            </mat-form-field>
+        </div>
+        <!-- btn section -->
+        <div fxLayout="row" fxLayoutAlign="end center" class="pt-16 pb-8">
+            <button class="mr-12 text-uppercase" mat-raised-button type="button" (click)="cancel()">
+                {{'cancel' | translate}}</button>
+            <button mat-raised-button type="submit" class="text-uppercase" color="accent"
+                [disabled]="disableSubmitBtn">{{(updateBtn ? 'Update':'Create') | translate}}</button>
+        </div>
+    </form>
+</ng-template>

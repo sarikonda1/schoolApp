@@ -1,0 +1,178 @@
+<div class="content px-sm-40 pt-sm-24">
+  <div class="ml-20 p-8 text-uppercase font-size-18" translate>Search Student Facility Assignments</div>
+  <div class="mat-elevation-z2 simple-table-container radius-t-20 pt-4">
+    <form [formGroup]="schoolFacilityForm" #studentFacilityForm="ngForm">
+      <div fxLayout.gt-sm="row" fxLayout="column" fxLayoutAlign="start center" class="p-24">
+        <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex.gt-sm="32" fxFlex="100">
+          <mat-label #facilityId translate>School Facility</mat-label>
+          <mat-select formControlName="facilityId" required>
+            <mat-option *ngFor="let facility of facilityDropDown" [value]="facility.value">
+              {{facility.label}}
+            </mat-option>
+          </mat-select>
+          <mat-error>
+            <app-validation [labelName]="facilityId.innerText"
+              [validationControl]="schoolFacilityForm.controls.facilityId" [doValidate]="isValidate">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex.gt-sm="35" fxFlex="100"
+          class="px-sm-20">
+          <mat-label translate #class>Class</mat-label>
+          <mat-select placeholder="Class" formControlName="classId" (selectionChange)="classSections($event.value)">
+            <mat-option *ngIf="classes?.length"></mat-option>
+            <mat-option *ngFor="let class of classes" [value]="class.value">
+              {{ class.label }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="32">
+          <mat-label #sectionId translate>Section</mat-label>
+          <mat-select formControlName="sectionId">
+            <mat-option *ngIf="sectionNamesList?.length"></mat-option>
+            <mat-option *ngFor="let section of sectionNamesList" [value]="section.value">
+              {{section.label}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <div fxLayout="row" class="mb-20 w-280 pl-24">
+          <button mat-raised-button translate type="reset" color="primary" class="text-uppercase" (click)="onFacilityClear()">
+            {{'Reset' | translate}}
+          </button>
+          <button mat-raised-button translate type="submit" color="accent" class="text-uppercase mx-12"
+            (click)="searchFacilityData(schoolFacilityForm.value)">
+            {{'Search' | translate}}
+          </button>
+          <button mat-button type='button' (click)="getHelpText('Student Facility Assignment')">
+            <mat-icon class="grey-600-fg">info</mat-icon>
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+<app-custom-card *ngIf="!showTable" [title]="'Student Facility Assignments'" [inputMessage]="'Enter the required search criteria to perform the search'">
+</app-custom-card>
+
+
+<app-table *ngIf="showTable" [settings]="tableSettings" (getTableData)='getFacilityData($event)' [templateRef]="assignFacility"
+  (openAddForm)='openAddForm()' (rowBasedAction)='actions($event)' [closeRowForm]='closeAddPanel'>
+</app-table>
+
+<ng-template #assignFacility>
+  <div *ngIf="isOpenAddForm">
+
+    <form [formGroup]="schoolFacilityAssignmentForm" #facilityAssignmentForm="ngForm" fxLayout="column" class="my-28">
+      <div fxLayout.gt-sm="row" fxLayout="column" fxLayoutAlign="center center" class="py-4 border-bottom">
+
+        <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex.gt-sm="30" fxFlex="100">
+            <mat-label translate>Facility name</mat-label>
+            <input (keyup)="preventSpace($event,'schoolFacilityAssignmentForm','facilityName')" matInput formControlName="facilityName">
+        </mat-form-field>
+
+        <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex.gt-sm="25" fxFlex="100"
+          class="px-sm-20">
+          <mat-label translate #class>Class</mat-label>
+          <mat-select placeholder="Class" formControlName="classId" (selectionChange)="assignmentSections($event.value)"
+            required>
+            <mat-option *ngFor="let class of assignClasses" [value]="class.value">
+              {{ class.label }}</mat-option>
+          </mat-select>
+          <mat-error>
+            <app-validation [labelName]="class.innerText"
+              [validationControl]="schoolFacilityAssignmentForm.controls.classId" [doValidate]="assignValidate">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="25">
+          <mat-label #sectionId translate>Section</mat-label>
+          <mat-select formControlName="sectionId" required>
+            <mat-option *ngFor="let section of assignSectionNamesList" [value]="section.value">
+              {{section.label}}
+            </mat-option>
+          </mat-select>
+          <mat-error>
+            <app-validation [labelName]="sectionId.innerText"
+              [validationControl]="schoolFacilityAssignmentForm.controls.sectionId" [doValidate]="assignValidate">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+
+        <div fxLayout="row" fxLayoutAlign="end center" class="w-240 pb-20">
+          <button mat-raised-button translate type="button" color="primary" class="text-uppercase  mx-12"
+            (click)="onAssignmentFacilityClear()">
+            {{'Clear' | translate}}
+          </button>
+          <button mat-raised-button translate type="submit" color="accent" class="text-uppercase"
+            (click)="getAddData(schoolFacilityAssignmentForm)">
+            {{'Search' | translate}}
+          </button>
+        </div>
+      </div>
+
+      <app-table *ngIf="showFacilityTable" class="max-height" [settings]="facilityAddTableSettings" (getTableData)='getAddData($event)'
+       (selectedRows)='selectedRows($event)' (changeRowDropdown)='selectedRows($event)'>
+      </app-table>
+      <app-custom-card *ngIf="!showFacilityTable"  [inputMessage]="'Enter the required search criteria and click on search to perform the search'">
+      </app-custom-card>
+
+      <div fxLayout="column" class="mt-12" fxFlex.gt-sm="25">
+        <div fxLayout="row" fxLayoutAlign="end center" class="edit-info">
+          <button mat-raised-button translate type="reset" class="text-uppercase" (click)="onAssignmentCancel()">
+            {{'Cancel' | translate}}
+          </button>
+          <button mat-raised-button translate type="submit" [disabled]="disabelAssignment" color="accent"
+            class="text-uppercase ml-8" (click)="onAssignFacility(schoolFacilityAssignmentForm.value)">
+            {{'Assign' | translate}}
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+</ng-template>
+<ng-template #editTemplate>
+        <div class="p-8 text-uppercase font-size-18" translate>Edit Facility Assignment</div>
+      <form [formGroup]="editStudentFacilityForm" #editAssignmentForm="ngForm"
+        (ngSubmit)="editStudentFacility(editStudentFacilityForm)" fxLayout="column" class="pt-24">
+  
+        <div translate #facilityName class="160 pb-12" fxLayout="row"><span translate>Facility</span> : <strong class="break-word pl-4">{{selectedFacilityName}}</strong>
+        </div>
+        <div translate #facilityName class="160 pb-20" fxLayout="row"><span translate>Student</span> : <strong class="break-word pl-4">{{studentName}}</strong></div>
+     
+          <mat-form-field fxFlexFill *ngIf="feeTypeTranches.length > 0" appearance="outline" fxFlex="100" fxLayout="column">
+            <mat-label translate #feeTranch>Fee Tranche</mat-label>
+            <mat-select placeholder="Fee Tranche" formControlName="feeTypeTrancheId" required>
+              <mat-option *ngFor="let feeTranch of feeTypeTranches" [value]="feeTranch.id">
+                {{feeTranch.name}}
+              </mat-option>
+            </mat-select>
+            <mat-error>
+              <app-validation [labelName]="feeTranch.innerText"
+                [validationControl]="editStudentFacilityForm.controls.feeTypeTrancheId" [doValidate]="isEditValidate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field fxFlexFill *ngIf="feeTermsList.length > 0" appearance="outline" fxFlex="100" fxLayout="column">
+            <mat-label translate #feeTerm>Ending Fee Term</mat-label>
+            <mat-select placeholder="Fee Term" formControlName="endFeeTermId">
+              <mat-option *ngIf="feeTermsList.length > 0"></mat-option>
+              <mat-option *ngFor="let feeTerm of feeTermsList" [value]="feeTerm.id">
+                {{feeTerm.name}}
+              </mat-option>
+            </mat-select>
+            <mat-error>
+              <app-validation [labelName]="feeTerm.innerText"
+                [validationControl]="editStudentFacilityForm.controls.endFeeTermId" [doValidate]="isEditValidate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+      
+        <div fxLayout="row" fxLayoutAlign="end center" class="pt-20">
+            <button type="button" mat-raised-button class="mr-16 text-uppercase" (click)="onEditCancel()">
+              {{'Cancel' | translate}}</button>
+            <button type="submit" mat-raised-button color="accent" class="text-uppercase" translate>{{'Submit' | translate}}</button>
+        </div>
+  
+      </form>
+  </ng-template>

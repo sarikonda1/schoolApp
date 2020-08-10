@@ -1,0 +1,158 @@
+<form [formGroup]="searchForm">
+
+    <div fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="center center" class="px-24 pt-20">
+        <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="33.3" class="pr-sm-20">
+            <mat-label translate #board>Board</mat-label>
+            <mat-select required (selectionChange)="onBoardChange($event)" formControlName="boardId">
+                <mat-option *ngFor="let option of availableSchoolBoards" [value]="option?.value">
+                    {{ option?.label }}</mat-option>
+            </mat-select>
+            <mat-error>
+                <app-validation [labelName]='board.innerText' [validationControl]="searchForm.controls.boardId"
+                    [doValidate]="true">
+                </app-validation>
+            </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="33.3" class="pr-sm-20">
+            <mat-label translate #class>Class</mat-label>
+            <mat-select required (selectionChange)="onClassChange($event)" formControlName="classId">
+                <mat-option *ngFor="let option of availableClasses" [value]="option?.value">
+                    {{ option?.label }}</mat-option>
+            </mat-select>
+            <mat-error>
+                <app-validation [labelName]='class.innerText' [validationControl]="searchForm.controls.classId"
+                    [doValidate]="true">
+                </app-validation>
+            </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="33.3">
+            <mat-label translate #sections>Sections</mat-label>
+            <mat-select required formControlName="sectionId">
+                <mat-option *ngFor="let option of availableSections" [value]="option?.value">
+                    {{ option?.label }}</mat-option>
+            </mat-select>
+            <mat-error>
+                <app-validation [labelName]='sections.innerText' [validationControl]="searchForm.controls.sectionId"
+                    [doValidate]="true">
+                </app-validation>
+            </mat-error>
+        </mat-form-field>
+    </div>
+    <div fxLayout="column" fxLayout.gt-sm="row"  class="px-24 pt-12 pb-12">
+        <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="33.3"
+            class="pr-sm-20">
+            <mat-label #title translate>Minimum Attendace Required</mat-label>
+            <input matInput autocomplete="off" formControlName="minimumAttendanceRequired"
+                (keyup)="preventSpace($event,'searchForm','minimumAttendanceRequired')"
+                (blur)="trimTextBoxSpaces('searchForm','minimumAttendanceRequired')">
+            <mat-error>
+                <app-validation [labelName]='title.innerText'
+                    [validationControl]="searchForm.controls.minimumAttendanceRequired" [doValidate]="true">
+                </app-validation>
+            </mat-error>
+        </mat-form-field>
+    </div>
+    <div fxLayout="row" fxLayoutAlign="end center" class="mr-20 pb-20">
+        <button mat-raised-button translate color="primary" class="text-uppercase" (click)="reset()" type="reset">
+            Reset
+        </button>
+        <button type="submit" mat-raised-button translate color="accent" class="text-uppercase ml-12"
+            (click)="filterSearch()">
+            Search
+        </button>
+    </div>
+</form>
+
+<div fxLayout="row" fxLayoutAlign="end center" class="px-32 py-12" *ngIf="resultApplicationReports">
+    <button mat-stroked-button class="mr-12" (click)="generateReport('generatePdfReport')">
+        <mat-icon class="mr-4">save_alt</mat-icon>Download PDF
+    </button>
+</div>
+
+<div class='invoice-container' *ngIf="resultApplicationReports" id="admitted-std" style="padding: 25px; padding-top: 0px;">
+    <span class="dark-theme-color" style="color:#fff">A</span>
+    <div class='b flex-d-c invoice-body' style='overflow: hidden; '>
+        <div class="flex details mb-20" style=" place-content: space-between;">
+            <div class="text-uppercase w-15-p"><strong>Bord</strong> <br />
+                <small>{{resultApplicationReports?.boradName}}</small></div>
+            <div class="text-uppercase w-10-p"><strong>Class</strong> <br />
+                <small>{{resultApplicationReports?.className}}</small></div>
+            <div class="text-uppercase w-10-p"><strong>Section</strong> <br />
+                <small>{{resultApplicationReports?.sectionName}}</small></div>
+            <div class="text-uppercase w-20-p"><strong>ACADEMIC SESSION</strong> <br />
+                <small>{{acadmicSession?.name}}</small></div>
+            <div class="text-uppercase w-15-p"><strong>From</strong> <br />
+                <small>{{acadmicSession?.startDate | date: 'MMM d, y'}}</small></div>
+            <div class="text-uppercase w-10-p"><strong>To</strong> <br />
+                <small>{{acadmicSession?.endDate | date: 'MMM d, y'}}</small></div>
+            <div class="text-uppercase w-20-p"> <strong>CLASS TEACHER</strong> <br />
+                <small>{{resultApplicationReports?.classTeacherName}}</small></div>
+        </div>
+        <div class="p-10 flex" style=" place-content: space-between;">
+            <div class="b text-uppercase" style="width: 29%; padding:10px">CLASS ATTENDANCE SUMMARY REPORT</div>
+            <div class="text-uppercase text-center" style="width: 22%;"><strong>Total Number of Students</strong> <br />
+                <small>{{resultApplicationReports?.studentsCount}}</small></div>
+            <div class="text-uppercase text-center" style="width: 22%;"><strong> MIN ATTENDANCE REQUIRED</strong> <br />
+                <small *ngIf="searchForm?.value?.minimumAttendanceRequired">{{searchForm?.value?.minimumAttendanceRequired}}%</small>
+                <small *ngIf="!searchForm?.value?.minimumAttendanceRequired">-</small></div>
+            <div class="text-uppercase text-center" style="width: 23%;"><strong>STUDENTS NOT MEETING MIN
+                    ATTENDANCE</strong> <br /> <small>{{resultApplicationReports?.detainedStudentsCount}}</small>
+            </div>
+
+        </div>
+        <div class="px-20 pt-20 text-uppercase" style="font-size: 18px;">CLASS ATTENDANCE RATE</div>
+        <div class="px-10 scroll-table">
+            <table class="attendance2 b" style="background: #eaeaea;">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th style="text-transform:capitalize;"
+                            *ngFor="let key of objectKeys(resultApplicationReports?.monthYearWithDays)">{{key}}</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    <tr>
+                        <td>
+                            NUMBER OF WORKING DAYS
+                        </td>
+                        <td *ngFor="let key of objectKeys(resultApplicationReports?.monthYearWithDays)">
+                            {{resultApplicationReports?.monthYearWithDays[key].workingDays}}</td>
+                    </tr>
+                    <tr>
+                        <td>AVERAGE ATTENDANCE RATE </td>
+                        <td *ngFor="let key of objectKeys(resultApplicationReports?.monthYearWithDays)">
+                            {{resultApplicationReports?.monthYearWithDays[key].percentage}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="px-20 pt-20 text-uppercase" style="font-size: 18px;">CLASS ATTENDANCE RATE</div>
+        <div class="px-10 scroll-table">
+            <table class="attendance2 b">
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th style="text-transform:capitalize;"
+                            *ngFor="let key of objectKeys(resultApplicationReports?.monthYearWithDays)">{{key}}</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    <tr *ngFor="let student of resultApplicationReports?.studentDetails">
+                        <td>
+                            <div>
+                                <div>{{student.name}}</div>
+                                <div>{{student.admissionNumber}}</div>
+                            </div>
+                        </td>
+
+                        <td *ngFor="let key of objectKeys(resultApplicationReports?.monthYearWithDays)">
+                            {{student.attendance[key].percentage}}%</td>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

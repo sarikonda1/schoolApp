@@ -1,0 +1,25 @@
+::ng-deep{
+.agm-map-container-inner{
+    border-radius: 6px;
+    .gm-ui-hover-effect{
+        top: 0 !important;
+        right: 0 !important;
+    }
+    .gm-style-cc{
+        display: none;
+      }
+   .agm-info-window-content{
+       max-width: 400px;
+   }
+}
+}  
+.table.simple{
+    tr{
+        &:last-child td{
+            border-bottom:none !important;
+        }
+    }
+}
+
+
+  

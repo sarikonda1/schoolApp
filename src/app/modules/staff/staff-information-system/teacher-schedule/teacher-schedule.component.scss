@@ -1,0 +1,34 @@
+.section-assignament{
+    // min-height: 300px;
+    .m-w{
+        max-width: 180px !important;
+        width: 180px !important;
+        height: 133px;
+
+    }
+}
+
+.w-sm-400{
+    width: 400px;
+}
+.mw-400{
+    width: 450px;;
+}
+.school-period{
+    overflow-y: auto;
+    overflow: overlay;
+    &:first-child .mw-100-p{
+
+    }
+    .weekDay {
+        position: sticky;
+        left: 0px;
+        z-index: 1;
+    }
+}
+.text-center {
+    text-align: center !important;
+}
+// @include media-breakpoint('gt-xs') {
+
+// }

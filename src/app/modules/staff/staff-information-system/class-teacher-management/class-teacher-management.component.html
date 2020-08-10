@@ -1,0 +1,75 @@
+<div class="p-sm-40">
+  <div fxLayout="row" fxLayoutAlign="start center" class="p-12 font-size-18 text-uppercase">
+    {{tableName | translate}}
+  </div>
+  <div class="w-100-p simple-table-container mat-elevation-z8 radius-20">
+    <div fxLayout="row" fxLayoutAlign="center center" class="p-16 border-bottom">
+      <form [formGroup]="schoolBoardForm" *ngIf="schoolHasBoard" fxFlex="100" fxLayout="row"
+        fxLayoutAlign="center center">
+        <mat-form-field fxFlex.gt-sm="30" fxFlex="100" fxLayout="column" appearance="outline" class="formfield-pb-0">
+          <mat-label translate #board>School Board</mat-label>
+          <mat-select formControlName="schoolBoard" (selectionChange)="onSelectBoard($event)">
+            <mat-option *ngFor="let board of schoolBoardsList" [value]="board.value">{{ board.label }}</mat-option>
+          </mat-select>
+          <mat-error>
+            <app-validation [labelName]='board.innerText' [validationControl]="schoolBoardForm?.controls?.schoolBoard"
+              [doValidate]="validate">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+      </form>
+      <div fxLayout="row" fxLayoutAlign="end center">
+        <button *ngIf="!(rows && rows.length == 0)" (click)="onEdit()" mat-raised-button class="text-uppercase"
+          [color]="isOnEdit ? 'primary' : 'accent'" translate>{{isOnEdit ? 'back' : 'edit' | translate}}</button>
+        <button (click)="getHelpText('Class Teacher Management')" mat-button>
+          <mat-icon  class="grey-600-fg">info</mat-icon>
+        </button>
+      </div>
+    </div>
+    <mat-table *ngIf="!(rows && rows.length == 0)" class="responsive-table" mat-table [dataSource]="rows" matSort
+      matSortDisable [matSortActive]="activeColumn" matSort matSortDisable [matSortDirection]="sortDirection"
+      (matSortChange)="customSort($event)">
+      <ng-container *ngFor="let column of columns; let i = index" matColumnDef="{{column.field}}">
+        <mat-header-cell *matHeaderCellDef>
+          <div class="headerTitle w-100-p" *ngIf="column.field != 'select' " mat-sort-header disableClear
+            [disabled]="!column.sort || (rows && rows.length == 0)">
+            <strong class="mb-0 title mat-subheading-1" translate>{{column.header}}</strong>
+          </div>
+
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row" [row]="row" [column]="column">
+          <span *ngIf="column.dropdownInputRequired;else show_data;" class="text-truncate mx-4">
+            <mat-form-field *ngIf="row?.hasOwnProperty(column.field);else not_has_section" class="text-truncate">
+              <mat-select (selectionChange)="onTeacherChange($event,row.className,column.field)"
+                [placeholder]="row[column.field] ? '' :  'Select Teacher'" [(value)]="row[column.field]" class="text-truncate">
+                <mat-option *ngFor="let staff of staffList" [value]="staff.id">
+                  {{staff.name }} </mat-option>
+              </mat-select>
+            </mat-form-field>
+            <ng-template #not_has_section>
+              <span>
+                {{"N/A"}}
+              </span>
+            </ng-template>
+          </span>
+          <ng-template #show_data>
+            <span *ngIf="row?.hasOwnProperty(column.field);else not_has_section" class="text-truncate">
+              {{row[column.field] ? row[column.field] : '---'}}
+            </span>
+            <ng-template #not_has_section>
+              <span>
+                {{"N/A"}}
+              </span>
+            </ng-template>
+          </ng-template>
+        </mat-cell>
+      </ng-container>
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: displayedColumns;">
+      </mat-row>
+    </mat-table>
+    <div *ngIf="rows && rows.length == 0" class="errorMsg">
+      <p class="red-text text-center mb-0 font-weight-bold p-24" translate>No Data Found</p>
+    </div>
+  </div>
+</div>

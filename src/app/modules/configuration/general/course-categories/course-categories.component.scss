@@ -1,0 +1,22 @@
+.custom-error{
+    position: relative;
+    ::ng-deep .mat-error{
+        position: absolute;
+        bottom: -8px;
+        width: 100%;
+        right: 0px;
+        text-align: right;
+    }
+}
+.sm-btn{
+    width: 26px;
+    height: 26px;
+    line-height: 26px;
+    ::ng-deep .mat-button-wrapper{
+        padding: 0px 0px;
+    }
+    .mat-icon{
+        font-size: 16px;
+    line-height: 22px;
+    }
+}

@@ -1,0 +1,1237 @@
+// Import Fuse core library
+@import "@fuse/scss/core";
+
+// Import app.theme.scss
+@import "app/app.theme";
+
+
+@import '~mat-range-datepicker/theming';
+@include mat-range-datepicker-theme($theme);
+$accent: mat-color($mat-light-blue, 600);
+$mat-green: mat-color($mat-green, 600);
+$mat-red: mat-color($mat-red, 300);
+
+
+
+//################# Mobile  Only ########################
+@include media-breakpoint('xs') {
+    .content.allTable-grid {
+        // width: 98%;
+        padding: 0px 1%;
+
+        .gridHeader {
+            .gridRightBtn {
+                .mat-raised-button {
+                    border-radius: 20px;
+                }
+            }
+        }
+
+        .radius-20.mt-xs-20 {
+            margin-top: 20px;
+        }
+
+        .scrolltable {
+            //max-width: 360px;
+            overflow: auto;
+            width: 100%;
+
+            .tableBar {
+                .mat-cell,
+                .mat-header-cell {
+                    min-width: 150px !important;
+                }
+
+                display: table-row-group;
+            }
+
+            .page-layout.simple {
+                width: 90%;
+            }
+        }
+
+        .filter-accordian {
+            .mat-expansion-panel {
+                margin: 0 !important;
+            }
+
+            .mobile-filter {
+                overflow-x: auto;
+
+                .filterBody {
+                    width: 850px !important;
+                    padding-right: 24px;
+                    margin-top: 10px;
+
+                    .formFilter {
+                        box-shadow: 0px 5px 5px -3px rgba(0, 0, 0, 0.2), 0px 8px 10px 1px rgba(0, 0, 0, 0.14), 0px 3px 14px 2px rgba(0, 0, 0, 0.12);
+                        border-radius: 5px;
+
+                        .filterBtn {
+                            padding: 10px;
+                            text-align: start;
+                            border-top: $border-style;
+
+                            .mat-raised-button {
+                                &:first-child {
+                                    position: sticky;
+                                    left: 27%;
+                                }
+                            }
+
+                            .mat-raised-button {
+                                &:last-child {
+                                    position: sticky;
+                                    left: 55%;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            .sm-table-form {
+                width: 100%;
+            }
+        }
+    }
+
+    //###########################Custom Horizontal Step #######################
+    .custom-horizontal-step {
+        .mat-horizontal-stepper-header-container {
+            display: none
+        }
+
+        // .mat-horizontal-content-container {
+        //     padding:0;
+        // }
+    }
+
+    //########################## Responsive Table ########################
+    .responsive-table {
+        overflow-y: auto;
+        .mat-header-cell,
+        .mat-cell,
+        .mat-footer-cell {
+            min-width: 180px;          
+        }
+    }
+}
+
+//################# Desktop Only ########################
+@include media-breakpoint('gt-xs') {
+    .content.allTable-grid {
+        .filter-accordian {
+            .sm-table-form {
+                width: 65%;
+            }
+
+            .mobile-filter {
+                max-width: initial !important;
+            }
+        }
+
+        .scrolltable {
+            overflow-x: auto;
+            overflow: overlay;
+            width: 100%;
+            -ms-overflow-style: auto;
+            .tableBar {
+                //display: grid;
+                // thead, tbody{
+                //     display: table;
+                // }
+                .mat-header-row, .mat-footer-row, .mat-row{
+                    border-bottom: none !important;
+                }
+                .mat-cell,
+                .mat-header-cell {
+                    min-width: 184px;
+                    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+                    // max-width: 200px;
+                }
+
+                .mat-header-row {
+                    .mat-header-cell {
+                        .headerTitle {
+                            .mat-sort-header-button {
+                                text-align: left;
+                            }
+                        }
+                    }
+                }
+            }
+            .groupTable{
+                display: table;
+            }
+
+        }
+    }
+
+    .manage-institue {
+        .mat-tab-header {
+            padding: 0px 55px;
+            // margin-bottom: -8px
+        }
+    }
+
+    //################ Start below 2 columns Table ########
+    .content.allTable-grid.small-table {
+        width: 100%;
+        margin: auto;
+        max-width: 884px;
+
+        .tableBar {
+            .mat-header-row {
+                .mat-header-cell {
+                    &:last-child {
+                        .mat-sort-header-container {
+                            justify-content: center;
+                            // border: 2px solid red;                        
+                        }
+
+                    }
+                }
+            }
+
+            .mat-row {
+                .mat-cell:last-child {
+                    text-align: center;
+                    // border: 2px solid red;
+                }
+            }
+        }
+
+        .filter-accordian {
+            .horizontal-scroll {
+                height: 180px !important;
+            }
+
+            .horizontal-scroll-select {
+                height: 92px !important;
+            }
+        }
+    }
+
+    //###########################Custom Horizontal Step #######################
+    .custom-horizontal-step {
+        position: relative;
+
+        .mat-horizontal-stepper-header-container {
+            .mat-horizontal-stepper-header {
+                box-sizing: border-box !important;
+                width: 100%;
+                padding: 0 40px;
+
+                &:first-child {
+                    margin-top: 20px;
+
+                    &:after {
+                        top: 26px;
+                    }
+                }
+
+                &:last-child {
+                    margin-bottom: 18px;
+
+                    &:after {
+                        bottom: 26px;
+                    }
+                }
+
+                &:after {
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    bottom: 0;
+                    left: 52px;
+                    border-left: $border-style;
+                }
+
+                .mat-step-label.mat-step-label-selected {
+                    font-weight: 400;
+
+                    &:before {
+                        content: '';
+                        position: absolute;
+                        top: 16px;
+                        bottom: 0;
+                        left: 0px;
+                        height: 35px;
+                        border-left: 6px solid $accent;
+                    }
+                }
+            }
+
+            flex-direction: column;
+            border-right: $border-style;
+            // padding: 20px 20px 20px 0px;
+        }
+
+        .branding-image {
+            .bl-1 {
+                border-left: $border-style;
+            }
+
+            .img-upload {
+                max-width: 500px;
+
+            }
+        }
+    }
+    .news-events{
+        max-width: 60%;
+        margin: auto;
+        max-height:450px;
+        overflow: auto;
+    }
+}
+
+//################# End Desktop Only ########################
+.content.allTable-grid {
+    min-width: 0;
+
+    .scrolltable {
+        .groupTable.tableBar {
+            .mat-header-cell:first-of-type {
+                .headerTitle {
+                    padding-left: 0px;
+                }
+            }
+
+            // .cdk-column-assessmentGroupName.border-right, .cdk-column-assesmentParameter.border-right{
+            //     border-left: 1px solid rgba(0, 0, 0, 0.12);
+            // }
+            // .mat-header-cell .headerTitle {
+            //     padding-left: 8px;
+            // }
+
+            .mat-row {       
+                .mat-cell {
+                    mdt-table-cell {
+                        display: flex;
+                    }
+
+                    &:last-child {
+                        mdt-table-cell {
+                            place-content: center;
+                        }
+                    }
+
+                    p {
+                        max-width: 300px;
+                    }
+                }
+            }
+        }
+        .tableBar {
+            .mat-cell:not(:first-child), .mat-header-cell:not(:first-child) {
+                padding-left: 8px;
+            }
+            .mat-header-row {
+                .mat-header-cell {
+                    &:last-child {
+                        .mat-sort-header-container {
+                            padding-left: 10px;
+                            justify-content: center;
+                            // border: 2px solid red;
+                            strong{
+                                text-align: center;
+                            }
+                        }
+
+                    }
+
+                    // .headerTitle{
+                    //     .mat-sort-header-button{
+                    //         display: inline-block;
+                    //         strong{
+                    //             display: table-caption;
+                    //         }
+                    //     }
+                    // }
+                }
+               .mat-header-cell{
+                   &:last-child{
+                       .headerTitle{width: 100%}
+                   }
+               }
+                .mat-header-cell.cdk-column-marks{
+                    &:last-child {
+                        justify-content: center;
+                    }          
+                    }  
+            }
+            .mat-row {
+                align-items: initial;
+                .mat-cell {
+                    &:first-child {
+                        border-left: none;
+                    }
+
+                    &:last-of-type {
+                        justify-content: center;
+
+                        p {
+                            text-align: center;
+                        }
+
+                    }
+                }
+            }
+        }
+    }
+
+    @include media-breakpoint('lt-lg') {
+        flex-direction: column;
+    }
+
+    .mat-chip {
+        height: auto;
+    }
+
+    .table-filter {
+        word-break: break-all;
+    }
+
+    .filter-accordian {
+        .mat-expansion-panel {
+            margin: 1px -16px;
+        }
+
+        .formFilter {
+            display: block !important
+        }
+
+        .horizontal-scroll {
+            height: 250px;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        .horizontal-scroll-select {
+            height: 162px;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        .course-number {
+            ::ng-deep .mat-form-field-wrapper {
+                width: 50px;
+                margin-bottom: 0;
+                padding-bottom: 0;
+            }
+
+            .mat-form-field-infix {
+                width: 34px;
+                text-align: center;
+                padding-top: 0.6em;
+            }
+        }
+    }
+
+    .search-input {
+        border: $border-style;
+        border-radius: 30px;
+        padding: 10px;
+
+        input {
+            color: currentColor;
+        }
+    }
+
+    // .mat-form-field-appearance-outline.mat-focused .mat-form-field-outline-thick:hover {
+    //     color: #039BE5 !important;
+    // }
+
+    // .mat-form-field-appearance-outline .mat-form-field-outline-thick {
+    //     color: #039BE5 !important;
+    // }
+
+}
+
+//############# Border Radius ####################
+.radius-20 {
+    border-radius: 20px !important;
+}
+
+.radius-t-20 {
+    border-top-right-radius: 20px;
+    border-top-left-radius: 20px;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+.radius-10 {
+    border-radius: 10px;
+}
+
+.radius-5 {
+    border-radius: 5px;
+}
+.obj-fit-img{
+    object-fit: cover;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+
+    &:hover {
+        text-decoration: none !important;
+    }
+}
+.cursor-drag{
+    cursor: all-scroll;
+}
+
+.break-word {
+    word-break: break-word;
+}
+.overflow-y-auto{
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+//############# Table Overlay ####################
+.overlay-table {
+    #table-overlay {
+        pointer-events: none;
+
+        .filter-accordian,
+        .add-building-overlay {
+            pointer-events: auto !important;
+            position: relative;
+            z-index: 9999;
+        }
+
+        .newBuildAdd {
+            pointer-events: auto;
+
+            .mat-card,
+            .events {
+                pointer-events: none;
+            }
+        }
+
+        .mat-expansion-panel {
+            position: relative;
+            z-index: 9999;
+        }
+
+        .mat-tab-body.mat-tab-body-active {
+            z-index: auto;
+        }
+
+        &::after {
+            content: '';
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 1;
+            background: rgba(0, 0, 0, 0.06);
+            z-index: 999;
+        }
+
+        .remove-overlay {
+            position: relative;
+            pointer-events: auto;
+            z-index: 9999;
+        }
+
+    }
+}
+
+//########################### Manage-institue #######################
+.manage-institue {
+    .mat-tab-header {
+        border-bottom: none !important;
+    }
+
+    .allTable-grid {
+        padding-top: 0px !important;
+
+        .simple-table-container {
+            margin-top: 0px !important;
+        }
+    }
+}
+
+//########################### End Manage-institue #######################
+//############# Conformation Table MatList ####################
+
+.confirm-table {
+    .mat-list-item {
+        justify-content: center;
+        //padding: 12px 0px !important;
+        min-height: 48px;
+        height: auto !important;
+        word-break: break-word;
+        border-top: $border-style;
+    }
+
+    .mat-list-item:nth-child(-n + 2) {
+        border-top: none;
+    }
+
+    .two-rows {
+        .mat-list-item-content {
+            padding: 0px !important;
+
+            .mat-list-item {
+                border-right: none;
+            }
+
+            .mat-list-item:first-child {
+                border-bottom: $border-style;
+            }
+        }
+    }
+
+    .mat-list-item:nth-of-type(odd) {
+        border-right: $border-style;
+    }
+
+}
+
+
+//###########################Custom Horizontal Step #######################
+.custom-horizontal-step {
+    .mat-horizontal-stepper-header-container {
+        .mat-stepper-horizontal-line {
+            display: none;
+        }
+        .mat-horizontal-stepper-header {
+            .mat-step-icon {
+                z-index: 99;
+            }
+
+            .mat-step-icon-selected {
+                background-color: $accent
+            }
+
+            .mat-step-icon-state-done {
+                background-color: $mat-green;
+            }
+        }
+    }
+
+    .mat-horizontal-content-container {
+        width: 100%;
+        padding-top: 20px;
+
+        .logo-name {
+            max-width: 200px;
+            white-space: pre-line;
+            word-break: break-all;
+        }
+
+        .logo-img {
+            width: 100%;
+            max-width: 110px;
+        }
+    }
+
+    .branding-image {
+        .img-upload {
+            width: 100%;
+        }
+
+        .symbolImage {
+            width: 80px;
+            height: 80px;
+
+            img {
+
+                object-fit: cover;
+            }
+        }
+
+        .nameImage {
+            width: 180px;
+            height: 60px;
+
+            img {
+                width: 180px;
+                height: 60px;
+                object-fit: cover;
+            }
+        }
+    }
+}
+
+//########## Sort Symbol ###################
+.mat-sort-header-arrow {
+    margin: 0 10px 0px 0px !important;
+}
+
+// .mat-subheading-1 {
+//     font: 400 14px/28px Muli, Helvetica Neue, Arial, sans-serif;
+// }
+
+//############## Edit Info position ###############
+.info-relative {
+    position: relative;
+
+    .edit-info {
+        position: absolute;
+        right: 71px;
+        top: 5px;
+        z-index: 99;
+    }
+}
+
+
+//############Tabs Table#############
+.tabs-table {
+    .allTable-grid.small-table {
+        max-width: 100% !important;
+        // padding: 0 !important;
+    }
+
+    .allTable-grid {
+        .simple-table-container {
+            // margin-top: 8px;
+            box-shadow: none;
+
+            .mat-table {
+                // background: transparent !important;
+                margin-top: 8px !important;
+                //border-top: 1px solid rgba(0, 0, 0, 0.12);
+            }
+        }
+    }
+}
+
+.mat-error {
+    line-height: initial;
+}
+
+//################### Custom Out line #######################
+// .coutline.mat-form-field-appearance-outline.mat-form-field-can-float.mat-form-field-should-float .mat-form-field-label{
+
+// }
+.coutline {
+    .mat-form-field-infix {
+        .mat-form-field-label {
+            left: 80px;
+            width: 65% !important;
+        }
+        .selected-flag {
+            bottom: 1px;
+            right: 4px;
+            background: transparent;
+        }
+    }
+}
+.coutline.mat-form-field-should-float{
+    .mat-form-field-infix {
+        .mat-form-field-label {          
+            width: 85% !important;
+        }
+    }
+}
+
+//################### Tool Tip #######################
+.matTool-tip {
+    font-size: 13px !important;
+    text-overflow: unset !important;
+    overflow: visible !important;
+    word-break: break-word;
+}
+.error-tooltip {
+    font-size: 13px !important;
+    text-overflow: unset !important;
+    overflow: visible !important;
+    word-break: break-word;
+    background-color: #F44336 !important;
+}
+
+//########### Wizard Form ###################
+.wizard-form {
+    .mat-horizontal-stepper-header-container {
+        padding-top: 16px;
+
+        .mat-horizontal-stepper-header.mat-step-header {
+
+            //min-width:136px;
+            .mat-step-icon {
+                height: 30px;
+                width: 30px;
+            }
+
+            .mat-step-icon-state-done {
+                background-color: $mat-green !important;
+            }
+
+            .mat-step-icon-selected {
+                background-color: $accent !important;
+            }
+
+            &::before,
+            &::after {
+                top: 41px !important;
+            }
+
+            &:hover {
+                background: transparent;
+            }
+
+            //.mat-step-header-ripple{opacity: 0;}
+            .mat-step-label {
+                min-width: 136px;
+
+                .mat-icon-button {
+                    width: 30px;
+                    height: 30px;
+                    line-height: 30px;
+                    bottom: 6px;
+
+                    .mat-icon {
+                        line-height: 16px;
+                    }
+                }
+            }
+        }
+
+        .mat-stepper-horizontal-line {
+            top: 41px;
+        }
+    }
+
+    .preLine {
+        white-space: pre-line;
+    }
+}
+
+//###################### Custom Steps #############
+.tabs-to-spteps {
+    .mat-tab-header {
+        border-bottom: none !important;
+        margin-top: 20px;
+    }
+
+    .mat-tab-label-container {
+        .mat-tab-label.mat-tab-label-active {
+            .mat-tab-label-content {
+                .tab-label-status {
+                    background-color: mat-color($mat-blue, 900) !important;
+                }
+            }
+        }
+
+        .mat-tab-label {
+            height: 100px;
+            align-items: baseline;
+            margin-top: 18px;
+            min-width: 160px;
+            width: 100%;
+            padding: 10px 0px;
+            opacity: 1;
+
+            .mat-tab-label-content {
+                .tab-label-status.complete {
+                    background-color: $mat-green;
+                }
+
+                .tab-label-status {
+                    width: 30px;
+                    height: 30px;
+                    line-height: 30px;
+                    border-radius: 50%;
+                    background-color: mat-color($mat-grey, 400);
+                    color: mat-color($mat-grey, 50);
+                }
+            }
+
+            &:after,
+            &:before {
+                content: '';
+                // border-top: $border-style;
+                position: absolute;
+                display: inline-block;
+                height: 0;
+                width: calc(50% - 20px);
+                top: 25px;
+            }
+
+            &:after {
+                right: 0px;
+            }
+
+            &:before {
+                left: 0px;
+            }
+
+            &:first-child::before,
+            &:last-child::after {
+                display: none;
+            }
+
+            .tab-title {
+                position: absolute;              
+                top: 50px;
+                white-space: pre-line;
+                left: 0;
+                right: 0;
+
+            }
+
+        }
+
+        .mat-ink-bar {
+            display: none;
+        }
+
+    }
+}
+
+.stickyx {
+    position: sticky;
+    top: 0;
+    z-index: 9;
+}
+
+.tabs-table-padding0 {
+    .filter-accordian{
+        .mat-expansion-panel{
+            margin: 1px 10px !important;
+            padding: 0px 15px 0 0px;
+        }
+    }
+   
+        .mat-expansion-panel-body {
+            padding: 0 0px 16px;
+        }
+    
+}
+
+.cTimepicker {
+    // padding: 4px;
+    display: flex;
+
+    .mat-select {
+        width: 30px;
+        text-align: center;
+
+        //    display:flex;
+        .mat-select-value {
+            max-width: 100%;
+
+            //text-align: center;
+            //font-weight: 800;
+            // margin: 0px 1px !important;
+            // align-items: center;
+            // place-content: center;
+        }
+
+        .mat-select-arrow-wrapper {
+            display: none !important;
+        }
+    }
+}
+
+//###################### custom-modalbox ###################
+.custom-modalbox {
+    .mat-dialog-container {
+        //@at-root padding: 0px;
+        .mat-dialog-content {
+            word-break: break-word;
+        }
+    }
+}
+.custom-dialog{
+    .mat-dialog-container {
+        max-height: 80vh;
+        overflow: auto;
+    }
+}
+.payment-model{
+   .mat-dialog-container{
+       padding: 0px;   
+       .mat-dialog-content{
+           margin:0px;
+           padding-bottom: 24px;
+       }
+   }
+}
+.secondary-model{
+    .mat-dialog-container{
+        padding: 0px;   
+        .mat-dialog-content{
+            margin:0px;
+            padding-bottom: 24px;
+        }
+    }
+}
+
+//###################### custom Table ###################
+
+.custom-table {
+    border-collapse: collapse;
+    tr {
+        th,
+        td {
+            padding: 12px;
+            text-align: left;
+            max-width: 150px;
+            word-break: break-all;
+        }
+
+        &:nth-child(odd) {
+            background-color: mat-color($fuse-navy, 50);
+        }
+    }
+}
+.responsive-normal-table {
+ 
+     table.simple tbody tr td{
+        max-width: 180px;
+        text-overflow: ellipsis;
+        overflow: hidden;          
+    }
+}
+
+//###################### Form Field bottom space ###################
+.formfield-pb-0 {
+    .mat-form-field-wrapper {
+        padding-bottom: 0;
+    }
+}
+
+.timepicker-error {
+    max-width: 105px;
+    position: relative;
+    bottom: 15px;
+    text-align: left;
+}
+
+.mat-stepper-vertical {
+    .mat-step-icon-state-done {
+        background-color: $mat-green !important;
+    }
+
+    .mat-step-icon-state-edit,
+    .mat-step-icon-selected {
+        background-color: $accent !important;
+    }
+}
+
+.mat-column-select {
+    -webkit-box-flex: 0;
+    flex: 0 1 68px;
+    min-width: 0px !important;
+    padding-right: 20px;
+}
+.mat-column-actions, .cdk-column-status, .mat-column-view, .mat-column-edit, .mat-column-delete{
+    max-width: 120px;
+    min-width: 120px !important;
+}
+@-moz-document url-prefix() {
+    .scrolltable{
+        .mat-table-sticky{
+            position: static !important;
+        }
+    }
+}
+// .scrolltable{
+//     .mat-table-sticky{
+       
+//     }
+// }
+
+.nav .nav-group>.group-title {
+    padding-left: 12px;
+    margin-top: 14px;
+    font-size: 18px;
+}
+.success-snackbar{
+     margin-top: 60px !important;
+     background: $mat-green !important; 
+}
+.error-snackbar{
+    margin-top: 60px !important;
+    background: $mat-red !important;
+}
+.icon-center{
+    .mat-form-field-flex{
+        align-items: center !important;
+    }
+}
+
+.mat-calendar-footer {
+    margin-top: -1px;
+}
+.button-disabled-label{
+    background-color: transparent !important;
+    color: #4caf50 !important
+}
+// .mat-dialog-container {
+//     max-height: 68vh !important;
+// }
+//################ IE Serch box disabled clear button ##############
+::-ms-clear {
+    display: none;
+  }
+  .rootmap-popup{
+      max-width: 98% !important;
+    //   height: 98%;
+      margin: auto !important;
+      .mat-dialog-container{
+          overflow: hidden; 
+          max-height: 100% !important;
+          .mat-dialog-content{
+            max-height: 70vh;
+
+          }
+        }
+  }
+//   button .mat-button-wrapper span{
+//     vertical-align: baseline !important;
+//   }
+.nav.material2 .nav-item .nav-link, .material2 .nav .nav-item .nav-link{
+    padding: 0 12px 0 12px ;
+}
+
+ .children {
+     .nav-item {
+         .nav-link,
+        &.nav-group > .group-title,
+        &.nav-group > .group-items > .nav-item > .nav-link {
+            color: #bdbdbd
+        } 
+    }
+}
+.nav {
+    .nav-group {
+         .group-items {
+             .nav-collapsable.open{
+                background: rgba(0, 0, 0, 0.25);
+             }
+         }
+    }
+
+} 
+.nav .nav-item .nav-link:hover{ background-color: rgba(255, 255, 255, 0.18823529411764706);
+    color: #fff;
+}
+.ngx-charts text { font-size: 16px; }
+
+
+// ############## widget calendar #############
+#widget-calendar{
+    .cal-month-view {
+        .cal-day-cell{
+            min-height: 100%;
+            position: relative;
+            .cal-events{
+                position: absolute;
+                bottom: 0;
+            }
+        }
+    }
+    .header {
+        &.Jan {
+            background-image: url('/assets/images/calendar/winter.jpg');
+            background-position: 0 85%;
+        }
+        &.Feb {
+            background-image: url('/assets/images/calendar/winter.jpg');
+            background-position: 0 85%;
+        }
+        &.Mar {
+            background-image: url('/assets/images/calendar/spring.jpg');
+            background-position: 0 40%;
+        }
+        &.Apr {
+            background-image: url('/assets/images/calendar/spring.jpg');
+            background-position: 0 40%;
+        }
+        &.May {
+            background-image: url('/assets/images/calendar/spring.jpg');
+            background-position: 0 40%;
+        }
+        &.Jun {
+            background-image: url('/assets/images/calendar/summer.jpg');
+            background-position: 0 80%;
+        }
+        &.Jul {
+            background-image: url('/assets/images/calendar/summer.jpg');
+            background-position: 0 80%;
+        }
+        &.Aug {
+            background-image: url('/assets/images/calendar/summer.jpg');
+            background-position: 0 80%;
+        }
+        &.Sep {
+            background-image: url('/assets/images/calendar/autumn.jpg');
+            background-position: 0 40%;
+        }
+        &.Oct {
+            background-image: url('/assets/images/calendar/autumn.jpg');
+            background-position: 0 40%;
+        }
+        &.Nov {
+            background-image: url('/assets/images/calendar/autumn.jpg');
+            background-position: 0 40%;
+        }
+        &.Dec {
+            background-image: url('/assets/images/calendar/winter.jpg');
+            background-position: 0 85%;
+        }
+    }
+}
+
+.dropdown-up{
+    .country-list{
+        bottom: 100%;
+        margin-bottom: -1px;
+    }
+}
+.country-list{
+    .country{
+        max-width: 360px ;
+    }
+}
+.simple-scroll-table{
+    overflow-x: auto;
+    overflow: overlay;
+    table.simple tbody tr td{
+        min-width: 160px;
+    }
+}
+progress-bar .progress-outer{
+    margin: initial !important;
+    padding: 1px !important;
+    .progress-inner{
+        max-height: 18px;
+        font-size: 14px;
+    }
+}
+
+.virtual-class-cards {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: flex-start;
+ }
+.virtual-class-card {
+    display: flex;
+    align-items: flex-start;
+    padding: 24px 24px 48px 24px;
+    margin-bottom: 96px;
+    .virtual-class-card-preview {
+        display: flex;
+        min-width: 320px;
+    }
+}
+.header-height{
+    .mat-header-row{
+        min-height: 40px !important;
+    }
+}
+
+
+
+

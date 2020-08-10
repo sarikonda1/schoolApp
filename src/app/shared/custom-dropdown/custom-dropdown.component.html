@@ -1,0 +1,43 @@
+<!-- <h3>Multiple selection</h3>-->
+<div *ngIf="multiple">
+    <mat-form-field appearance="outline" fxFlex="auto" class="text-truncate">
+      <mat-label>{{dropDownPlaceholder | translate}}</mat-label>
+      <mat-select #customDropdownSelect [formControl]="dropDownCtrl" [multiple]="multiple" (selectionChange)="onSelect($event)" [disabled]="disable" [required]="isRequired" [compareWith]="compareObjects">
+        <mat-select-trigger>
+          <ng-container *ngFor="let data of dropDownCtrl.value;let i = index">
+            <ng-container *ngIf="i < maxCount">
+              {{data ? data?.label : ''}}
+            </ng-container>
+          </ng-container>
+          <span *ngIf="dropDownCtrl.value?.length > maxCount" class="example-additional-selection">
+            (+{{dropDownCtrl.value.length - maxCount}}
+            {{dropDownCtrl.value?.length === maxCount ? 'other' : 'others'}})
+          </span>
+        </mat-select-trigger>
+        <mat-option>
+          <ngx-mat-select-search [clearSearchInput]=true [formControl]="dropDownFilterCtrl"
+            [placeholderLabel]="serchBoxPalceholder | translate" [noEntriesFoundLabel]="noEntryFoundLabel | translate">
+          </ngx-mat-select-search>
+        </mat-option>
+        <mat-option *ngFor="let inputData of filteredDropDownValue | async" [value]="inputData">
+          {{inputData.label}}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="errorCheck?.hasError('required')">{{errorMessage}}</mat-error>
+    </mat-form-field>
+</div>
+
+<!-- <h3>Single selection</h3>  -->
+<div *ngIf="!multiple">
+    <mat-form-field appearance="outline" fxFlex="auto" class="text-truncate">
+      <mat-label>{{dropDownPlaceholder | translate}}</mat-label>
+      <mat-select [formControl]="dropDownCtrl" (selectionChange)="onSelect($event)" [multiple]="multiple" [required]="isRequired">
+        <ngx-mat-select-search [formControl]="dropDownFilterCtrl" [placeholderLabel]="serchBoxPalceholder  | translate"
+          [noEntriesFoundLabel]="noEntryFoundLabel  | translate"></ngx-mat-select-search>
+        <mat-option *ngFor="let inputData of filteredDropDownValue | async" [value]="inputData">
+          {{inputData.label}}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="errorCheck?.hasError('required')">{{errorMessage}}</mat-error>
+    </mat-form-field>
+</div>

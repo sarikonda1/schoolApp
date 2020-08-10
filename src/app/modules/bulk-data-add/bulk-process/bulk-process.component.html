@@ -1,0 +1,56 @@
+<div class="px-sm-40 pt-sm-40">
+    <div class="py-8 px-20" fxLayoutAlign="space-between center">
+        <div class="font-size-18 text-uppercase" translate>Process Information</div>
+        <button mat-raised-button color="primary" (click)="back()">Back</button>
+    </div>
+    <div class="mat-elevation-z3 simple-table-container radius-t-20">
+        <div fxLayout="column">
+            <mat-list class="confirm-table pt-0" fxLayout="row wrap">
+                <mat-list-item fxFlex="80" fxLayout="column">
+                    Name of the File Processed
+                </mat-list-item>
+                <mat-list-item fxFlex="20" fxLayout="column">
+                    {{importData?.attachmentViewModel?.fileValue}}
+                </mat-list-item>
+                <mat-list-item fxFlex="80" fxLayout="column">
+                    Total Number Of Records
+                </mat-list-item>
+                <mat-list-item fxFlex="20" fxLayout="column">
+                    {{importData?.recordCount}}
+                </mat-list-item>
+                <mat-list-item fxFlex="80" fxLayout="column">
+                    Records Processed Successfully
+                </mat-list-item>
+                <mat-list-item fxFlex="20" fxLayout="column">
+                    {{importData?.successCount}}
+                </mat-list-item>
+                <mat-list-item fxFlex="80" fxLayout="column">
+                    Records Failed while Processing
+                </mat-list-item>
+                <mat-list-item fxFlex="20" fxLayout="column">
+                    {{importData?.failureCount}}
+                </mat-list-item>
+                <mat-list-item fxFlex="80" fxLayout="column">
+                    Total Number of Records Processed
+                </mat-list-item>
+                <mat-list-item fxFlex="20" fxLayout="column">
+                    {{importData?.processedCount}}
+                </mat-list-item>
+            </mat-list>
+            <mat-list class="border-top">
+                <mat-list-item fxFlex="20" fxLayout="column">
+                    <button mat-button color="accent" type="button" (click)="openAttachment()">
+                        <mat-icon class="mr-4">cloud_download</mat-icon>Download File
+                    </button>
+                </mat-list-item>
+            </mat-list>
+        </div>
+    </div>
+</div>
+
+<progress-bar [progress]="percentage" [color]="'#488aff'">
+</progress-bar>
+
+<app-table *ngIf="rows && rows.length > 0" [settings]="tableSettings" (getTableData)='tableData($event)'
+    (openAddForm)='openForm()' [closeRowForm]="closeForm">
+</app-table>

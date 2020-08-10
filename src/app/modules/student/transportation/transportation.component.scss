@@ -1,0 +1,11 @@
+.transport{
+    tr{
+        td{
+            &:first-child{
+                min-width: 180px;
+                font-weight: 600;
+            }
+            word-break: break-all;
+        }
+    }
+}

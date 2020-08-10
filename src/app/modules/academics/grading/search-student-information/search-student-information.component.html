@@ -1,0 +1,201 @@
+<div class="px-40 pt-40">
+  <div class="py-8 px-20 font-size-18 text-uppercase" translate>Additional Student Information</div>
+  <div class="mat-elevation-z3 simple-table-container radius-t-20">
+    <div fxLayoutAlign="end center" class="p-16 border-bottom">
+      <button mat-button (click)="getHelpText('Additional Student Info')">
+        <mat-icon class="grey-600-fg">info</mat-icon>
+      </button>
+    </div>
+    <form [formGroup]="studentInformationSearchForm" (ngSubmit)="searchReportCards()" #paymentSearch="ngForm"
+      class="p-24">
+      <div fxFlexFill fxLayout="column" class="pt-12" fxLayout.gt-sm="row">
+
+        <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="25"
+          class="pr-sm-20">
+          <mat-label translate #board>Board</mat-label>
+          <mat-select placeholder="Board" formControlName="boardId"
+            (selectionChange)="onSelectSchoolBoard($event.value)" required>
+            <mat-option *ngFor="let board of schoolBoardsList" [value]="board.value">
+              {{ board.label }}</mat-option>
+          </mat-select>
+          <mat-error>
+            <app-validation [labelName]='board.innerText'
+              [validationControl]="studentInformationSearchForm.controls.boardId" [doValidate]="validate">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="25"
+          class="pr-sm-20">
+          <mat-label translate #class>Class</mat-label>
+          <mat-select placeholder="Class" formControlName="classId" (selectionChange)="onClassChange($event.value)"
+            required>
+            <mat-option *ngFor="let class of classesList" [value]="class.value">
+              {{ class.label }}</mat-option>
+          </mat-select>
+          <mat-error>
+            <app-validation [labelName]='class.innerText'
+              [validationControl]="studentInformationSearchForm.controls.classId" [doValidate]="validate">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="25"
+          class="pr-sm-20">
+          <mat-label translate #section>Section</mat-label>
+          <mat-select (selectionChange)="getGradingTerms()" placeholder="Section" formControlName="sectionId" required>
+            <mat-option *ngFor="let section of availableSections" [value]="section.value">
+              {{ section.label }}</mat-option>
+          </mat-select>
+          <mat-error>
+            <app-validation [labelName]='section.innerText'
+              [validationControl]="studentInformationSearchForm.controls.sectionId" [doValidate]="validate">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="25">
+          <mat-label translate #gradingTerm>Grading Term</mat-label>
+          <mat-select placeholder="Grading Term" formControlName="gradingTermId" required>
+            <mat-option *ngFor="let term of gradingTermsList" [value]="term.id">
+              {{ term.name }}</mat-option>
+          </mat-select>
+          <mat-error>
+            <app-validation [labelName]='gradingTerm.innerText'
+              [validationControl]="studentInformationSearchForm.controls.gradingTermId" [doValidate]="validate">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div fxLayout="row" fxLayoutAlign="end center" class="mb-20">
+        <button mat-raised-button type="reset" color="primary" class="text-uppercase mr-12" (click)="onClear()">
+          <span translate>Reset</span>
+        </button>
+        <button mat-raised-button type="submit" color="accent" class="text-uppercase">
+          <span translate>Search</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+<app-table *ngIf="!showCustomCard && rows?.length" [settings]="tableSettings" [closeRowForm]='closeAddPanel' (getTableData)='getTableData($event)' (additionalButtonClick)="onShowAll($event)"
+  (rowBasedAction)="rowWiseActions($event)" [templateRef]="updateStudent ? isUpdate : studentScore"
+  [rowTemplateRef]="studentScore">
+</app-table>
+<app-custom-card *ngIf="showCustomCard" [title]=customCardDetails.title [inputMessage]=customCardDetails.message>
+</app-custom-card>
+
+<ng-template #studentScore let-name="name" let-row="row" let-value="value" let-columnIndex="columnIndex">
+  <form [formGroup]="studentValuesForm">
+    <ng-container formArrayName="reportValues"
+      *ngFor="let c of studentValuesForm.get('reportValues')?.controls; let i = index">
+      <div [formGroupName]="i" *ngIf="i==name" fxLayoutAlign="center center" class="coustom-mat-error">
+        <div *ngIf="studentValuesForm.controls.reportValues?.controls[i].controls.inputType.value === 'text' ">
+          <mat-form-field fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-xs="32">
+            <input (keyup)="preventSpace($event,'studentValuesForm','reportCardItemValue')" matInput
+              formControlName="reportCardItemValue"
+              (blur)="updateStudentData(row, studentValuesForm.controls.reportValues.controls[i], name, columnIndex)">
+
+            <mat-icon class="tick-position green-fg" *ngIf="inputChangeIndex['check' + name + '_' + columnIndex]">
+              check</mat-icon>
+            <mat-icon class="tick-position red-fg" *ngIf="inputChangeIndex['error' + name + '_' + columnIndex]">error
+            </mat-icon>
+            <mat-spinner class="spinner-position" [diameter]="20" color="accent"
+              *ngIf="inputChangeIndex['spinner_' + name + '_' + columnIndex]"></mat-spinner>
+          </mat-form-field>
+          <mat-error>
+            <app-validation [labelName]="'reportValues'"
+              [validationControl]="studentValuesForm.controls.reportValues?.controls[i].controls.reportCardItemValue"
+              [doValidate]="validate">
+            </app-validation>
+          </mat-error>
+        </div>
+
+        <div *ngIf="studentValuesForm.controls.reportValues?.controls[i].controls.inputType.value === 'textarea' ">
+          <mat-form-field appearance="outline" class="example-full-width">
+            <textarea id="comment-field" formControlName="reportCardItemValue" matInput
+              (blur)="updateStudentData(row, studentValuesForm.controls.reportValues.controls[i], name, columnIndex)"></textarea>
+
+            <mat-icon class="textarea-loader-position green-fg"
+              *ngIf="inputChangeIndex['check' + name + '_' + columnIndex]">check</mat-icon>
+            <mat-icon class="textarea-loader-position red-fg"
+              *ngIf="inputChangeIndex['error' + name + '_' + columnIndex]">error</mat-icon>
+            <mat-spinner class="textarea-loader-position" [diameter]="20" color="accent"
+              *ngIf="inputChangeIndex['spinner_' + name + '_' + columnIndex]"></mat-spinner>
+
+            <mat-error>
+              <app-validation [labelName]="'reportValues'"
+                [validationControl]="studentValuesForm.controls.reportValues?.controls[i].controls.reportCardItemValue"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <mat-icon class="tick-position green-fg" *ngIf="check(i)">check</mat-icon>
+      </div>
+    </ng-container>
+  </form>
+</ng-template>
+
+<ng-template #isUpdate let-name="sname">
+  <div class="py-16 font-size-18 text-uppercase" translate>Update Student Additional Information</div>
+  <form [formGroup]="updateForm" (ngSubmit)="updateValues(updateForm.value)" #appForm="ngForm">
+    <div fxLayout="column" fxLayout.gt-sm="row" *ngIf="dataSet">
+
+      <div fxLayout="column" class="pr-sm-20" fxFlex="100" fxFlex.gt-sm="50">
+        <mat-form-field appearance="outline">
+          <mat-label>Student Name</mat-label>
+
+          <input readonly matInput [ngModelOptions]="{standalone: true}" [(ngModel)]="dataSet.studentName" disabled>
+        </mat-form-field>
+      </div>
+      <input type="hidden" formControlName="schoolAcademicSessionStudentId"
+        [ngModel]=" dataSet?.schoolAcademicSessionStudentId">
+      <input type="hidden" formControlName="gradingTermId" [ngModel]=" dataSet?.gradingTermId">
+
+
+      <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+        <mat-form-field appearance="outline">
+          <mat-label>Roll Number</mat-label>
+          <input readonly matInput [ngModelOptions]="{standalone: true}" [(ngModel)]="dataSet.rollNumber" disabled>
+        </mat-form-field>
+      </div>
+
+
+
+    </div>
+    <div fxLayout="column" fxLayout.gt-sm="row wrap" *ngIf="dataSet?.reportPrintTemplateName">
+
+      <div fxLayout="column" class="pr-sm-20" fxFlex="100" fxFlex.gt-sm="33"
+        *ngFor="let item of dataSet?.reportPrintTemplateName; let i = index">
+        <!-- <input type="hidden" formControlName="printTemplateFieldId{{i}}" [ngModel]="item.printTemplateFieldId"> -->
+
+        <!-- <input type="hidden" formControlName="studentAdditionalInfoId{{i}}" [ngModel]="item.studentAdditionalInfoId"> -->
+        <mat-form-field appearance="outline">
+          <mat-label>{{item.reportCardItemName}}</mat-label>
+          <input (keyup)="preventSpace($event,'updateForm',item.code)" matInput autocomplete="off" matInput
+            [formControlName]="item.code">
+
+          <mat-error>
+            <app-validation [labelName]="item.reportCardItemName" [validationControl]="updateForm.controls[item.code]"
+              [doValidate]="validateFeilds">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+
+    </div>
+    <div fxLayout="row" fxLayoutAlign="center center">
+      <button class="mr-12 text-uppercase" mat-raised-button type="button"
+        (click)="closeForm()">{{'Cancel' | translate}}</button>
+      <button class="mr-12 text-uppercase" mat-raised-button color="accent">{{'Update' | translate}}</button>
+    </div>
+  </form>
+</ng-template>
+
+<div *ngIf="!showCustomCard && rows?.length === 0" class="errorMsg">
+  <p class="red-text text-center mb-0 font-weight-bold p-24" translate>No Custom Feilds For the Selected Grading Term</p>
+</div>

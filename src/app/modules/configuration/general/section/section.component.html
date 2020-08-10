@@ -1,0 +1,32 @@
+<app-table [settings]="tabSettings" (selectedRows)='onTableRowSelect($event)'
+    (rowBasedAction)='rowActions($event)' (openAddForm)="openAddForm()" [closeRowForm]='closeAddPanel'
+    [templateRef]="sectiontemplate" (getTableData)='getAllSections($event)' (deleteAllRows)="deleteAll()">
+</app-table>
+
+<ng-template #sectiontemplate>
+    <form #sectionDataForm="ngForm" [formGroup]="sectionForm">
+        <div fxFlexFill fxLayout="row" class="pt-24" fxLayoutAlign="center center">
+            <mat-form-field appearance="outline" fxLayout="column" fxFlex.gt-xs="50" fxFlex="100">
+                <mat-label #sectionname translate>sectionname</mat-label>
+                <input matInput autocomplete="off" (keyup)="preventSpace($event,'sectionForm','name')" formControlName="name"
+                    (blur)="trimTextBoxSpaces('sectionForm','name')" required #focusField>
+                <mat-error *ngIf="validate">
+                    <app-validation [labelName]="sectionname.innerText" [validationControl]="sectionForm.controls.name"
+                        [doValidate]="validate">
+                    </app-validation>
+                </mat-error>
+            </mat-form-field>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="center center" fxLayoutAlign.gt-xs="end center" class="pt-16 pb-8">
+            <button class="mr-12 text-uppercase" mat-raised-button type="button" (click)="cancel()">
+                {{'Cancel' | translate}}</button>
+            <button mat-raised-button (click)="addOrUpdateSection(sectionForm)" type="submit"
+                class="mr-12 text-uppercase" color="accent"
+                [disabled]="isdisableBtn">{{ (!isUpdate ? 'Create':'Update') | translate}}</button>
+                <button (click)="addOrUpdateSection(sectionForm, true);focusField.focus()" class="text-uppercase" *ngIf="!isUpdate"
+                mat-raised-button mat-button type="submit" [disabled]="disableSubmitBtn" color="primary">
+                {{'Create and Continue' | translate}}</button>
+
+        </div>
+    </form>
+</ng-template>

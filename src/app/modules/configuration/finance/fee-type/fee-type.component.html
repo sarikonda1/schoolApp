@@ -1,0 +1,121 @@
+<app-table [settings]="tabSettings" (getTableData)='getAllFeeTypes($event)' (rowBasedAction)='rowWiseActions($event)'
+    (openAddForm)="addForm()" [closeRowForm]='closeAddPanel' [templateRef]="addFeeTypes"></app-table>
+
+<ng-template #addFeeTypes>
+    <form [formGroup]="feetypeForm" (ngSubmit)="addUpdateFeeType(feetypeForm)" #feeTypeForm="ngForm">
+        <div fxFlexFill fxLayout="column" class="pt-24" fxLayout.gt-sm="row">
+            <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" class="pr-sm-20"
+                fxFlex.gt-xs="32">
+                <mat-label #feeTypeCategoryId translate>Fee Type Category</mat-label>
+                <mat-select formControlName="feeTypeCategoryId" (selectionChange)="checkFeeTypeCategory($event.value)"
+                    required>
+                    <mat-option *ngFor="let feeTypeCategory of feeTypeCategoryDropDown" [value]="feeTypeCategory.value">
+                        {{feeTypeCategory.label}}
+                    </mat-option>
+                </mat-select>
+                <mat-error>
+                    <app-validation [labelName]='feeTypeCategoryId.innerText'
+                        [validationControl]="feetypeForm.controls.feeTypeCategoryId"
+                        [doValidate]="feeTypeFormSubmitted">
+                    </app-validation>
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="pr-sm-20" fxLayout="column" fxFlexFill fxFlex="100"
+                fxFlex.gt-xs="36">
+                <mat-label #name translate>Name</mat-label>
+                <input matInput formControlName="name" required (keyup)="preventSpace($event,'feetypeForm','name')" autocomplete="off" (blur)="trimTextBoxSpaces('feetypeForm','name')">
+                <mat-error>
+                    <app-validation [labelName]='name.innerText' [validationControl]="feetypeForm.controls.name"
+                        [doValidate]="feeTypeFormSubmitted">
+                    </app-validation>
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="outline" fxLayout="column" fxFlexFill fxFlex="100" fxFlex.gt-xs="32">
+                <mat-label #displayName translate>displayname</mat-label>
+                <input matInput formControlName="displayName" (keyup)="preventSpace($event,'feetypeForm','displayName')" (blur)="trimTextBoxSpaces('feetypeForm','displayName')"  autocomplete="off">
+                <mat-error>
+                    <app-validation [labelName]='displayName.innerText' [validationControl]="feetypeForm.controls.displayName"
+                        [doValidate]="feeTypeFormSubmitted">
+                    </app-validation>
+                </mat-error>
+            </mat-form-field>
+        </div>
+
+        <div fxFlexFill fxLayout="column" fxLayout.gt-sm="row wrap">
+            <mat-form-field appearance="outline" fxLayout="column" class="pr-sm-20" fxFlexFill fxFlex="100"
+                fxFlex.gt-xs="32">
+                <mat-label #code translate>Code</mat-label>
+                <input matInput formControlName="code" (keyup)="preventSpace($event,'feetypeForm','code')" (blur)="trimTextBoxSpaces('feetypeForm','code')" autocomplete="off">
+                <mat-error>
+                    <app-validation [labelName]='code.innerText' [validationControl]="feetypeForm.controls.code"
+                        [doValidate]="feeTypeFormSubmitted">
+                    </app-validation>
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="pr-sm-20" fxLayout="column" fxFlexFill fxFlex="100"
+                fxFlex.gt-xs="36">
+                <mat-label #feeAccountId translate>Fee Account</mat-label>
+                <mat-select formControlName="feeAccountId" required>
+                    <mat-option *ngFor="let feeAccount of feeAccountDropDown" [value]="feeAccount.value">
+                        {{feeAccount.label}}
+                    </mat-option>
+                </mat-select>
+                <mat-error>
+                    <app-validation [labelName]='feeAccountId.innerText'
+                        [validationControl]="feetypeForm.controls.feeAccountId" [doValidate]="feeTypeFormSubmitted">
+                    </app-validation>
+                </mat-error>
+            </mat-form-field>
+            <div *ngIf="showFeeterm" fxLayout="column" fxFlexFill fxFlex="100" fxFlex.gt-xs="32">
+                <app-custom-dropdown *ngIf=" dataLoaded | async" formControlName="feeTermId"
+                    [dropDownConf]="feeTermMulticheck" ngDefaultControl [errorCheck]="feetypeForm.controls.feeTermId"
+                    (selectedData)="onSelect($event)">
+                </app-custom-dropdown>
+            </div>
+
+            <mat-form-field fxFlexFill appearance="outline" [ngClass]="showFeeterm ? 'pr-sm-20': '' "  fxLayout="column" fxFlex.gt-xs="32"
+                fxFlex="100">
+                <mat-label #feeDescription translate>Fee Description</mat-label>
+                <input matInput formControlName="feeDescription" (keyup)="preventSpace($event,'feetypeForm','feeDescription')" autocomplete="off" (blur)="trimTextBoxSpaces('feetypeForm','feeDescription')">
+                <mat-error>
+                    <app-validation [labelName]='feeDescription.innerText'
+                        [validationControl]="feetypeForm.controls.feeDescription" [doValidate]="feeTypeFormSubmitted">
+                    </app-validation>
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field *ngIf='isSchoolFacility' fxFlexFill appearance="outline" fxLayout="column" fxFlex.gt-xs="36"
+                class="pr-sm-20">
+                <mat-label #schoolFacilityId translate>School Facility</mat-label>
+                <mat-select formControlName="schoolFacilityId" required={{schoolFacilityRequired}}>
+                    <mat-option *ngFor="let facility of facilityDropDown" [value]="facility.value">
+                        {{facility.label}}
+                    </mat-option>
+                </mat-select>
+                <mat-error>
+                    <app-validation [labelName]='schoolFacilityId.innerText'
+                        [validationControl]="feetypeForm.controls.schoolFacilityId" [doValidate]="feeTypeFormSubmitted">
+                    </app-validation>
+                </mat-error>
+            </mat-form-field>
+
+            <div *ngIf='isSameForEntireClass' fxLayout="column" fxFlex="100" fxFlex.gt-xs="32" class="pb-20"
+                fxLayoutAlign="center start">
+                <mat-checkbox formControlName="isSameForEntireClass" translate [disabled]="isDisabled">{{'Is Same For Entire Class' | translate}}</mat-checkbox>
+            </div>
+
+        </div>
+        <div fxFlexFill fxLayout="column" fxLayout.gt-sm="row">
+
+
+
+
+
+        </div>
+        <div fxLayout="row" fxLayoutAlign="end center" class="pt-16">
+            <button class="mr-12 text-uppercase" mat-raised-button type="button"
+                (click)="onCancelClick()">{{'Cancel' | translate}}</button>
+            <button [disabled]="disbleSubmitBtn" mat-raised-button type="submit" color="accent"
+                class="text-uppercase mr-12" mat-button>{{this.buttonName | translate}}</button>
+        </div>
+    </form>
+</ng-template>

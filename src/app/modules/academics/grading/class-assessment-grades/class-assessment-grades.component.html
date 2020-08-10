@@ -1,0 +1,259 @@
+<div class="p-sm-40" id="map-grid">
+    <div *ngIf="isNavFromReports===false" class="p-12 font-size-18 text-uppercase" translate>Class Assessment Grades
+    </div>
+    <div class="mat-elevation-z6 simple-table-container radius-t-20">
+        <div *ngIf="isNavFromReports===false" fxLayoutAlign="end center" class="p-20">
+            <button mat-button type='button' (click)="getHelpText('Class Assessment Grades')">
+                <mat-icon class="grey-600-fg">info</mat-icon>
+            </button>
+        </div>
+        <mat-divider *ngIf="isNavFromReports===false"></mat-divider>
+
+        <form *ngIf="isNavFromReports===false" [formGroup]="classAssessmentGradesFormGroup"
+            #classAssessmentGroupsConfiguration="ngForm" (ngSubmit)="getAssessmentConfigurationList()" class="p-sm-32">
+            <div fxFlexFill fxLayout="column" fxLayout.gt-sm="row">
+                <mat-form-field appearance="outline" class="pr-sm-20" fxLayout="column" fxFlex="100" fxFlex.gt-sm="25"
+                    fxFlexFill>
+                    <mat-label #schoolBoardId translate>School Board</mat-label>
+                    <mat-select formControlName="schoolBoardId" (selectionChange)="onSelectSchoolBoard($event)"
+                        required>
+                        <mat-option *ngFor="let schoolBoard of availableSchoolBoards" [value]="schoolBoard.value">
+                            {{schoolBoard.label}}
+                        </mat-option>
+                    </mat-select>
+                    <mat-error>
+                        <app-validation [labelName]="schoolBoardId.innerText"
+                            [validationControl]="classAssessmentGradesFormGroup.controls.schoolBoardId"
+                            [doValidate]="classAssmentGroupsFormSubmitted">
+                        </app-validation>
+                    </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="pr-sm-20" fxLayout="column" fxFlex="100" fxFlex.gt-sm="25"
+                    fxFlexFill>
+                    <mat-label #class translate>Class</mat-label>
+                    <mat-select formControlName="classId" (selectionChange)="onClassChange($event.value)" required>
+                        <mat-option *ngFor="let availableClass of availableClasses" [value]="availableClass.value">
+                            {{availableClass.label}}
+                        </mat-option>
+                    </mat-select>
+                    <mat-error>
+                        <app-validation [labelName]="class.innerText"
+                            [validationControl]="classAssessmentGradesFormGroup.controls.classId"
+                            [doValidate]="classAssmentGroupsFormSubmitted">
+                        </app-validation>
+                    </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="pr-sm-20" fxLayout="column" fxFlex="100" fxFlex.gt-sm="25"
+                    fxFlexFill>
+                    <mat-label #section translate>Section</mat-label>
+                    <mat-select formControlName="sectionId" (selectionChange)="onSectionChange($event.value, true)"
+                        required>
+                        <mat-option *ngFor="let availableSection of availableSections" [value]="availableSection.value">
+                            {{availableSection.label}}
+                        </mat-option>
+                    </mat-select>
+                    <mat-error>
+                        <app-validation [labelName]="section.innerText"
+                            [validationControl]="classAssessmentGradesFormGroup.controls.sectionId"
+                            [doValidate]="classAssmentGroupsFormSubmitted">
+                        </app-validation>
+                    </mat-error>
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="pr-sm-20" fxLayout="column" fxFlex="100" fxFlex.gt-sm="25"
+                    fxFlexFill>
+                    <mat-label #gradingTerm translate>Grading Term</mat-label>
+                    <mat-select formControlName="gradingTermId" (selectionChange)="onGradingTermChange($event.value)"
+                        required>
+                        <mat-option *ngFor="let gradingTerm of gradingTerms" [value]="gradingTerm.value">
+                            {{gradingTerm.label}}
+                        </mat-option>
+                    </mat-select>
+                    <mat-error>
+                        <app-validation [labelName]="gradingTerm.innerText"
+                            [validationControl]="classAssessmentGradesFormGroup.controls.gradingTermId"
+                            [doValidate]="classAssmentGroupsFormSubmitted">
+                        </app-validation>
+                    </mat-error>
+                </mat-form-field>
+            </div>
+            <div fxFlexFill fxLayout="column" fxLayout.gt-sm="row" class="pt-20">
+
+                <mat-form-field appearance="outline" class="pr-sm-20" fxLayout="column" fxFlex="100" fxFlex.gt-sm="25"
+                    fxFlexFill>
+                    <mat-label #assessmentGroup translate>Assessment Group</mat-label>
+                    <mat-select formControlName="assessmentGroupId"
+                        (selectionChange)="onSelectAssessmentGroup($event.value)">
+                        <mat-option *ngIf="assessmentGroupsList?.length"></mat-option>
+                        <mat-option *ngFor="let assessmentGroup of assessmentGroupsList"
+                            [value]="assessmentGroup.value">
+                            {{assessmentGroup.label}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="pr-sm-20" fxLayout="column" fxFlex="100" fxFlex.gt-sm="25"
+                    fxFlexFill>
+                    <mat-label #assessmentCategory translate>Assessment Category</mat-label>
+                    <mat-select formControlName="assessmentCategoryId"
+                        (selectionChange)="onSelectAssessmentCategory($event.value)">
+                        <mat-option *ngIf="assessmentCategoriesList?.length"></mat-option>
+                        <mat-option *ngFor="let assessmentCategory of assessmentCategoriesList"
+                            [value]="assessmentCategory.value">
+                            {{assessmentCategory.label}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="pr-sm-20" fxLayout="column" fxFlex="100" fxFlex.gt-sm="25"
+                    fxFlexFill>
+                    <mat-label #assessmentParam translate>Assessment Parameter</mat-label>
+                    <mat-select formControlName="assessmentParameterId">
+                        <mat-option *ngIf="assessmentParams?.length"></mat-option>
+                        <mat-option *ngFor="let assessmentParam of assessmentParams" [value]="assessmentParam.value">
+                            {{assessmentParam.label}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="pr-sm-20" fxLayout="column" fxFlex="100" fxFlex.gt-sm="25"
+                    fxFlexFill>
+                    <mat-label #assessmentParam translate>Students</mat-label>
+                    <mat-select formControlName="studentNames">
+                        <mat-option *ngIf="filterdStudents?.length"></mat-option>
+                        <mat-option *ngFor="let tempFilteredStudent of filterdStudents"
+                            [value]="tempFilteredStudent.schoolAcademicSessionStudentId">
+                            {{tempFilteredStudent.studentName}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="end center" class="mt-20">
+                <button mat-raised-button type="reset" class="text-uppercase mr-12" (click)="clearSearchForm()"
+                    translate>{{'Clear' | translate}}</button>
+                <button mat-raised-button type="submit" color="accent" class="text-uppercase"
+                    translate>{{'Search' | translate}}</button>
+            </div>
+        </form>
+
+        <mat-divider *ngIf="isNavFromReports===false" id="mat_divider"></mat-divider>
+        <app-table *ngIf="studentAssessmentDeatils?.rows?.length; else multi_student_table"
+            [settings]="studentAssessmentDeatils" [rowTemplateRef]="studentGrade"
+            (additionalButtonClick)="onAdditionalButtonClick($event)" (changeRowDropdown)='changeRowDropdown($event)'
+            (selectedRows)='selectedRows($event)' [additionalExpantionPanelTemplateRef]="studentAssesmentGradeConfig"
+            [massActionTemplateRef]="massActions" [showAdditonalExpansionPanel]="setGradeForm"
+            (getTableData)='getStudentTableData($event)'></app-table>
+        <ng-template #multi_student_table>
+            <app-table
+                *ngIf="(testEmitter$ | async) && rows && rows !== undefined && rows !== null && rows.length > 0 && classAssessmentGradesFormGroup.valid"
+                [settings]="tableSettings" (additionalButtonClick)="onAdditionalButtonClick($event)"
+                (getTableData)='getTableData($event)' (selectedRows)='selectedRows($event)'
+                (changeRowDropdown)='changeRowDropdown($event)' [rowTemplateRef]="studentGrade"
+                [additionalExpantionPanelTemplateRef]="studentGradeAssesmentConfig"
+                [massActionTemplateRef]="massActions" [showAdditonalExpansionPanel]="setGradeForm">
+            </app-table>
+        </ng-template>
+        <div *ngIf="isSearchPerformed && classAssessmentGradesFormGroup.valid" class="errorMsg">
+            <p *ngIf="isStudentSearch && !rows.length" class="red-text text-center mb-0 font-weight-bold p-24"
+                translate>Assessment Parameter Configuration is missing for the Student's Class and/or Section</p>
+            <p *ngIf="!isStudentSearch && !rows?.length" class="red-text text-center mb-0 font-weight-bold p-24"
+                translate>No Data Found</p>
+        </div>
+    </div>
+</div>
+<ng-template #studentGradeAssesmentConfig>
+    <form (ngSubmit)="updateAssessmentConfiguration('updateAssesmentGradesFormGroup')"
+        [formGroup]="updateAssesmentGradesFormGroup" class="mt-24" fxLayout="column">
+        <div class="text-center accent-fg">{{'Please Select a Grade for the Selected Assessments.' | translate}}</div>
+        <div fxLayout="row" fxFlex="100" class="mt-20" fxLayoutAlign="center center">
+            <mat-form-field appearance="outline" class="px-sm-12" fxLayout="column" fxFlex="100" fxFlexFill
+                fxFlex.gt-sm="50" *ngFor="let assesmentSubCat of availableAssessmentSubCategories">
+                <mat-label #grade translate>{{assesmentSubCat.name}}</mat-label>
+                <mat-select [formControlName]="assesmentSubCat.name" required>
+                    <mat-option *ngFor="let option of assesmentSubCat.options" [value]="option.value">
+                        {{option.label}}
+                    </mat-option>
+                </mat-select>
+                <mat-error>
+                    <app-validation [labelName]="grade.innerText"
+                        [validationControl]="updateAssesmentGradesFormGroup.controls.Grade" [doValidate]=true>
+                    </app-validation>
+                </mat-error>
+            </mat-form-field>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="end center" class="my-12">
+            <button mat-raised-button type="button" class="text-uppercase"
+                (click)="setGrade(false)">{{'Cancel' | translate}}</button>
+            <button mat-raised-button type="submit" color="accent" class="text-uppercase mx-12"
+                translate>{{'Submit' | translate}}</button>
+        </div>
+    </form>
+</ng-template>
+
+
+<ng-template #studentAssesmentGradeConfig>
+    <form (ngSubmit)="updateAssessmentConfiguration('studentGradeAssessmentForm')"
+        [formGroup]="studentGradeAssessmentForm" class="mt-24" fxLayout="column">
+        <mat-list fxLayout="row wrap" class="pt-0 confirm-table border border">
+            <mat-list-item fxLayout="column" fxFlex="50" *ngIf="rows[0]?.studentName" translate>Student
+            </mat-list-item>
+            <mat-list-item *ngIf="rows[0]?.studentName" fxLayout="column" fxFlex="50">
+                {{rows[0].studentName}}</mat-list-item>
+            <mat-list-item *ngIf="rows[0]?.className" fxLayout="column" fxFlex="50" translate>Class
+            </mat-list-item>
+            <mat-list-item *ngIf="rows[0]?.className" fxLayout="column" fxFlex="50">
+                {{rows[0].className}}</mat-list-item>
+            <mat-list-item *ngIf="rows[0]?.sectionName" fxLayout="column" fxFlex="50" translate>Section
+            </mat-list-item>
+            <mat-list-item *ngIf="rows[0]?.sectionName" fxLayout="column" fxFlex="50">
+                {{rows[0].sectionName}}</mat-list-item>
+            <mat-list-item *ngIf="rows[0]?.gradeTermName" fxLayout="column" fxFlex="50" translate>Grading Term
+            </mat-list-item>
+            <mat-list-item *ngIf="rows[0]?.gradeTermName" fxLayout="column" fxFlex="50">
+                {{rows[0].gradeTermName}}</mat-list-item>
+        </mat-list>
+        <div fxLayout.gt-sm="row" fxLayout="column" fxFlex="100" class="mt-20">
+            <mat-form-field appearance="outline" class="px-sm-12" fxLayout="column" fxFlex="100" fxFlex.gt-sm="25"
+                fxFlexFill>
+                <mat-label #grade translate>Student Grade</mat-label>
+                <mat-select formControlName="studentGrade">
+                    <mat-option *ngFor="let grade of gradeIndicatorList" [value]="grade.value">
+                        {{grade.label}}
+                    </mat-option>
+                </mat-select>
+                <mat-error>
+                    <app-validation [labelName]="grade.innerText"
+                        [validationControl]="studentGradeAssessmentForm.controls.studentGrade" [doValidate]=true>
+                    </app-validation>
+                </mat-error>
+            </mat-form-field>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="end center" class="my-12">
+            <button mat-raised-button type="button" class="text-uppercase"
+                (click)="setGrade(false)">{{'Cancel' | translate}}</button>
+            <button mat-raised-button type="submit" color="accent" class="text-uppercase mx-12"
+                translate>{{'Submit' | translate}}</button>
+        </div>
+    </form>
+</ng-template>
+
+<ng-template #massActions>
+    <button mat-raised-button type="button" class="mx-4 text-uppercase" color="accent" (click)="setGrade(true)"
+        [disabled]="setGradeForm" translate>{{'Set Grade' | translate}}</button>
+</ng-template>
+
+<ng-template #studentGrade let-row="row" let-name="name" let-value="value" let-columnIndex="columnIndex">
+    <mat-form-field style="padding: 10px 0 0;">
+        <mat-select [placeholder]="" [(value)]="value"
+            (selectionChange)="onDropDownChange(row, $event.value, name,  columnIndex)">
+            <mat-option *ngFor="let option of gradeIndicatorList" [value]="option.value">
+                {{option.label }} </mat-option>
+        </mat-select>
+        <mat-icon class="tick-position green-fg" *ngIf="dropdownChangeIndex['check' + name + '_' + columnIndex]">check
+        </mat-icon>
+        <mat-icon class="tick-position red-fg" *ngIf="dropdownChangeIndex['error' + name + '_' + columnIndex]">error
+        </mat-icon>
+        <mat-spinner class="spinner-position" [diameter]="20" color="accent"
+            *ngIf="dropdownChangeIndex['spinner_' + name + '_' + columnIndex]"></mat-spinner>
+    </mat-form-field>
+</ng-template>

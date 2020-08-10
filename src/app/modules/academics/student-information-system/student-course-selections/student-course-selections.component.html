@@ -1,0 +1,126 @@
+<div class="px-sm-40 pt-sm-24">
+  <div class="p-12 font-size-18 text-uppercase" translate>Student Course Selections</div>
+  <form [formGroup]="studentCourseSelectionForm" (ngSubmit)="search(studentCourseSelectionForm)"
+    #studentCourseSearchForm="ngForm">
+    <div class="mat-elevation-z3 radius-t-20 simple-table-container" fxLayout="column">
+      <div fxFlexFill fxLayoutAlign="start center" fxLayout.gt-xs="row" fxLayout="column" class="p-20 mt-16">
+        <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex.gt-xs="25" fxFlex="100"
+          class="pr-sm-20">
+          <mat-label translate #class>Class</mat-label>
+          <mat-select required formControlName="classId"
+            (selectionChange)="getSections($event.value)">
+            <mat-option *ngFor="let class of classes" [value]="class.value">
+              {{ class.label }}</mat-option>
+          </mat-select>
+          <mat-error>
+            <app-validation [labelName]="class.innerText"
+              [validationControl]="studentCourseSelectionForm.controls.classId" [doValidate]="true">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex.gt-xs="25" fxFlex="100"
+          class="pr-sm-20">
+          <mat-label translate #section>Sections</mat-label>
+          <mat-select required formControlName="sectionId"
+            (selectionChange)="getCourseCategories('','')" [compareWith]="compareWithFunc">
+            <mat-option *ngFor="let section of sections" [value]="section.value">
+              {{ section.label }} <span *ngIf="section.boardName!=null">({{section.boardName}})</span></mat-option>
+          </mat-select>
+          <mat-error>
+            <app-validation [labelName]="section.innerText"
+              [validationControl]="studentCourseSelectionForm.controls.sectionId" [doValidate]="true">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex.gt-xs="25" fxFlex="100"
+          class="pr-sm-20">
+          <mat-label translate #courseCategory translate>Course Category</mat-label>
+          <mat-select formControlName="courseCategoryId">
+            <mat-option *ngIf="courseCategoriesList?.length"></mat-option>
+            <mat-option *ngFor="let courseCategory of courseCategoriesList" [value]="courseCategory.id">
+              {{ courseCategory.name }}</mat-option>
+          </mat-select>
+          <mat-error>
+            <app-validation [labelName]="courseCategory.innerText"
+              [validationControl]="studentCourseSelectionForm.controls.courseCategoryId" [doValidate]="true">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+        <div fxFlexFill fxLayout="column" fxFlex.gt-xs="55" fxFlex="100" fxLayoutAlign="end">
+          <div fxLayout="row" fxLayoutAlign="end center" class="mb-24">
+            <button type="button" mat-raised-button color="primary" class="text-uppercase" (click)="reset()">{{'Reset' | translate}}</button>
+            <button type="submit" mat-raised-button class="text-uppercase mx-12" color="accent">{{'Search' | translate}}</button>
+            <button mat-button type='button' (click)="getHelpText('Student Course Selections')">
+              <mat-icon class="grey-600-fg">info</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+  </form>
+</div>
+
+<app-custom-card *ngIf="!isValid" [title]="'Students'" [inputMessage]="'Please enter the required search criteria to perform the search'">
+</app-custom-card>
+
+<app-table *ngIf="isValid" [settings]="tabSettings" (rowBasedAction)='rowActions($event)' [massActionTemplateRef]="massActions"
+  (getTableData)='stdentCourseCategoryTableData($event)' (selectedRows)='selectedRows($event)'></app-table>
+
+<ng-template #massActions>
+  <button type="button" mat-raised-button class="text-uppercase mx-8" color="accent"
+    (click)="onAssignMultipleStudents()">{{'Assign Course Selection' | translate}}</button>
+</ng-template>
+
+<!--clone-->
+<ng-template #studentCoursesForm>
+  <form fxLayout="column">
+    <div class="font-size-18 pb-16"><span translate>Select Course Category and Course</span></div>
+    <mat-form-field appearance="outline" fxFlex="100" fxLayout="column">
+      <mat-label translate #courseCategory translate>Course Category</mat-label>
+      <mat-select [(ngModel)]="studentCourseSelectionView.courseCategoryId"
+        name="courseCategoryId" (selectionChange)="onCourseCategoryChange($event.value)" [disabled]="!isMultiSelect" required>
+        <mat-option *ngFor="let courseCategory of courseCategoriesList" [value]="courseCategory.id">
+          {{ courseCategory.name }}</mat-option>
+      </mat-select>
+      <mat-error>
+      </mat-error>
+    </mat-form-field>
+    <div *ngIf="courseCategoryData.courses?.length" class="pb-8">
+    <span *ngIf="courseCategoryData.requiredCount!=null &&courseCategoryData.requiredCount!=0">
+      <span class="font-size-12" translate>Required Count</span>: {{courseCategoryData.requiredCount}}
+    </span>
+
+      <span *ngIf="courseCategoryData.optionalCount!=null&&courseCategoryData.optionalCount!=0"><span
+          class="font-size-12 mx-12" translate>Optional Count</span>: {{courseCategoryData.optionalCount}}</span>
+      <span *ngIf="courseCategoryData.areAllOptional =='Yes'">
+        <span class="font-size-12" translate>Are All Optional</span>: {{courseCategoryData.areAllOptional}}
+      </span>
+    </div>
+    <mat-list fxLayout.gt-sm="row wrap" fxFlex="100" class="pt-0 confirm-table border mh-300"
+      *ngIf="courseCategoryData.courses?.length">
+      <mat-list-item fxLayout="column" fxFlex.gt-sm="30" class="stickyx"><strong translate>Select</strong></mat-list-item>
+      <mat-list-item fxLayout="column" fxFlex.gt-sm="70" class="stickyx"><strong translate>Course Name</strong></mat-list-item>
+      <div *ngFor="let course of courseCategoryData.courses" fxFlex="100" class="border-top">
+        <mat-list-item fxLayout="column" fxFlex="30" fxLayoutAlign="center center">
+          <mat-checkbox value="course.courseId" [checked]="course.isChecked"
+            (change)="course.isChecked = !course.isChecked;onCheckBoxChange()"></mat-checkbox>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="70"> {{course.name}}</mat-list-item>
+      </div>
+    </mat-list>
+    <mat-error class="pt-8">{{errorMessage | translate}}</mat-error>
+
+    <div fxLayout="row" fxLayoutAlign="start center" class="pt-20">
+      <div fxFlex="100" fxLayout="column" fxLayoutAlign="end">
+        <div fxLayout="row" fxLayoutAlign="end center">
+          <button type="button" mat-raised-button class="mr-16 text-uppercase" type="button" (click)="closeAssignCoursesDialog()">{{'Cancel' | translate}}</button>
+          <button type="submit" mat-raised-button color="accent" class="text-uppercase" (click)="assignStudentCourses()" translate>{{'Submit' | translate}}</button>
+        </div>
+      </div>
+    </div>
+  </form>
+
+</ng-template>

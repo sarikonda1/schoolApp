@@ -1,0 +1,20 @@
+
+.mat-select-search-inner{
+  position: sticky;
+  top:0;
+  z-index: 99;
+  .select-btn{
+    margin-top: -7px;
+  }
+}
+.mat-custom-chip{
+  ::ng-deep {
+    .mat-chip-list-wrapper{
+      flex-wrap: inherit !important;
+    }
+    .mat-chip{
+      overflow: visible !important;
+    }
+  }
+}
+

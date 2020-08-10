@@ -1,0 +1,94 @@
+<app-custom-card *ngIf="(resultSetReport) && !(resultSetReport?.feeConcessions?.length)" [inputMessage]="'No Record Found'">
+</app-custom-card>
+<div fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="center center" class="px-24 pt-20 pb-12">
+  <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="32" class="pr-sm-12">
+    <mat-label translate #class>Class</mat-label>
+    <mat-select [formControl]="classId">
+      <mat-option *ngFor="let class of availableClasses" [value]="class.value">
+        {{ class.label }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+  <button mat-raised-button translate color="primary" class="text-uppercase ml-12 mb-20" (click)="reset()" type="reset">
+    Reset
+  </button>
+  <button mat-raised-button translate color="accent" class="text-uppercase ml-12 mb-20"
+    (click)="getStudentConcessions()">
+    {{'Search' | translate}}
+  </button>
+</div>
+
+<div fxLayout="row" fxLayoutAlign="end center" class="px-32 py-12" *ngIf="(resultSetReport?.feeConcessions?.length)">
+  <button mat-stroked-button class="mr-12" (click)="generateReport('generatePdfReport')">
+    <mat-icon class="mr-4">save_alt</mat-icon>Download PDF
+  </button>
+  <!-- <button mat-stroked-button (click)="generateReport('generateExcelReport')">
+    <mat-icon class="mr-4">save_alt</mat-icon> Download EXCEL
+  </button> -->
+</div>
+
+<div class='invoice-container' id="adm-app-summary" *ngIf="resultSetReport?.feeConcessions?.length > 0" style="padding: 25px; padding-top: 0px;">
+  <span class="dark-theme-color" style="color:#fff">A</span>
+  <div class='b flex-d-c invoice-body' style='overflow: hidden; '>
+    <h3 class="text-center text-uppercase">Classwise Fee Concession Students Report</h3>
+    <div class="p-10 mb-20 main-title">
+      <div class="left-align">Report Generated On : {{ date }}</div>
+      <div class="right-align flex" *ngIf="acadmicSession">
+        {{acadmicSession?.name}} ({{acadmicSession?.startDate | date: 'MMM d, y'}} -
+        {{acadmicSession?.endDate | date: 'MMM d, y'}})
+      </div>
+    </div>
+    <div class="p-10" *ngIf="resultSetReport?.feeConcessions?.length > 0">
+      <div *ngFor="let class of resultSetReport?.feeConcessions" id="adm-app-summary">
+        <div class="b inner-page" *ngIf="class?.feeConcessionGroupViews?.length">
+          <div class="header-title2 b-b flex flex-d-r">
+            <div class="flex flex-d-c" style="-webkit-flex:1 1 auto; flex:1 1 auto;">{{class.className}} </div>
+            <div style="text-align: end;" class="flex flex-d-c  text-right w-280"> {{class.totalStudentsFortheClass}}
+            </div>
+          </div>
+          <div *ngFor="let concession of class?.feeConcessionGroupViews">
+            <div class="header-title2 flex flex-d-r b-b">
+              <div class="flex flex-d-c w-100-p">{{concession.concessionGroupName}}
+                {{concession.concessionGroupCode ? ',' : ''}} {{concession.concessionGroupCode}}
+                {{concession.concessionGroupDescription ? ',' : ''}}
+                {{concession.concessionGroupDescription}} </div>
+              <div class="flex flex-d-c w-80 text-right">{{concession.totalStudentsFortheGroup}}</div>
+            </div>
+            <div class="flex flex-d-r">
+              <div class="flex-d-c w-60-p b-r">
+                <table class="marks border-tr b-b">
+                  <thead>
+                    <tr>
+                      <th class="text-left">Student Name</th>
+                      <th class="text-left">Admission Number </th>
+                      <th class="text-left"> Section </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let student of concession?.studentConcessonGroupViews">
+                      <td class="text-left">{{student.studentName}}</td>
+                      <td class="text-left">{{student.admissionNumber}}</td>
+                      <td class="text-left">{{student.sectionName}}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="flex-d-c w-40-p  ml-2 mr-2 p-12" style="font-size: 18px; padding: 12px;">
+                <p style="text-decoration: underline;">{{concession.concessionGroupName}}</p>
+                <ng-container *ngFor="let details of concession?.feeConcessionGroupDiscountDataViewModels">
+                  <div>{{details.feeTypeName}}</div>
+                  <div>{{details.concessionTypeName}}</div>
+                  <div> {{details.discount}}</div>
+                  <div *ngFor="let term of details.feeConcessionGroupTermDiscountDataViewModel">
+                    <div>{{term.feeTermName}} {{term.termConcessionAmt}}
+                    </div>
+                  </div>
+                </ng-container>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

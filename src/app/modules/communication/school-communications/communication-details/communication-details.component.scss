@@ -1,0 +1,21 @@
+// .mw-584{
+//     max-width: 580px !important;
+// }
+
+.mh-248 {
+    max-height: 248px !important;
+    overflow-y: auto;
+}
+.mh-350 {
+    max-height: 350px !important;
+    overflow-y: auto;
+}
+
+.last-border-none {
+    .mat-list-item{
+        height: auto;
+    }
+    .border-bottom:last-child {
+        border-bottom: none;
+    }
+}

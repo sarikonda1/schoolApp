@@ -1,0 +1,78 @@
+<div fxLayout="row" fxLayoutAlign="space-between center" class="primary stickyx p-12 border-bottom" *ngIf="currentUserType !== '' && dashboardWidgets.length">
+    <div class="h2">Date: {{ getFormattedDateBySchoolDateFormat(currentDate) }}</div>
+    <button mat-icon-button (click)="toggleSidebarOpen('widgetOptionsPanel')">
+        <mat-icon>settings</mat-icon>
+    </button>
+</div>
+<div fxLayout="column" class="p-16" *ngIf="currentUserType !== ''">
+    <fuse-sidebar name="widgetOptionsPanel" class="widget-options-sidebar" position="right" [invisibleOverlay]="true">
+        <div fxLayout="row" fxLayoutAlign="space-between center" class="p-12 accent">
+            <div class="h3" translate>Manage Widgets</div>
+            <button mat-icon-button (click)="toggleSidebarOpen('widgetOptionsPanel')">
+                <mat-icon>clear</mat-icon>
+            </button>
+        </div>
+
+        <div cdkDropList (cdkDropListDropped)="reArrangeWidgets($event)">
+            <div class="sidebar-box p-20 border-bottom custom-white" cdkDragBoundary=".widget-options-sidebar"
+                *ngFor="let dashboardWidget of dashboardWidgets; let i = index;" cdkDrag fxLayout="row"
+                fxLayoutAlign="space-between center">
+                <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
+                {{dashboardWidget.name | translate}}
+                <section class="example-section">
+                    <mat-slide-toggle  [color]="color" [checked]="dashboardWidget.isVisible"
+                        (change)="updateWidgetDisplay($event.checked , i)">
+                    </mat-slide-toggle>
+                </section>
+            </div>
+        </div>
+    </fuse-sidebar>
+    <!-- WIDGET GROUP -->
+    <div class="widget-group" fxLayout="row wrap" fxFlex="100" *fuseIfOnDom [@animateStagger]="{value:'50'}">
+        <ng-container *ngFor="let dashboardWidget of dashboardWidgets; let i = index;">
+            <fuse-widget [@animate]="{value:'*',params:{y:'100%'}}"
+                class="widget p-4" fxLayout="column" fxFlex="100"
+                fxFlex.gt-sm="{{dashboardWidget?.displayConfig?.width}}" *ngIf="dashboardWidget.isVisible">
+                <div class="example-custom-placeholder" *cdkDragPlaceholder fxLayout="column" fxFlex="100"
+                    fxFlex.gt-sm="{{dashboardWidget?.displayConfig?.width}}"></div>
+                <div class="fuse-widget-front">
+                    <div class="px-16 py-12" fxLayout="row" fxLayoutAlign="space-between center">
+                        <div fxLayout="row" fxLayoutAlign="end end">
+                            <mat-icon *ngIf="dashboardWidget?.displayConfig?.icon" class="pink-fg mr-4">{{dashboardWidget.displayConfig.icon}}</mat-icon>
+                            <div class="h3 text-uppercase">{{dashboardWidget.name | translate}}</div></div>
+                        <div>
+                            <button mat-icon-button [matMenuTriggerFor]="moreMenu" aria-label="more">
+                                <mat-icon>more_vert</mat-icon>
+                            </button>
+                            <mat-menu #moreMenu="matMenu">                              
+                                <button mat-menu-item (click)="updateWidgetDisplay(false, i)">
+                                    <mat-icon class="mr-4">visibility_off</mat-icon> {{'Hide' | translate}}
+                                </button>
+                                <button mat-menu-item (click)="refreshWidgetDisplay(i)" translate fxLayoutAlign="center center">
+                                    <mat-icon class="mr-4">refresh</mat-icon> {{'Refresh' | translate}}
+                                </button>
+                            </mat-menu>
+                        </div>
+                    </div>
+
+                    <mat-divider></mat-divider>
+
+                    <div *ngIf="showWidgets[dashboardWidget.displayConfig.component]" class="overflow-y-auto {{dashboardWidget?.displayConfig?.widgetHeight}}" >
+                        <ng-container *ngIf="!refreshWidgets[dashboardWidget.displayConfig.component]">
+                            <ng-container *ngComponentOutlet="widgetcomponents[dashboardWidget.displayConfig.component]">
+                            </ng-container>
+                        </ng-container>
+                        <div *ngIf="refreshWidgets[dashboardWidget.displayConfig.component]"
+                             style="display: flex; justify-content: center; align-items: center" fxFlexFill fxLayoutAlign="center center">
+                             <app-af-loader></app-af-loader>
+                        </div>
+                    </div>
+
+                </div>
+
+            </fuse-widget>
+        </ng-container>
+    </div>
+</div>
+
+

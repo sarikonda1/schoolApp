@@ -1,0 +1,109 @@
+<app-table [settings]="tabSettings" [closeRowForm]='closeAddPanel' [templateRef]="newClassPeriodType"
+    (getTableData)='tableData($event)' (rowBasedAction)='rowActions($event)' (openAddForm)="onAddFormClick()">
+</app-table>
+
+
+<ng-template #newClassPeriodType>
+    <form [formGroup]="classPeriodTypeForm" (ngSubmit)="onCheckValues();onSaveClick(classPeriodTypeForm)"
+        #classPeriodType="ngForm">
+        <div class="sm-table-form m-auto">
+            <div fxLayout.lt-sm="column" class="pt-24" fxLayout.gt-xs="row">
+                <mat-form-field appearance="outline" class="example-full-width mr-sm-20" fxLayout="column" fxFlex="100">
+                    <mat-label #classperiodtype translate>name</mat-label>
+                    <input matInput formControlName="name" autocomplete="off" (keyup)="preventSpace($event,'classPeriodTypeForm','name')" (blur)="trimTextBoxSpaces('classPeriodTypeForm','name')" required>
+                    <mat-error>
+                        <app-validation [labelName]='classperiodtype.innerText'
+                            [validationControl]="classPeriodTypeForm.controls.name" [doValidate]="isFormValidate">
+                        </app-validation>
+                    </mat-error>
+                </mat-form-field>
+            </div>
+
+            <div *ngIf="multipleAssignments" fxFlexFill fxLayout="column" class="pt-24" fxLayoutAlign="center center">
+
+                <div fxFlexFill fxLayout="row" fxFlex="100" fxLayoutAlign="center center"
+                    class="mb-24" translate>Does this Period Type Have Multiple Course and Staff
+                    Assignments ?</div>
+                <mat-radio-group fxLayout="row" fxFlex="100" formControlName="hasMultipleAssignments">
+                    <mat-radio-button class="ml-24" *ngFor="let radio of isMultipleAssignmentsOptions"
+                        [value]="radio.value" (change)="multipleAssignmentsClick(radio.label)">
+                        {{radio.label | translate}}</mat-radio-button>
+                </mat-radio-group>
+
+            </div>
+
+            <div *ngIf="break" fxFlexFill fxLayout="column" class="pt-24" fxLayoutAlign="center center">
+                <div fxFlexFill fxLayout="row" fxFlex="100" fxLayoutAlign="center center"
+                    class="mb-sm-24 secondary-text">
+                    <button mat-mini-fab type="button" class="green-bg white-fg sm-btn mr-12"
+                    (click)="break=true;onPrevButtonClick()">
+                        <mat-icon>check</mat-icon>
+                    </button><span translate>Does this Period Type Have Multiple Course and Staff
+                        Assignments ? </span><span translate class="pl-8 font-weight-800">
+                        {{classPeriodTypeForm.value.hasMultipleAssignments ==1?'Yes':'No'}}</span></div>
+
+                <div fxFlexFill fxLayout="row" fxFlex="100" fxLayoutAlign="center center"
+                    class="mb-24" translate>Is this a Break / Recess Period Type ?</div>
+                <mat-radio-group fxLayout="row" fxFlex="100" formControlName="isBreak">
+                    <mat-radio-button class="ml-24" *ngFor="let radio of isBreakOptions" [value]="radio.value"
+                        (change)="isBreakClick(radio.label)">{{radio.label | translate}}</mat-radio-button>
+                </mat-radio-group>
+            </div>
+
+
+            <div *ngIf="noAssignments" fxFlexFill fxLayout="column" class="pt-24" fxLayoutAlign="center center">
+                <div fxFlexFill fxLayout="row" fxFlex="100" fxLayoutAlign="center center"
+                    class="mb-sm-24 secondary-text"> <button mat-mini-fab type="button" class="green-bg white-fg sm-btn mr-12"
+                    (click)="break=true;onPrevButtonClick()">
+                        <mat-icon>check</mat-icon>
+                    </button><span translate>Does this Period Type Have Multiple Course and Staff
+                        Assignments ?</span> <span translate class="pl-8 font-weight-800">
+                        {{classPeriodTypeForm.value.hasMultipleAssignments ==1?'Yes':'No'}}</span>
+                </div>
+
+                <div fxFlexFill fxLayout="row" fxFlex="100" fxLayoutAlign="center center"
+                    class="mb-sm-24 secondary-text"> <button mat-mini-fab class="green-bg white-fg sm-btn mr-12" type="button"
+                    (click)="noAssignments=true;onPrevButtonClick()">
+                        <mat-icon>check</mat-icon>
+                    </button><span translate>Is this a Break / Recess Period Type ?</span>:<span translate
+                        class="pl-8 font-weight-800">
+                        {{classPeriodTypeForm.value.isBreak ==1?'Yes':'No'}}</span>
+                </div>
+
+                <div fxFlexFill fxLayout="row" fxFlex="100" fxLayoutAlign="center center"
+                    class="mb-24" translate>Will this Type of Period have a Teacher/Subject Assigned ?
+                </div>
+                <mat-radio-group fxLayout="row" fxFlex="100" formControlName="hasAssignments">
+                    <mat-radio-button class="ml-24" *ngFor="let radio of hasAssignmentsOptions" [value]="radio.value"
+                        (change)="noAssignmentsClick(radio.label)">{{radio.label | translate}}</mat-radio-button>
+                </mat-radio-group>
+            </div>
+
+
+        </div>
+
+        <div fxFlexFill fxLayout="row" fxLayoutAlign="center center" class="py-24 my-18">
+            <div>
+                <button class="mr-12 text-uppercase" mat-raised-button type="button"
+                    (click)="onCancelClick()">{{'cancel' | translate}}</button>
+            </div>
+            <div *ngIf="prevBtn">
+                <button class="mr-12 text-uppercase" color="primary" mat-raised-button type="button"
+                    (click)="onPrevButtonClick()">{{'Previous' | translate}}</button>
+            </div>
+            <div *ngIf="nextBtn">
+                <button mat-raised-button class="mr-12 text-uppercase" type="button" color="accent"
+                    (click)="onNextBtnClick()">{{'Next' | translate}}</button>
+            </div>
+            <div *ngIf="updateBtn">
+                <button class="mr-12 text-uppercase" mat-raised-button color="accent" type="submit"
+                    [disabled]="isUpdateDisabled|| disbleSubmitBtn">{{'Update' | translate}}</button>
+            </div>
+            <div *ngIf="saveBtn">
+                <button mat-raised-button color="accent" type="submit" class="text-uppercase"
+                    [disabled]="isSaveDisabled|| disbleSubmitBtn">{{'Save' | translate}}</button>
+            </div>
+        </div>
+
+    </form>
+</ng-template>

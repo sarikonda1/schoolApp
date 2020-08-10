@@ -1,0 +1,20 @@
+<div class="p-40">
+<div class="text-uppercase font-size-20 p-12" translate>Staff Directory</div>
+<h2 class="text-center" *ngIf="staffDetailsLength == 0 && onLoadApi" translate>No Staff Found for this student</h2>
+<h2 class="text-center" *ngIf="!isClassTeacher && staffDetailsLength != 0" translate>No Class Teacher for this student</h2>
+<div *ngIf="staffDetailsLength != 0 && onLoadApi" class="mat-elevation-z2 simple-table-container radius-t-20"> 
+
+     <div class="font-size-18 p-20 border-bottom">{{courseDetails?.className}} - {{courseDetails?.sectionName}}</div> 
+
+     <div fxLayout="row wrap" class="p-16">
+      
+        <mat-card fxLayout="column" fxFlex="33" class="mat-elevation-z p-8 break-word" [style.display]="staff?.staffName ? 'block' : 'none'" *ngFor="let staff of courseDetails?.staffDetails">
+            <mat-card-header class="border p-16 radius-5">
+                <div mat-card-avatar> <img [src]="staff?.fileNameWithExtension ? storeService?.getFilePath(staff?.fileNameWithExtension) : DefaultProfileImagePath" class="mat-avatar avatar" [alt]="staff.staffName"/></div>
+                <mat-card-title>{{staff?.staffName}}</mat-card-title>
+                <mat-card-subtitle>{{ getFormatedCourses(staff?.courseDetails)}}</mat-card-subtitle>
+              </mat-card-header>
+        </mat-card>
+     </div> 
+</div>
+</div>

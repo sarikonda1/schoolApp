@@ -1,0 +1,113 @@
+<div fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="center center" class="px-24 pt-20 pb-12">
+    <form [formGroup]="searchForm">
+        <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="30"
+            class="icon-center pr-sm-12">
+            <mat-label translate #fromDate>From Date</mat-label>
+            <input matInput (keyup)="forceValidation('fromDate',searchForm)" formControlName="fromDate"
+                [matDatepicker]="picker" required placeholder="Choose a from date" (dateChange)="setValidation()">
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+            <mat-error>
+                <app-validation [labelName]='fromDate.innerText' [validationControl]="searchForm.controls.fromDate"
+                    [doValidate]="true">
+                </app-validation>
+            </mat-error>
+        </mat-form-field>
+        <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="32"
+            class="icon-center">
+            <mat-label translate #toDate>To Date</mat-label>
+            <input matInput (keyup)="forceValidation('toDate',searchForm)" formControlName="toDate"
+                [matDatepicker]="toDatePicker" [min]="searchForm.value.fromDate" [max]="maxDate" required
+                placeholder="Choose a to date">
+            <mat-datepicker-toggle matSuffix [for]="toDatePicker"></mat-datepicker-toggle>
+            <mat-datepicker #toDatePicker></mat-datepicker>
+            <mat-error>
+                <app-validation [labelName]='toDate.innerText' [validationControl]="searchForm.controls.toDate"
+                    [doValidate]="true">
+                </app-validation>
+            </mat-error>
+        </mat-form-field>
+        <div fxLayoutAlign="end center">
+            <button mat-raised-button translate color="primary" class="text-uppercase ml-12 mb-20" (click)="reset()" type="reset">
+                Reset
+            </button>
+            <button mat-raised-button translate color="accent" class="text-uppercase ml-12 mb-20"
+                (click)="getStaffAttendanceReport()">
+                {{'Search' | translate}}
+            </button>
+        </div>
+    </form>
+</div>
+
+<div fxLayout="row" fxLayoutAlign="end center" class="px-32 py-12" *ngIf="resultApplicationReports">
+    <button mat-stroked-button class="mr-12" (click)="generateReport('generatePdfReport')">
+        <mat-icon class="mr-4">save_alt</mat-icon>Download PDF
+    </button>
+</div>
+<div class='invoice-container' id="admitted-std" *ngIf="resultApplicationReports" style="padding: 25px; padding-top: 0px;">
+    <span class="dark-theme-color" style="color:#fff">A</span>
+    <div class='b flex-d-c invoice-body' style='overflow: hidden;'>
+        <h2 class="text-center text-uppercase" translate>STAFF ATTENDANCE SUMMARY REPORT</h2>
+        <div class="p-20 mb-20 main-title">
+            <div class="left-align flex">
+                <div>{{searchForm.value.fromDate | date: 'MMM d, y'}}</div>
+                <div class="px-20">To</div>
+                <div>{{searchForm.value.toDate | date: 'MMM d, y'}}</div>
+            </div>
+            <div class="right-align">TOTAL NUMBER OF STAFF: {{resultApplicationReports.totalNumberOfStaff}}</div>
+        </div>
+        <div class="p-10">
+            <table class="attendance b">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th style="text-transform:capitalize;"
+                            *ngFor="let key of objectKeys(resultApplicationReports?.numberOFWorkingDays)">{{key}}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>No. of Working days</td>
+                        <td *ngFor="let key of objectKeys(resultApplicationReports?.numberOFWorkingDays)">
+                            {{resultApplicationReports?.numberOFWorkingDays[key]}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="px-20 pt-20 text-uppercase">STAFF ATTENDANCE</div>
+        <div class="p-10 scroll-tab">
+            <table class="attendance2 staff-attendence b">
+                <thead>
+                    <tr>
+                        <th>Staff overall</th>
+                        <th></th>
+                        <th style="text-transform:capitalize;"
+                            *ngFor="let key of objectKeys(resultApplicationReports?.numberOFWorkingDays)">{{key}}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <ng-container *ngFor="let staff of resultApplicationReports?.staffDetails">
+                        <tr>
+                            <td>{{staff.staffName}}</td>
+                            <td>Days Present</td>
+                            <td *ngFor="let key of objectKeys(resultApplicationReports?.numberOFWorkingDays)">
+                                {{staff?.staffAttendanceDetails[key]?.presentDays}}</td>
+                        </tr>
+                        <tr>
+                            <td>{{staff?.department}}</td>
+                            <td>Days Absent</td>
+                            <td *ngFor="let key of objectKeys(resultApplicationReports?.numberOFWorkingDays)">
+                                {{staff?.staffAttendanceDetails[key]?.absentDays}}</td>
+                        </tr>
+                        <tr>
+                            <td>{{staff.staffCode}}</td>
+                            <td>Hours Logged</td>
+                            <td *ngFor="let key of objectKeys(resultApplicationReports?.numberOFWorkingDays)">
+                                {{staff?.staffAttendanceDetails[key]?.hoursLogged}}</td>
+                        </tr>
+                    </ng-container>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

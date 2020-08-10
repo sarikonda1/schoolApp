@@ -1,0 +1,73 @@
+<div class="content px-sm-40 py-sm-20">
+  <div class="w-100-p mat-elevation-z2 simple-table-container radius-20 mb-20">
+    <div class="p-20" fxLayout="row" fxLayoutAlign="space-between center">
+      <div fxLayout="row" fxLayoutAlign="start center" class="font-size-16" translate>Group Details</div>
+      <div fxLayout="row" fxLayoutAlign="start center">
+        <button mat-raised-button color="primary" class="text-uppercase" (click)="goBack()" translate>{{'Back' | translate}}</button>
+        <button mat-button (click)="getHelpText('Student Groups')">
+            <mat-icon class="grey-600-fg">info</mat-icon>
+          </button>
+      </div>
+    </div>
+    <mat-divider></mat-divider>
+
+    <div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign="center start" class="p-20 mb-12">
+      <div fxLayout="column" fxFlex="60">
+        <div fxLayout="row">
+            <div class="profile-image border m-24 radius-10">
+                <img *ngIf="profileImage" [src]="profileImage ? profileImage : ''" class="w-200 h-200 radius-10" alt="No Image"/>
+                <div *ngIf="!profileImage" fxLayoutAlign="center center" class="w-200 h-200">No Image</div>
+              </div>
+          <div fxLayout="column" class="pl-20 mt-24" fxLayoutAlign="start start">
+            <div fxLayout="row" >
+              <div class="w-100 primary-300-fg break-word" translate>Short Name</div>: <div class="pl-12 break-word"> {{this.studentGroupsDetailsList?.shortName}} </div>
+            </div>
+            <div fxLayout="row" class="py-16">
+              <div class="w-100 primary-300-fg break-word" translate>Full Name</div>: <div class="pl-12 break-word"> 
+                {{this.studentGroupsDetailsList?.fullName?(this.studentGroupsDetailsList.fullName):"--"}} </div>
+            </div>
+            <div fxLayout="row">
+                <div class="w-100 primary-300-fg" translate>Color</div>: <div [class]="'w-40 h-40 border ml-12 '+ this.color"> </div>
+              </div>
+          </div>
+        </div>
+      </div>
+      <div fxLayout="column" fxFlex="40" class="mt-24">
+        <div fxLayout="row">
+          <div fxLayout="column" class="pl-20" fxLayoutAlign="center start">
+            <div fxLayout="row" class="pb-16">
+              <div class="w-100  primary-300-fg break-word" translate>Symbol Name</div>: <div class="pl-12 break-word"> {{this.studentGroupsDetailsList?.symbol?(this.studentGroupsDetailsList.symbol):"--"}} </div>
+            </div>
+            <div fxLayout="row">
+              <div class="w-100 primary-300-fg break-word" translate>Moto</div>: <div class="pl-12 break-word">  {{this.studentGroupsDetailsList?.moto?(this.studentGroupsDetailsList.moto):"--"}} </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+   
+
+    <div class="border-top border-bottom p-12" fxLayout="row" fxLayoutAlign="end center">
+      <span class="grey-600-fg" translate>Academic Session</span>
+          <button mat-icon-button [disabled]="!academicSessions[selectedAsIndex-1]" (click)="onYearClick(true)">
+        <mat-icon>arrow_leftt</mat-icon>
+      </button>
+
+      <div class="title">
+        <!-- {{a[selectedIndex]?.label}} -->
+        {{getSelectedAcademicSession()}}
+      </div>
+
+      <!-- <button mat-icon-button [disabled]="a?.length == selectedIndex" (click)="this.selectedIndex = this.selectedIndex + 1"> -->
+          <button mat-icon-button [disabled]="!academicSessions[selectedAsIndex+1]" (click)="onYearClick()">
+        <mat-icon>arrow_right</mat-icon>
+      </button>
+    </div>
+
+    <app-table *ngIf="loadAsync | async" [settings]="tabSettings" (rowBasedAction)='rowActions($event)' (getTableData)='getStudentGroups($event, true)' [templateRef]='studentGroupTemplate' id="app-table"
+      (openAddForm)='openForm()' [closeRowForm]='closeAddPanel'>
+    </app-table>
+  </div>
+</div>

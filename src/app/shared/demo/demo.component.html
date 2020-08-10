@@ -1,0 +1,38 @@
+<div id="login" fxLayout="column">
+
+    <div id="login-form-wrapper" fxLayout="column" fxLayoutAlign="center center">
+
+        <div id="login-form" [@animate]="{value:'*',params:{duration:'300ms',y:'100px'}}" class="fuse-white">
+
+            <div class="logo">
+                <img src="assets/images/logos/name-logo.png">
+            </div>
+
+            <div  fxLayout="column">
+                <h1> Start a Demo with</h1>
+                <button type="click" (click)="loginAs('ia')" mat-raised-button color="accent" class="my-12" aria-label="Login as Institute Admin"
+                >
+                    Institute Admin
+                </button>
+                <button type="click" (click)="loginAs('sa')" mat-raised-button color="primary" class="my-12" aria-label="Login as School Admin"
+                >
+                    School Admin
+                </button>
+                <button type="click" (click)="loginAs('lshp')" mat-raised-button color="basic" class="my-12" aria-label="Login as Launchship Admin"
+                >
+                    Launchship Admin
+                </button>
+                <button type="click" (click)="loginAs('parent')" mat-raised-button color="accent" class="my-12" aria-label="Login as Parent"
+                >
+                    PARENT
+                </button>
+                <button type="click" (click)="loginAs('staff')" mat-raised-button class="my-12"  aria-label="Login as Staff"
+                >
+                    STAFF
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+</div>

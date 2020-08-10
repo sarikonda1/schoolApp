@@ -1,0 +1,89 @@
+<div fxLayout.gt-sm="row" fxLayout="column"
+  *ngIf="(staffAttendance !== undefined && staffAttendance !== null) && !isLoading">
+  <div fxLayout="column" fxFlex.gt-sm="50" fxFlex="100" class="border-left px-8">
+    <p class="text-center text-uppercase font-size-14 mb-0" translate>Staff Attendance</p>
+    <div fxLayoutAlign="center center" class="h-200"
+      *ngIf="(staffAttendance.presentCount != 0 || staffAttendance.absentCount != 0) && !isLoading; else staffContent">
+      <ngx-charts-pie-chart *fuseIfOnDom [scheme]="staffAttendanceWidget.scheme" [results]="staffAttendanceWidget.list"
+        doughnut="false">
+      </ngx-charts-pie-chart>
+    </div>
+    <ng-template #staffContent>
+      <div class="h-260 text-uppercase font-size-14 secondary-text" fxLayoutAlign="center center">
+        {{'No Attendance entries for staff' | translate }}
+      </div>
+    </ng-template>
+
+    <div class="mh-16 border-top secondary-text" fxLayout="row wrap" fxLayoutAlign="start center"
+      *ngIf="(staffAttendance.presentCount !== 0 || staffAttendance.absentCount !== 0) && !isLoading">
+      <div class="py-8 px-4" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" fxLayoutAlign="center center">
+        <span class="font-size-20 mb-0">
+          {{staffAttendance.staffCount}}
+        </span>
+        <span class="break-word">Total</span>
+      </div>
+      <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+        <div fxLayout="row" fxFlex="100">
+          <div class="border-right border-left py-8 px-4" fxLayout="column" fxFlex="50" fxLayoutAlign="center center">
+            <span class="font-size-20 mb-0" >
+              {{staffAttendance.presentCount}}
+            </span>
+            <span class="break-word">Present</span>
+          </div>
+          <div fxLayout="column" fxFlex="50" fxLayoutAlign="center center" class="py-8 px-4">
+            <span class="font-size-20 mb-0">
+              {{staffAttendance.absentCount}}
+            </span>
+            <span class="break-word">Absent</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div fxLayout="column" fxFlex.gt-sm="50" fxFlex="100" class="border-left px-8">
+    <p class="text-center text-uppercase font-size-14 mb-0" translate>Student Attendance</p>
+    <div fxLayoutAlign="center center" class="h-200"
+      *ngIf="(studentAttendance.absentCount != 0 || studentAttendance.presentCount != 0) && !isLoading; else studentContent">
+      <ngx-charts-pie-chart *fuseIfOnDom [scheme]="studentAtendanceWidget.scheme"
+        [results]="studentAtendanceWidget.list" doughnut="false">
+      </ngx-charts-pie-chart>
+    </div>
+    <ng-template #studentContent>
+      <div class="h-260 text-uppercase font-size-14 secondary-text" fxLayoutAlign="center center">{{'No
+        Attendance entries for student' | translate}}</div>
+    </ng-template>
+    <div class="mh-16 border-top secondary-text" fxLayout="row wrap" fxLayoutAlign="start center"
+      *ngIf="studentAttendance.presentCount !== 0 || studentAttendance.absentCount !== 0">
+      <div class="py-8 px-4" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" fxLayoutAlign="center center">
+        <span class="font-size-20 mb-0" *ngIf="studentAttendance.studentCount !== 0">
+          {{studentAttendance.studentCount}}
+        </span>
+        <span class="break-word">Total</span>
+      </div>
+      <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+        <div fxLayout="row" fxFlex="100">
+          <div class="border-right border-left py-8" fxLayout="column" fxFlex="50" fxLayoutAlign="center center">
+            <span class="font-size-20 mb-0" >
+              {{studentAttendance.presentCount}}
+            </span>
+            <span class="break-word">Present</span>
+          </div>
+          <div fxLayout="column" fxFlex="50" fxLayoutAlign="center center" class="py-8 px-4">
+            <span class="font-size-20 mb-0" >
+              {{studentAttendance.absentCount}}
+            </span>
+            <span class="break-word">Absent</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="(staffAttendance === undefined || studentAttendance === undefined) && !isLoading">
+  <p class="text-center text-uppercase font-size-16 secondary-text" translate>No Data To Display</p>
+</div>
+
+<div *ngIf="isLoading" fxFlexFill fxLayoutAlign="center center">
+  <app-af-loader></app-af-loader>
+</div>

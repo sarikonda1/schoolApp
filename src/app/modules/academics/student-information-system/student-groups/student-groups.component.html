@@ -1,0 +1,164 @@
+<app-table [settings]="tabSettings" id="student-groups-table" (getTableData)='getStudentGroups($event)'
+  [templateRef]='studentGroupTemplate' (openAddForm)='openForm()' (rowBasedAction)='rowActions($event)'
+  [closeRowForm]=closeAddPanel>
+</app-table>
+
+<ng-template #studentGroupTemplate>
+  <form [formGroup]="studentGroupForm" #userStudentGroupForm="ngForm">
+    <div class="pt-20 font-size-18" translate>Student Group</div>
+    <div fxLayout.gt-xs="row" fxLayout="column" class="p-sm-24">
+      <div fxLayout="column" fxFlex.gt-xs="1 1 auto" fxFlex="100" fxFlexFill>
+        <div fxFlexFill fxLayout="column" fxLayoutAlign="start center" fxLayout.gt-xs="row">
+          <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-xs="40">
+            <mat-label translate #shortName>Short Name</mat-label>
+            <input matInput formControlName="shortName" (keyup)="preventSpace($event,'studentGroupForm','shortName')" 
+              (blur)="trimTextBoxSpaces('studentGroupForm','shortName')" required>
+            <mat-error>
+              <app-validation [labelName]='shortName.innerText'
+                [validationControl]="studentGroupForm.controls.shortName" [doValidate]="studentGroupSubmitted">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-xs="40"
+            class="px-sm-20">
+            <mat-label translate #fullName>Full Name</mat-label>
+            <input matInput formControlName="fullName" (keyup)="preventSpace($event,'studentGroupForm','fullName')" (blur)="trimTextBoxSpaces('studentGroupForm','fullName')">
+            <mat-error>
+              <app-validation [labelName]='fullName.innerText' [validationControl]="studentGroupForm.controls.fullName"
+                [doValidate]="studentGroupSubmitted">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div fxFlexFill fxLayout="column" fxLayoutAlign="start center" fxLayout.gt-xs="row" class="pt-12">
+          <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-xs="40">
+            <mat-label translate #symbol>Symbol Name</mat-label>
+            <input matInput formControlName="symbol" (keyup)="preventSpace($event,'studentGroupForm','symbol')"
+            (blur)="trimTextBoxSpaces('studentGroupForm','symbol')">
+            <mat-error>
+              <app-validation [labelName]='symbol.innerText' [validationControl]="studentGroupForm.controls.symbol"
+                [doValidate]="studentGroupSubmitted">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-xs="40"
+            class="px-sm-20">
+            <mat-label translate #moto>Moto</mat-label>
+            <input matInput formControlName="moto" (keyup)="preventSpace($event,'studentGroupForm','moto')"
+            (blur)="trimTextBoxSpaces('studentGroupForm','moto')">
+            <mat-error>
+              <app-validation [labelName]='moto.innerText' [validationControl]="studentGroupForm.controls.moto"
+                [doValidate]="studentGroupSubmitted">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <div fxLayout="row" fxLayoutAlign="center center" class="w-100 pb-16">
+            <mat-label class="pr-8" translate>Color</mat-label>
+            <fuse-material-color-picker *ngIf="colorCode != ''" [color]="colorCode" [(selectedClass)]="colorCode"
+              (colorChanged)="onColorChanged($event)" formControlName="color">
+            </fuse-material-color-picker>
+            <fuse-material-color-picker *ngIf="colorCode == ''" (colorChanged)="onColorChanged($event)"
+              formControlName="color">
+            </fuse-material-color-picker>
+          </div>
+        </div>
+      </div>
+      <div fxLayout="column">
+        <div fxLayout="column" class="w-180 h-180 border">
+          <span *ngIf="!flagImageProp?.src" fxLayoutAlign="center center" fxFlexFill>{{'Upload Image' | translate}}</span>
+          <img class="radius-5 w-180 h-180" [src]="flagImageProp?.src" *ngIf="flagImageProp?.src" alt="Launchship" />
+        </div>
+        <div fxLayout="column" fxLayoutAlign="center center" class="py-12">
+          <div fxLayout="row" fxLayoutAlign="end center">
+            <button mat-raised-button color="primary" (click)="fileInput.value='';fileInput.click()" type="button">
+              {{'Upload Image' | translate}}
+            </button>
+            <button mat-icon-button [style.display]="flagImageProp?.src ? 'block' : 'none'" type="button">
+              <mat-icon class="mb-4 grey-600-fg" (click)="fileInput.value='';clearImages(true)">highlight_off
+              </mat-icon>
+            </button>
+          </div>
+          <input [accept]="'image/*'" id="fileInput" (change)="imgChanged(fileInput.files,studentGroupForm)" fxHide
+            type="file" #fileInput>
+          <div [style.visibility]="studentGroupForm?.value?.attachment?.fileName ? 'visible' : 'hidden'"
+            class="pt-4 secondary-text font-size-12">
+            {{studentGroupForm?.value?.attachment?.fileName}}
+          </div>
+        </div>
+      </div>
+    </div>
+    <mat-divider></mat-divider>
+    <div class="py-20 font-size-18" translate>Assign Representatives</div>
+    <form [formGroup]="representativeForm" #userStudentGroupRepForm="ngForm"
+      (ngSubmit)="addStudentGroup(studentGroupForm)">
+      <div formArrayName="studentGroupReps" *ngFor="let itemrow of addNewRowAssaignRepform.controls; let i=index">
+        <div [formGroupName]="i" fxLayout="column" fxLayoutAlign="start center" fxLayout.gt-xs="row" class="px-sm-24">
+          <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-xs="40">
+            <mat-label #repRoleId translate>Representative Role</mat-label>
+            <mat-select id="form-{{i}}" formControlName="representativeRoleId" (selectionChange)="onSelectRepRole(i)"
+              required>
+              <mat-option *ngFor="let repRole of studentRepRoles" [value]="repRole.value">
+                {{repRole.label}}
+              </mat-option>
+            </mat-select>
+            <mat-error>
+              <app-validation [labelName]='repRoleId.innerText'
+                [validationControl]="itemrow.controls.representativeRoleId" [doValidate]="true">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+
+          <div fxFlexFill fxLayout="column" class="px-sm-24 w-244 pb-20">
+            <mat-label  class="pb-4 pl-8"><span #assigneeTypeId translate>Assign to</span> <span>*</span></mat-label>
+            <mat-radio-group aria-label="Select an option" formControlName="assigneeTypeId"
+              (change)="onChange($event.value,i)">
+              <mat-radio-button value="1">{{'Student' | translate}}</mat-radio-button>
+              <mat-radio-button value="2" class="pl-16" translate>{{'Staff' | translate}}</mat-radio-button>
+            </mat-radio-group>
+            <mat-error *ngIf="userStudentGroupRepForm?.submitted">
+              <app-validation [labelName]='assigneeTypeId.innerText'
+                [validationControl]="itemrow.controls.assigneeTypeId" [doValidate]="true">
+              </app-validation>
+            </mat-error>
+          </div>
+
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-xs="60">
+            <mat-label #roleid class="pr-8" translate>Assignee</mat-label>
+            <input id="assign-{{i}}" type="text" placeholder="Assignee" aria-label="Assignee" matInput formControlName="assignRepRoleName" (keyup)="preventSpaceForArray($event,itemrow.controls.assignRepRoleName)" (blur)="trimSpaces(itemrow,'assignRepRoleName')"
+              [matAutocomplete]="auto" (input)="onSelectOptionEvent($event,i)" 
+              [readonly]="!itemrow?.value?.assigneeTypeId"
+              required>
+
+            <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+              <mat-option *ngFor="let option of filteredAssigness[i]" [value]="option">
+                {{option.label}}
+              </mat-option>
+            </mat-autocomplete>
+            <mat-error>
+              <app-validation [labelName]='roleid.innerText' [validationControl]="itemrow.controls.assignRepRoleName"
+                [doValidate]="true">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+
+          <button mat-icon-button class="mb-20 ml-4" type="button" (click)="deleteRow(i)">
+            <mat-icon class="red-300-fg">delete</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <div fxLayout="row" fxLayoutAlign="start center" class="px-sm-24">
+        <button mat-stroked-button color="accent" class="text-uppercase" type="button" (click)="addNewRow()">
+          {{'Add Representatives' | translate}}
+        </button>
+      </div>
+      <div fxLayout="row" fxLayoutAlign="end center" class="p-24">
+        <button class="mr-12 text-uppercase" mat-raised-button type="button" (click)="closePanel()">
+          {{'Cancel' | translate}}</button>
+
+        <button [disabled]="disbleSubmitBtn" mat-raised-button type="submit" class="text-uppercase"
+          color="accent">{{(isUpdateData ? 'Update':'Create') | translate}}</button>
+      </div>
+    </form>
+  </form>
+</ng-template>

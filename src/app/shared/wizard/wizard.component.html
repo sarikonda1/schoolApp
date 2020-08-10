@@ -1,0 +1,49 @@
+<mat-tab-group [(selectedIndex)]="selectedIndex" (selectionChange)="selectionChanged($event)" (selectedIndexChange)="selected($event)"
+    class="mat-elevation-z6 m-16 radius-10 wizard-form tabs-to-spteps">
+    <mat-tab>
+        <ng-template mat-tab-label>
+            <div class="tab-label-status">1</div>
+            <div class="tab-title font-size-14 text-capitalized" translate>Start</div>
+        </ng-template>
+        <ng-template matTabContent>
+            <div [innerHTML]="wizardInfo" class="mt-32 text-center"></div>
+            <div fxLayoutAlign="center center">
+                <button mat-raised-button type="button" color="accent" class="my-24" (click)="startWizard()"
+                    ><span translate>Start</span></button>
+            </div>
+        </ng-template>
+    </mat-tab>
+
+    <mat-tab *ngFor="let step of steps;  let i = index">
+        <ng-template mat-tab-label>
+            <div class="tab-label-status"
+                [ngClass]="(wizardStatus[step.component] == 'complete') ? 'complete' : 'pending'">
+                <mat-icon *ngIf="wizardStatus[step.component] == 'complete'; else mat_tab_number;" class="font-size-16 pt-8">check</mat-icon>
+                <ng-template #mat_tab_number>{{i + 2}}</ng-template>
+            </div>
+            <div class="tab-title font-size-14 text-capitalized" translate>{{step.title | titlecase}}</div>
+        </ng-template>
+        <ng-template matTabContent>
+            <mat-checkbox fxLayoutAlign="end" class="mr-36 mt-24"
+                [checked]="(wizardStatus[step.component] == 'complete')"
+                (change)="markAsCompleted($event,step.component)">
+                {{'Mark as Completed' | translate}}
+            </mat-checkbox>
+            <div>
+                <ng-container *ngComponentOutlet="step.componentObj"></ng-container>
+            </div>
+        </ng-template>
+    </mat-tab>
+
+    <mat-tab>
+        <ng-template mat-tab-label>
+            <div class="tab-label-status">{{steps?.length + 2}}</div>
+            <div class="tab-title font-size-14 text-capitalized" translate>Done</div>
+        </ng-template>
+        <ng-template matTabContent>
+            <div class="text-center h2 mt-32" translate>You have reached the end of this setup wizard.</div>
+            <div class="text-center h2 mb-32" translate>You may review the steps again or use other setup wizards for additional functions.</div>
+        </ng-template>
+    </mat-tab>
+
+</mat-tab-group>

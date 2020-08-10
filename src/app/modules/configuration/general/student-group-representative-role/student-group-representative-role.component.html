@@ -1,0 +1,27 @@
+<app-table *ngIf="dataLoaded | async" [settings]="tabSettings" (getTableData)='getStudentGroupRepRoles($event)'
+     (rowBasedAction)='rowActions($event)'
+    [templateRef]="addRepRoleRef" [closeRowForm]='closeAddPanel' [showSelectAll]="selectAll" (deleteAllRows)='deleteAll()'
+    (selectedRows)='selectedRows($event)' (openAddForm)="onAddFormClick()"></app-table>
+
+<ng-template #addRepRoleRef>
+    <form [formGroup]="userForm" (ngSubmit)="onSubmit(userForm)" #repForm="ngForm">
+        <div fxFlexFill fxLayout="row" class="pt-24" fxLayoutAlign="center center">
+            <mat-form-field appearance="outline" class="mr-sm-20" fxLayout="column" fxFlex.gt-xs="50"
+                fxFlex="100">
+                <mat-label #name translate>New Student Group Representative Role</mat-label>
+                <input autocomplete="off" matInput formControlName="name" required (keyup)="preventSpace($event,'userForm', 'name')" (blur)="trimTextBoxSpaces('userForm', 'name')">
+                <mat-error>
+                    <app-validation [labelName]="name.innerText" [validationControl]="userForm.controls.name"
+                        [doValidate]="doValidate">
+                    </app-validation>
+                </mat-error>
+            </mat-form-field>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="end center" class="pt-16 pb-8">
+            <button class="mr-12 text-uppercase" type="button" mat-raised-button (click)="closeAddForm()">
+                {{'Cancel' | translate}}</button>
+            <button mat-raised-button type="submit" class="text-uppercase" color="accent" [disabled]="disableSubmitBtn">
+                {{(updateButtonShow ? 'Update':'Create') | translate}}</button>
+        </div>
+    </form>
+</ng-template>

@@ -1,0 +1,12 @@
+.sm-btn{
+    width: 26px;
+    height: 26px;
+    line-height: 26px;
+    ::ng-deep .mat-button-wrapper{
+        padding: 0px 0px;
+    }
+    .mat-icon{
+        font-size: 16px;
+    line-height: 22px;
+    }
+}

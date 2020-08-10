@@ -1,0 +1,19 @@
+.config-card {
+    max-height: 60vh;
+    overflow-y: auto;
+
+    .border-dashed {
+        border-style: dashed;
+        border-width: 2px;    
+        cursor: pointer;   
+    }
+    .mat-card{
+        cursor: pointer;
+    }
+}
+
+.status {
+    position: absolute;
+    top: 0;
+    right: 0px;
+}

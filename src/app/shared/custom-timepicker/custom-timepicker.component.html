@@ -1,0 +1,60 @@
+<mat-form-field [appearance]="appearance" fxFlex="100" [ngClass]="formClass ? formClass:''">
+  <mat-label translate>{{label}}</mat-label>
+  <mat-icon *ngIf="isIconRequired" matPrefix class="mr-8" (click)="openHoursDropdown(0)">access_time</mat-icon>
+  <input [formControl]="timecontrol" matInput autocomplete="off" [(ngModel)]="time" [hidden]="true" [required]="isRequired"/>
+  <mat-error [ngClass]="errorClass ? errorClass:''">
+    <app-validation [labelName]="label ? label : 'Time'" [validationControl]="timecontrol" [doValidate]="true">
+    </app-validation>
+  </mat-error>
+  <div fxLayout="row">
+    <div class="cTimepicker">
+      <mat-select #hourSelect (selectionChange)="hoursChange($event, 0)" [(ngModel)]="hourStart"
+        (click)="$event.stopPropagation()">
+        <mat-option value="">HH</mat-option>
+        <mat-option *ngFor="let dispalyHour of hours" [value]="dispalyHour.value">
+          {{dispalyHour.viewValue}}
+        </mat-option>
+      </mat-select>:
+      <mat-select #minuteSelect (selectionChange)="minutesChange($event, 0)" [(ngModel)]="minuteStart"
+        (click)="$event.stopPropagation()">
+        <mat-option value="">MM</mat-option>
+        <mat-option *ngFor="let displayMinute of minutes" [value]="displayMinute.value">
+          {{displayMinute.viewValue}}
+        </mat-option>
+      </mat-select>
+      <ng-template [ngIf]="!is24HoursFormat">
+        <mat-select #meridiemSelect (selectionChange)="changeMeridiem($event, 0)"
+          [(ngModel)]="meridiemStart" (click)="$event.stopPropagation()">
+          <mat-option *ngFor="let ap of meridiems" [value]="ap.value">
+            {{ap.viewValue}}
+          </mat-option>
+        </mat-select>
+      </ng-template>
+    </div>
+    <div class="cTimepicker" *ngIf="rangeMode">
+      <mat-divider class="mr-8" [vertical]="true"></mat-divider>
+      <mat-select #hourSelectEnd (selectionChange)="hoursChange($event, 1)" [(ngModel)]="hourEnd"
+        (click)="$event.stopPropagation()">
+        <mat-option value="">HH</mat-option>
+        <mat-option *ngFor="let dispalyHour of hours" [value]="dispalyHour.value">
+          {{dispalyHour.viewValue}}
+        </mat-option>
+      </mat-select>:
+      <mat-select #minuteSelectEnd (selectionChange)="minutesChange($event, 1)" [(ngModel)]="minuteEnd"
+        (click)="$event.stopPropagation()">
+        <mat-option value="">MM</mat-option>
+        <mat-option *ngFor="let displayMinute of minutes" [value]="displayMinute.value">
+          {{displayMinute.viewValue}}
+        </mat-option>
+      </mat-select>
+      <ng-template *ngIf="!is24HoursFormat">
+        <mat-select #meridiemSelectEnd (selectionChange)="changeMeridiem($event, 1)" [(ngModel)]="meridiemEnd"
+          (click)="$event.stopPropagation()">
+          <mat-option *ngFor="let ap of meridiems" [value]="ap.value">
+            {{ap.viewValue}}
+          </mat-option>
+        </mat-select>
+      </ng-template>
+    </div>
+  </div>
+</mat-form-field>

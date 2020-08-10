@@ -1,0 +1,18 @@
+{
+  "colLowerCase":[
+    { "field": "holidayReason", "header": "Description", "sort": false },
+    { "field": "date", "header": "Date", "sort": false, "anchorDialog": true },
+    { "field": "staffHoliday", "header": "Staff Holiday", "sort": false },
+    { "field": "postToCalendar", "header": "Post To Calendar", "sort": false },
+    { "field": "classSection", "header": "Class & Section", "sort": false },
+    { "field": "error", "header": "Errors", "sort": false }
+  ],
+  "colUpperCase":[
+    { "field": "HolidayReason", "header": "Description", "sort": false },
+    { "field": "Date", "header": "Date", "sort": false, "anchorDialog": true },
+    { "field": "StaffHoliday", "header": "Staff Holiday", "sort": false },
+    { "field": "PostToCalendar", "header": "Post To Calendar", "sort": false },
+    { "field": "ClassSections", "header": "Class & Section", "sort": false },
+    { "field": "ErrorMessage", "header": "Result", "radioAction": true, "activeClass": "red-fg", "sort": false }
+  ]
+}

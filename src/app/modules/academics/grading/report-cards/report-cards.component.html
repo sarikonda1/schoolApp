@@ -1,0 +1,132 @@
+<div class="px-40 pt-40">
+  <div class="py-8 px-20 font-size-18 text-uppercase">{{'Report Cards Search' | translate }}</div>
+  <div class="mat-elevation-z3 simple-table-container radius-t-20">
+    <div fxLayoutAlign="end center" class="p-16 border-bottom">
+      <button (click)="getHelpText('Report Cards Search')" mat-button>
+        <mat-icon class="grey-600-fg">info</mat-icon>
+      </button>
+    </div>
+    <form [formGroup]="reportCardsSearchForm" (ngSubmit)="searchReportCards()" #paymentSearch="ngForm" class="p-24">
+      <div fxFlexFill fxLayout="column" class="pt-12" fxLayout.gt-sm="row">
+
+        <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="25"
+          class="pr-sm-20">
+          <mat-label translate #board>Board</mat-label>
+          <mat-select placeholder="Board" formControlName="boardId"
+            (selectionChange)="onSelectSchoolBoard($event.value)" required>
+            <mat-option *ngFor="let board of schoolBoardsList" [value]="board.value">
+              {{ board.label }}</mat-option>
+          </mat-select>
+          <mat-error>
+            <app-validation [labelName]='board.innerText' [validationControl]="reportCardsSearchForm.controls.boardId"
+              [doValidate]="validate">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="25"
+          class="pr-sm-20">
+          <mat-label translate #class>Class</mat-label>
+          <mat-select placeholder="Class" formControlName="classId" (selectionChange)="onClassChange($event.value)"
+            required>
+            <mat-option *ngFor="let class of classesList" [value]="class.value">
+              {{ class.label }}</mat-option>
+          </mat-select>
+          <mat-error>
+            <app-validation [labelName]='class.innerText' [validationControl]="reportCardsSearchForm.controls.classId"
+              [doValidate]="validate">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="25"
+          class="pr-sm-20">
+          <mat-label translate #section>Section</mat-label>
+          <mat-select (selectionChange)="getGradingTerms()" placeholder="Section" formControlName="sectionId" required>
+            <mat-option *ngFor="let section of availableSections" [value]="section.value">
+              {{ section.label }}</mat-option>
+          </mat-select>
+          <mat-error>
+            <app-validation [labelName]='section.innerText'
+              [validationControl]="reportCardsSearchForm.controls.sectionId" [doValidate]="validate">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="25">
+          <mat-label translate #gradingTerm>Grading Term</mat-label>
+          <mat-select placeholder="Grading Term" formControlName="gradingTermId" required>
+            <mat-option *ngFor="let term of gradingTermsList" [value]="term.id">
+              {{ term.name }}</mat-option>
+          </mat-select>
+          <mat-error>
+            <app-validation [labelName]='gradingTerm.innerText'
+              [validationControl]="reportCardsSearchForm.controls.gradingTermId" [doValidate]="validate">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div id="report-card-table" fxLayout="row" fxLayoutAlign="end center" class="mb-20">
+        <button mat-raised-button type="reset" color="primary" class="text-uppercase mr-12" (click)="onClear()">
+          <span translate>Reset</span>
+        </button>
+        <button mat-raised-button type="submit" color="accent" class="text-uppercase">
+          <span translate>Search</span>
+        </button>
+      </div>
+
+    </form>
+  </div>
+
+  <div *ngIf="reportCardDetails?.gradeTermStudenSummaryView?.list?.length"
+    class="mat-elevation-z3 simple-table-container mt-20 radius-5" fxLayout="column">
+    <div fxLayoutAlign="space-between center" class="px-24 py-20">
+      <div class="py-8 px-20 font-size-18 text-uppercase">Report Card Summary</div>
+      <button mat-mini-fab color="accent" aria-label="More" [matMenuTriggerFor]="menu">
+        <mat-icon>more_vert</mat-icon>
+      </button>
+    </div>
+    <div>
+      <mat-list class="pt-0 confirm-table border mb-28 mx-sm-auto" fxLayout="row wrap" fxFlex="100" fxFlex.gt-sm="69"
+        fxLayoutAlign="center center">
+        <mat-list-item fxLayout="column" fxFlex.gt-sm="75" fxFlex="100">
+          {{ 'Number of Students' | translate }}
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex.gt-sm="25" fxFlex="100">
+          {{ reportCardDetails?.gradingDetails?.noofStudents }}
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex.gt-sm="75" fxFlex="100">
+          {{ 'Number of completed Report Cards'  | translate }}
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex.gt-sm="25" fxFlex="100">
+          {{ reportCardDetails?.gradingDetails?.noofCompletedReportcards }}
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex.gt-sm="75" fxFlex="100">
+          {{ 'Number of pending approval Report Cards' | translate }}
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex.gt-sm="25" fxFlex="100">
+          {{ reportCardDetails?.gradingDetails?.noofpendingApprovalReportcards }}
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex.gt-sm="75" fxFlex="100">
+          {{ 'Number of Pending Incomplete Report Cards' | translate }}
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex.gt-sm="25" fxFlex="100">
+          {{ reportCardDetails?.gradingDetails?.noofpendingReportcards }}
+        </mat-list-item>
+      </mat-list>
+    </div>
+  </div>
+</div>
+
+<app-table [settings]="tableSettings" (getTableData)='getTableData($event)' (rowBasedAction)='onRowActions($event)'
+  (openAddForm)="onAddFormClick()">
+</app-table>
+
+<mat-menu #menu="matMenu">
+  <ng-container *ngFor="let item of operationsForSummary">
+    <button mat-menu-item (click)="onSelectAction(item)">
+      <mat-icon>{{item.icon}}</mat-icon>{{item.name |translate}}
+    </button>
+  </ng-container>
+</mat-menu>

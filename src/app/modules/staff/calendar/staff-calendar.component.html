@@ -1,0 +1,88 @@
+<div class="p-40" fxLayout="column" fxLayout.gt-sm="row" fxFlex="100">
+    <div fxLayout="column" fxFlex.gt-sm="60" fxFlex="100">
+        <div class="mat-elevation-z4 radius-10 mb-12" *ngIf="isResLoaded | async">
+            <af-calendar [addNewEvent]="false" [cellHeight]="true" [events]="events" [title]="title"
+            [selectedCalenderDay]="selectedDay" [viewCalenderDate]="viewDate" [startDate]="startDate" [endDate]="endDate"
+                (dateChange)="dateChange($event)" (dateSelect)="dateSelect($event)" [customCellTemplate]="descriptiveCell">
+            </af-calendar>
+        </div>
+        <div fxLayout="row wrap" fxFlex="80" class="p-20 primary-50 radius-5" *ngIf="events?.length">
+            <div fxLayoutAlign="start center" fxFlex="25" *ngFor="let calenderColor of colors; let i=index;"
+                class="pb-12"><span class="p-12 mr-8 mat-elevation-z1"
+                    [style.background]="calenderColor.code"></span>               
+                    <div class="text-truncate pr-4" [matTooltip]="calenderColor.name" matTooltipClass="matTool-tip">{{calenderColor.name}}</div>
+                </div>
+        </div>
+    </div>
+
+
+    <div fxLayout="column" fxFlex.gt-sm="40" fxFlex="100" class="pl-sm-20 mx-height-auto">
+        <div fxLayout="column" class="border radius-5 mb-12" *ngFor="let cal of displayCal;let i = index">
+            <div id={{i}} class="h3 text-center p-20 border-bottom">{{cal.dateTitle}}</div>
+
+            <div fxLayout="column" fxFlex="90" class="pl-12 my-8" *ngFor="let e of cal.events">
+                <div class="font-weight-600 pt-8" fxLayout="row" fxLayoutAlign="start center">
+                    <span class="events-icon mr-12" [style.background]="e.color"></span>{{ e.title }} <button mat-icon-button [matMenuTriggerFor]="classSection" class="mr-16" *ngIf=" e?.classSections &&  e?.classSections.length">
+                            <mat-icon>info</mat-icon>
+                        </button></div>
+                <div *ngIf="e?.courseName" class="secondary-text py-8 pl-20">{{ e?.courseName}}</div>
+                <div *ngIf="e?.description" class="pl-20">{{ e?.description}}</div>
+                <div *ngIf="e?.className" class="py-8 pl-20">{{ e?.className}}</div>
+                <div *ngIf="e?.sectionName" class="pl-20">{{ e?.sectionName}}</div>
+                
+                <mat-menu #classSection="matMenu">
+                    <div *ngFor="let class of e?.classSections" class="p-8" fxLayout="row wrap">
+                       <strong>{{class.className}}-</strong>
+                        <div *ngFor="let section of class.groups;let l = last" class="pl-4">
+                            {{section.sectionName}}<span *ngIf="!l">,</span>
+                        </div>
+                    </div>
+                </mat-menu>
+            </div>
+
+        </div>
+
+        <!-- <mat-card *ngFor="let cal of displayCal;let i = index" class="mb-12 p-0">
+            <div id={{i}} class="border-bottom h2 text-center p-20">
+                {{cal.dateTitle}}
+            </div>
+            <div *ngFor="let e of cal.events" class="p-24" fxLayoutAlign="start center">
+                <mat-icon class="mr-8">arrow_right</mat-icon>
+                <span>{{ e.title }}</span>
+                <span *ngIf="e?.courseName">{{ e?.courseName}}</span>
+                <span *ngIf="e?.description">{{ e?.description}}</span>
+                <span *ngIf="e?.className">{{ e?.className}}</span>
+                <span *ngIf="e?.sectionName">{{ e?.sectionName}}</span>
+            </div>
+        </mat-card> -->
+        <mat-card class="mb-12 p-0" *ngIf="!displayCal?.length">
+            <div class="border-bottom font-size-16 secondary-text text-center p-20">
+                {{'No Calendar Entries To Be Displayed' | translate}}
+            </div>
+        </mat-card>
+    </div>
+</div>
+    <ng-template #descriptiveCell let-day="day" let-openDay="openDay" let-locale="locale"
+        let-tooltipPlacement="tooltipPlacement" let-highlightDay="highlightDay" let-unhighlightDay="unhighlightDay"
+        let-eventClicked="eventClicked" let-tooltipTemplate="tooltipTemplate"
+        let-tooltipAppendToBody="tooltipAppendToBody" let-tooltipDelay="tooltipDelay"
+        let-trackByEventId="trackByEventId" let-validateDrag="validateDrag">
+        <div class="cal-cell-top">
+            <span class="cal-day-number">{{
+            day.date | calendarDate: 'monthViewDayNumber':locale
+            }}</span>
+        </div>
+        <div class="cal-events" *ngIf="day.events.length > 0 && showEvents(day)">
+            <!--<div class="text-truncate" *ngFor="let event of day.events; trackBy: trackByEventId"
+                [ngStyle]="{ color: event.color?.primary }" [ngClass]="event?.cssClass"
+                (mouseenter)="highlightDay.emit({ event: event })" (mouseleave)="unhighlightDay.emit({ event: event })"
+                [dropData]="{ event: event, draggedFrom: day }" [dragAxis]="{ x: event.draggable, y: event.draggable }"
+                [validateDrag]="validateDrag" (mwlClick)="eventClicked.emit({ event: event })">{{ event.title }}</div>-->
+            <ng-container *ngFor="let color of day.colors;">
+                <div class="text-truncate"
+                     [ngStyle]="{ color: color }">
+                    <div  class="cal-event" [ngStyle]="{ background: color }"></div>
+                </div>
+            </ng-container>
+        </div>
+    </ng-template>

@@ -1,0 +1,66 @@
+<div class="mat-elevation-z4 mx-40 mb-24 radius-t-20">
+<app-table [settings]="tabSettings" (getTableData)='getPollutionCheckHistory($event)'
+  (rowBasedAction)="rowWiseActions($event)" [disabled]="disbleSubmitBtn" [templateRef]="addPollutionCheckTemplate"
+  [closeAddForm]="closeAddPanel" (openAddForm)="onAddFormClick()" [closeRowForm]='closeAddPanel'>
+</app-table>
+</div>
+<ng-template #addPollutionCheckTemplate>
+  <form [formGroup]="pollutionCheckForm" (ngSubmit)="onSubmit(pollutionCheckForm)" #pollutionCheck="ngForm" autocomplete="off">
+    <div fxFlexFill fxLayout="column" fxLayout.gt-xs="row" class="pt-24">
+
+      <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex.gt-xs="40" fxFlex="100" class="icon-center">
+        <mat-label #pollutioncheckdate translate>pollutioncheckdate</mat-label>
+        <input matInput (keyup)="forceValidation('pollutionCheckDate',pollutionCheckForm)"
+          [matDatepicker]="pollutionCheckDate" [max]="currentDate" formControlName="pollutionCheckDate" required>
+        <mat-datepicker-toggle matSuffix [for]="pollutionCheckDate"></mat-datepicker-toggle>
+        <mat-datepicker #pollutionCheckDate></mat-datepicker>
+        <mat-error>
+          <app-validation [labelName]="pollutioncheckdate.innerText"
+            [validationControl]="pollutionCheckForm.controls.pollutionCheckDate" [doValidate]="validate">
+          </app-validation>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex.gt-xs="40" fxFlex="100" class="px-sm-20 icon-center">
+        <mat-label #pollutioncheckexpirydate translate>pollutioncheckexpirydate</mat-label>
+        <input matInput (keyup)="forceValidation('pollutionCheckExpiryDate',pollutionCheckForm)"
+          [matDatepicker]="pollutionCheckExpiryDate" [min]="pollutionCheckForm.controls.pollutionCheckDate.value"
+          formControlName="pollutionCheckExpiryDate" required>
+        <mat-datepicker-toggle matSuffix [for]="pollutionCheckExpiryDate"></mat-datepicker-toggle>
+        <mat-datepicker #pollutionCheckExpiryDate></mat-datepicker>
+        <mat-error>
+          <app-validation [labelName]="pollutioncheckexpirydate.innerText"
+            [validationControl]="pollutionCheckForm.controls.pollutionCheckExpiryDate" [doValidate]="validate">
+          </app-validation>
+        </mat-error>
+      </mat-form-field>
+
+      <div fxLayout="column" class="mt-12 w-280" fxFlex.gt-xs="32" fxFlex="100">
+        <div fxLayout="row">
+          <button mat-raised-button type="button" color="primary" (click)="logoImgInput.value='';logoImgInput.click()">
+            <mat-icon class="mr-8">attach_file</mat-icon>{{'Upload Image' | translate}}
+          </button>
+          <button mat-icon-button type="button"  [style.display]="logoImgProp?.src ? 'block' : 'none'">
+            <mat-icon class="mb-4 grey-600-fg"
+              (click)="logoImgInput.value='';clearImages(true)">highlight_off</mat-icon>
+          </button>
+        </div>
+        <input [accept]="'.doc,.docx,image/jpeg,image/jpg,image/png,application/pdf,image/*'" id="logoImgInput"
+          (change)="imgChanged(logoImgInput.files)" fxHide type="file" #logoImgInput>
+        <div class="pt-8 logo-name break-word"
+          [style.visibility]="uploadFiles?.value?.pollutionFileNameWithExtension ? 'visible' : 'hidden'"
+          [style.display]="logoImgProp?.src ? 'block' : 'none'">
+          {{uploadFiles?.value?.pollutionFileNameWithExtension}}</div>
+      </div>
+    </div>
+   
+
+    <div fxLayout="row" fxLayoutAlign="end center" class="pt-16">
+      <button mat-raised-button class="mr-12 text-uppercase" type="button" (click)="cancel()">{{'cancel' | translate}}</button>
+      <button type="submit" mat-raised-button class="text-uppercase" type="submit" color="accent"
+        *ngIf="!updateBtn">{{'create' | translate}}</button>
+      <button type="submit" mat-raised-button class="text-uppercase" type="submit" color="accent"
+        *ngIf="updateBtn">{{'update' | translate}}</button>
+    </div>
+  </form>
+</ng-template>

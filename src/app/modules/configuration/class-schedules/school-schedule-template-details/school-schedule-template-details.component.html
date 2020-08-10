@@ -1,0 +1,39 @@
+<div class="content p-sm-40" (window:resize)="onResize()">
+  <div class="w-100-p mat-elevation-z8 simple-table-container radius-t-20 mt-8" fxLayout="column">
+    <div fxLayout="row" fxLayoutAlign="center center" class="p-20">
+      <div fxLayout="column" fxFlex="40">
+        <div class="font-size-20">
+          {{tempName}}
+        </div>
+      </div>
+
+      <div class="text-right gridRightBtn" fxFlex="60" fxLayout="column" fxLayoutAlign="end">
+        <div fxLayout="row" fxLayoutAlign="end center">
+          <button mat-raised-button translate type="button" color="primary" class="text-uppercase"
+            (click)="back()">{{'Back' | translate}}</button>
+          <button mat-button (click)="getHelpText('School Schedule Templates')">
+            <mat-icon class="grey-600-fg">info</mat-icon>
+          </button>
+        </div>
+      </div>
+
+    </div>
+    <mat-divider></mat-divider>
+    <div class="m-20 border school-period">
+      <div *ngFor="let item of filterSchoolScheduleTempList; let ind = index">
+        <div fxLayout="row inline" class="border-bottom">
+          <div fxLayout="column" fxFlex="20" class="border-right p-20 w-120 weekDay break-word custom-white accent-fg font-weight-600 text-uppercase" translate>{{item.name}}</div>
+          <div fxLayout="column" fxFlex="20" fxLayoutAlign="center start" class="border-right w-132 px-12 break-word"
+            *ngFor="let child of item.value;let i=index" [ngClass]="item.value?.length > filterSchoolScheduleTempList[ind-1]?.value?.length ? (i > ( filterSchoolScheduleTempList[ind-1]?.value?.length-1) && ind  ? 'border-top': '') : ''">
+            <div fxLayout="row" *ngIf="child.periodNames == 'PERIOD'" class="text-uppercase break-word"
+            translate>{{child.periodNames}}<span></span>&nbsp;{{i+1}}</div>
+            <div fxLayout="row" class="break-word" translate>{{child.periodName}}</div>
+            <div fxLayout="row" class="grey-500-fg break-word" *ngIf="child.startTime!= null">{{child.startTime | slice:0:5}} to
+              {{child.endTime | slice:0:5}}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,26 @@
+<div *ngIf="isLoading"fxFlexFill fxLayoutAlign="center center">
+  <app-af-loader></app-af-loader>
+</div>
+<ng-container *ngIf="!isLoading && newsItems.length>0">
+    <div *ngFor="let newsItem of newsItems" fxLayout="row" class="p-12 even-color">
+        <!-- <div fxLayout="column" fxFlex="0 1 auto" class="pr-24 secondary-text h2">{{ getFormattedDateBySchoolDateFormat(newsItem.announcedDate)}}</div> -->
+        <div fxLayout="column" class="pr-8 w-200">
+            <div fxLayout="row">
+                <div class="font-size-40 pr-8 orange-fg">{{newsItem.announcedDate | date:'dd'}}</div>
+                <div fxLayout="column">
+                    <span class="font-size-18 accent-fg">{{newsItem.announcedDate | date:'EEEE'}}</span>
+                    <span class="secondary-text">{{newsItem.announcedDate | date:'LLL'}} {{newsItem.announcedDate | date:'yyyy'}}</span>
+                </div>
+            </div>
+        </div>
+        <div fxLayout="column">
+            <div class="pb-4 font-weignt-800">{{newsItem.eventDescription}}</div>
+            <a target="_blank" *ngIf="newsItem.attachmentUrl" [href]="newsItem.attachmentUrl" translate>View
+                Attachment</a>
+        </div>
+    </div>
+</ng-container>
+
+<div *ngIf="!isLoading && newsItems.length==0" fxLayoutAlign="center center" fxFlexFill>
+    <p class="text-center text-uppercase font-size-16 secondary-text" translate>No Data To Display</p>
+</div>

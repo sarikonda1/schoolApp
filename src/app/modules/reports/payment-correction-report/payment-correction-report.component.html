@@ -1,0 +1,91 @@
+<div class="px-sm-32 pt-sm-24" #search>
+  <form [formGroup]="searchForm" #ngForm="ngForm">
+    <div fxLayout="column" fxLayout.gt-sm="row" class="pb-4">
+      <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="36"
+        class="icon-center pr-sm-12">
+        <mat-label #studentId translate>Search Student Name</mat-label>
+        <input #studentName matInput placeholder="Search Students" formControlName="studentSearch"
+          aria-label="StudentName" matInput [matAutocomplete]="studentNameSearch">
+        <mat-icon class="grey-400-fg" matSuffix>search</mat-icon>
+        <mat-autocomplete #studentNameSearch="matAutocomplete" [displayWith]="displayFn">
+          <mat-option *ngFor="let option of filterdStudents" [value]="option">
+            {{option.studentName}}
+            <span class="grey-400-fg"> {{option.currentClassName}} {{option.currentSectionName}} </span>
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+    </div>
+
+    <div fxLayout="column" fxLayout.gt-sm="row">
+      <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="30" class="pr-sm-12">
+        <mat-label #section translate>Payment Status</mat-label>
+        <mat-select placeholder="Payment Status" formControlName="paymentStatusId">
+          <mat-option *ngIf="paymentStatus?.length"></mat-option>
+          <mat-option *ngFor="let status of paymentStatus" [value]="status.value">
+            {{ status.label }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" class="pr-sm-12" fxFlex.gt-sm="30">
+        <mat-label #paymentTypeId translate>Payment Mode</mat-label>
+        <mat-select formControlName="paymentMode">
+          <mat-option *ngIf="paymentTypesList?.length"></mat-option>
+          <mat-option *ngFor="let paymentTypes of paymentTypesList" [value]="paymentTypes.id">
+            {{ paymentTypes.name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="25">
+        <input matInput formControlName="inputDate" [satDatepicker]="picker" placeholder="Choose a date">
+        <sat-datepicker #picker [rangeMode]="true"> </sat-datepicker>
+        <sat-datepicker-toggle matSuffix [for]="picker"></sat-datepicker-toggle>
+        <mat-label translate #dob>Date</mat-label>
+        <mat-error>
+          <app-validation [labelName]='dob.innerText' [validationControl]="searchForm.controls.dateOfBirth"
+            [doValidate]="true">
+          </app-validation>
+        </mat-error>
+      </mat-form-field>
+      <div fxLayout="row" fxLayoutAlign="end center" class="mr-20 pb-20">
+        <button mat-raised-button translate color="primary" class="text-uppercase ml-12" (click)="reset()" type="reset">
+          Reset
+        </button>
+        <button type="submit" mat-raised-button translate color="accent" class="text-uppercase ml-12"
+          (click)="getPaymentCorrectionReport()">
+          Search
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<app-custom-card *ngIf="!(reportResults?.paymentCorrections?.length) && ngForm.submitted"
+  [inputMessage]="'No Record Found'">
+</app-custom-card>
+<div fxLayout="row" fxLayoutAlign="end center" class="px-32 py-12" *ngIf="reportResults?.paymentCorrections?.length">
+  <button mat-stroked-button class="mr-12" (click)="generateReport('generatePdfReport')">
+    <mat-icon class="mr-4">save_alt</mat-icon>Download PDF
+  </button>
+  <button mat-stroked-button (click)="generateReport('generateExcelReport')">
+    <mat-icon class="mr-4">save_alt</mat-icon> Download EXCEL
+  </button>
+</div>
+<div class='invoice-container' id="admitted-std" *ngIf="reportResults?.paymentCorrections?.length" style="padding: 25px; padding-top: 0px;">
+  <span class="dark-theme-color" style="color:#fff">A</span>
+  <div class='b flex-d-c invoice-body' style='overflow: hidden; '>
+    <h3 class="text-center text-uppercase">Payment Corrections Report</h3>
+    <div class="p-10 mb-20 main-title">
+      <div class="left-align">Report Generated On : {{ date }}</div>
+      <div class="right-align flex" *ngIf="acadmicSession">
+        {{acadmicSession?.name}} ({{acadmicSession?.startDate | date: 'MMM d, y'}} -
+        {{acadmicSession?.endDate | date: 'MMM d, y'}})
+      </div>
+    </div>
+    <div class="px-20 pt-20">Payment Correction Details</div>
+    <div class="p-10" *ngIf="reportResults?.paymentCorrections?.length">
+      <app-af-report-table [inputData]="reportResults?.paymentCorrections" [tableId]="'pmt-cor-rpt'"
+        [columns]="columns"></app-af-report-table>
+    </div>
+  </div>
+</div>

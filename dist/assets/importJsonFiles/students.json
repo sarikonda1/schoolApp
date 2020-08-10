@@ -1,0 +1,86 @@
+{
+  "colLowerCase":  [
+    { "field": "studentName", "header": "Student Name", "sort": false },
+    { "field": "dateOfAdmission", "header": "Date Of Admission", "sort": false },
+    { "field": "admissionNumber", "header": "Admission Number", "sort": false },
+    { "field": "dateOfBirth", "header": "Date Of Birth", "sort": false },
+    { "field": "dateOfJoining", "header": "Date Of Joining", "sort": false },
+    { "field": "admissionForSchoolBoard", "header": "Admission For School Board", "sort": false },
+    { "field": "admissionForClass", "header": "Admission For Class", "sort": false },
+    { "field": "gender", "header": "Gender", "sort": false },
+    { "field": "nationality", "header": "Nationality", "sort": false },
+    { "field": "primaryEmail", "header": "Primary Email", "sort": false },
+    { "field": "secondaryEmail", "header": "Secondary Email", "sort": false },
+    { "field": "mobileNumber", "header": "Mobile Number", "sort": false },
+
+    { "field": "fatherName", "header": "Father Name", "sort": false },
+    { "field": "motherName", "header": "Motheher Name", "sort": false },
+
+    { "field": "addressLine1", "header": "Address Line1", "sort": false },
+    { "field": "addressLine2", "header": "Address Line2", "sort": false },
+    { "field": "addressLine3", "header": "Address Line3", "sort": false },
+    { "field": "city", "header": "City", "sort": false },
+    { "field": "state", "header": "State", "sort": false },
+    { "field": "country", "header": "Country", "sort": false },
+    { "field": "pincode", "header": "Pincode", "sort": false },
+
+    { "field": "emergencyContactName1", "header": "Emergency Contact Name1", "sort": false },
+    { "field": "emergencyContactRelation1", "header": "Emergency Contact Relation1", "sort": false },
+    { "field": "emergencyContactPhoneNumber1", "header": "Emgergency Contact Phone Number1", "sort": false },
+
+    { "field": "fatherEmail", "header": "Father Email", "sort": false },
+    { "field": "fatherMobileNumber", "header": "Father Mobile Number", "sort": false },
+    { "field": "fatherAlternateNumber", "header": "Father Alternate Number", "sort": false },
+
+    { "field": "motherEmail", "header": "Mother Email", "sort": false },
+    { "field": "motherMobileNumber", "header": "Mother Mobile Number", "sort": false },
+    { "field": "motherAlternateNumber", "header": "Mother Alternate Number", "sort": false },
+
+    { "field": "aadhaarNumber", "header": "Adhaar Number", "sort": false },
+    { "field": "studentGroup", "header": "Student Group", "sort": false },
+
+    { "field": "error", "header": "Errors", "sort": false }
+  ],
+  "colUpperCase":  [
+    { "field": "StudentName", "header": "Student Name", "sort": false },
+    { "field": "DateOfAdmission", "header": "Date Of Admission", "sort": false },
+    { "field": "AdmissionNumber", "header": "Admission Number", "sort": false },
+    { "field": "DateOfBirth", "header": "Date Of Birth", "sort": false },
+    { "field": "DateOfJoining", "header": "Date Of Joining", "sort": false },
+    { "field": "AdmissionForSchoolBoard", "header": "Admission For School Board", "sort": false },
+    { "field": "AdmissionForClass", "header": "Admission For Class", "sort": false },
+    { "field": "Gender", "header": "Gender", "sort": false },
+    { "field": "Nationality", "header": "Nationality", "sort": false },
+    { "field": "PrimaryEmail", "header": "Primary Email", "sort": false },
+    { "field": "SecondaryEmail", "header": "Secondary Email", "sort": false },
+    { "field": "MobileNumber", "header": "Mobile Number", "sort": false },
+
+    { "field": "FatherName", "header": "Father Name", "sort": false },
+    { "field": "MotherName", "header": "Mother Name", "sort": false },
+
+    { "field": "AddressLine1", "header": "Address Line1", "sort": false },
+    { "field": "AddressLine2", "header": "Address Line2", "sort": false },
+    { "field": "AddressLine3", "header": "Address Line3", "sort": false },
+    { "field": "City", "header": "City", "sort": false },
+    { "field": "State", "header": "State", "sort": false },
+    { "field": "Country", "header": "Country", "sort": false },
+    { "field": "Pincode", "header": "Pincode", "sort": false },
+
+    { "field": "EmergencyContactName1", "header": "Emergency Contact Name1", "sort": false },
+    { "field": "EmergencyContactRelation1", "header": "Emergency Contact Relation1", "sort": false },
+    { "field": "EmergencyContactPhoneNumber1", "header": "Emgergency Contact TelNumber1", "sort": false },
+
+    { "field": "FatherEmail", "header": "Father Email", "sort": false },
+    { "field": "FatherMobileNumber", "header": "Father Mobile Number", "sort": false },
+    { "field": "FatherAlternateNumber", "header": "Father Alternate Number", "sort": false },
+
+    { "field": "MotherEmail", "header": "Mother Email", "sort": false },
+    { "field": "MotherMobileNumber", "header": "Mother Mobile Number", "sort": false },
+    { "field": "MotherAlternateNumber", "header": "Mother Alternate Number", "sort": false },
+
+    { "field": "AadhaarNumber", "header": "Adhaar Number", "sort": false },
+    { "field": "StudentGroup", "header": "Student Group", "sort": false },
+
+    { "field": "ErrorMessage", "header": "Message", "radioAction": true, "activeClass": "blue-fg", "sort": false }
+  ]
+}

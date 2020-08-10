@@ -1,0 +1,20 @@
+.mh-424 {  
+    max-height: 424px;
+    overflow-y: auto;
+  }
+  .recipients{
+    ::ng-deep{
+      .mat-list-item-content{
+        align-items: start;
+      }
+    }
+  }
+  .min-w-300{
+    min-width: 300px;
+  }
+  .rm-height{
+    ::ng-deep
+    .mat-list-item{
+      height: auto;
+    }
+  }

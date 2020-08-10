@@ -1,0 +1,151 @@
+<div class="px-sm-40 py-20">
+  <div class="p-12 font-size-18 text-uppercase" translate>Manage Tranche Fees</div>
+  <form [formGroup]="manageFeeTranchesForm" #userManageFeeTranchesForm="ngForm">
+    <div class="mat-elevation-z8 radius-20 simple-table-container" fxLayout="column">
+      <div fxFlexFill fxLayoutAlign="start center" fxLayout.gt-xs="row" fxLayout="column" class="px-16 pt-20">
+
+        <mat-form-field *ngIf="isSchoolBoard" fxFlexFill appearance="outline" fxLayout="column" fxFlex.gt-xs="20"
+          fxFlex="100">
+          <mat-label translate #schoolBoard>School Board</mat-label>
+          <mat-select required formControlName="schoolBoardId" (selectionChange)="fetchClasses($event.value)">
+            <mat-option *ngFor="let schoolBoard of schoolBoards" [value]="schoolBoard.value">
+              {{schoolBoard.label}}
+            </mat-option>
+          </mat-select>
+          <mat-error>
+            <app-validation [labelName]="schoolBoard.innerText"
+              [validationControl]="manageFeeTranchesForm.controls.schoolBoardId" [doValidate]="isValidate">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex.gt-xs="25" fxFlex="100"
+          class="px-sm-20">
+          <mat-label translate #feeType>Fee Type</mat-label>
+          <mat-select required formControlName="feeTypeId" (selectionChange)="getAllFeeTranches($event.value)">
+            <mat-option *ngFor="let feeType of feeTypes" [value]="feeType.value">
+              {{ feeType.label }}</mat-option>
+          </mat-select>
+          <mat-error>
+            <app-validation [labelName]="feeType.innerText"
+              [validationControl]="manageFeeTranchesForm.controls.feeTypeId" [doValidate]="true">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex.gt-xs="25" fxFlex="100"
+          class="px-sm-20">
+          <mat-label translate #class>Class</mat-label>
+          <mat-select formControlName="classId" (selectionChange)="classSelect($event.value)">
+            <mat-option *ngIf="classes?.length"></mat-option>
+            <mat-option *ngFor="let class of classes" [value]="class.value">
+              {{ class.label }}</mat-option>
+          </mat-select>
+          <mat-error>
+            <app-validation [labelName]="class.innerText" [validationControl]="manageFeeTranchesForm.controls.classId"
+              [doValidate]="true">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+        <div fxFlexFill fxLayout="column" fxFlex.gt-xs="55" fxFlex="100" fxLayoutAlign="end">
+          <div fxLayout="row" fxLayoutAlign="end center" class="mb-24">
+            <button *ngIf="isAddButton" type="button" [disabled]="isDisabled" mat-raised-button
+              class="text-uppercase mx-8" color="accent" (click)="addClick()">{{'Add' | translate}}</button>
+            <button *ngIf="isUpdateButton" type="button" [disabled]="isDisabled" mat-raised-button
+              class="text-uppercase mr-8" color="primary" (click)="editClick()">{{'Edit' | translate}}</button>
+            <button mat-button type="button" (click)="getHelpText('Manage Tranche Fees')" [disabled]="isDisabled">
+              <mat-icon class="grey-600-fg">info</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+      <mat-divider></mat-divider>
+      <div *ngIf="isErrorMessage" class="p-sm-40 text-center">{{errorMessage|translate}}</div>
+
+
+
+      <!-- ADD -->
+      <h1 *ngIf="isCreate || isEdit" class="mb-0 pl-32 pt-24">{{feeTypeName}}</h1>
+      <div *ngIf="isInvoiceError" class="pl-32 pt-12 message-box error">{{invoiceError}}</div>
+      <div class="px-20 pb-20" fxLayout="row wrap" *ngIf="isCreate || isEdit">
+        <fuse-widget formArrayName="feeTypeTranches" class="widget" fxLayout="column" fxFlex.gt-xs="50" fxFlex="100"
+          *ngFor="let control of manageFeeTranchesForm.controls['feeTypeTranches']?.controls;let i=index;">
+          <div [formGroupName]="i" class="fuse-widget-front mat-elevation-z">
+            <div>
+              <div class="p-20 border-bottom" fxLayout="row" fxLayoutAlign="space-between center">
+                <div class="h2">{{control?.controls['feeTypeTrancheName']?.value}}</div>
+              </div>
+            </div>
+            <div class="h-300 scroll-y-auto">
+              <div class="px-20" fxLayout="row" formArrayName="schoolFeeAssignments"
+                *ngFor="let feeTranchControl of control?.controls['schoolFeeAssignments']?.controls; let j=index">
+                <div [formGroupName]="j" fxLayoutAlign="space-between center" class="w-100-p feetype-Error">
+                  <div class="h3 break-word pr-12">{{feeTranchControl?.controls['shortName']?.value}}</div>
+                  <mat-form-field fxLayout="column" fxFlex="0 1 auto">
+                    <input matInput formControlName="feeAmount" (keypress)="numberOnly($event)"
+                      [value]="feeTranchControl?.controls['feeAmount']?.value">
+                  </mat-form-field>
+                  <mat-error>
+                    <app-validation [labelName]="'Amount'|translate"
+                      [validationControl]="feeTranchControl?.controls?.feeAmount" [doValidate]="isValidate">
+                    </app-validation>
+                  </mat-error>
+                </div>
+              </div>
+            </div>
+            <div class="py-16 px-20 font-weight-600 font-size-18 feetype-Error" fxLayout="row"
+              fxLayoutAlign="space-between center">
+              <div>Total Amount</div>
+              <mat-form-field fxLayout="column" fxFlex="0 1 auto">
+                <input matInput formControlName="feeAmount" (keypress)="numberOnly($event)" [disable]="'true'" [value]="getTotalAmount(control)">
+              </mat-form-field>
+              <mat-error class="mt-12">
+                <app-validation [labelName]="'Total Amount'|translate"
+                  [validationControl]="control?.controls?.feeAmount" [doValidate]="isValidate">
+                </app-validation>
+              </mat-error>
+            </div>
+          </div>
+        </fuse-widget>
+      </div>
+      <!-- ADD -->
+
+
+      <h1 *ngIf="isDisplay" class="mb-0 pl-16 pt-24">{{feeTypeName}}</h1>
+      <div class="p-20" fxLayout="row wrap" *ngIf="isDisplay">
+        <fuse-widget class="widget" fxLayout="column" fxFlex.gt-xs="50" fxFlex="100"
+          *ngFor="let feeTypeTranche of feeTypeTranches;">
+          <div class="fuse-widget-front mat-elevation-z">
+            <div class="p-20 border-bottom" fxLayout="row" fxLayoutAlign="space-between center">
+              <div class="h2">{{feeTypeTranche.feeTypeTrancheName}} </div>
+              <button type="button" (click)=delete(feeTypeTranche.schoolFeeId) mat-icon-button>
+                <mat-icon class="red-fg">delete</mat-icon>
+              </button>
+            </div>
+            <div class="h-300 scroll-y-auto">
+              <div class="px-20" fxLayout="row" fxLayoutAlign="space-between center"
+                *ngFor="let schoolFeeAssignment of feeTypeTranche.schoolFeeAssignments;">
+                <div class="h3 break-word pr-12">{{schoolFeeAssignment.shortName}}</div>
+                <mat-form-field fxLayout="column" fxFlex="0 1 auto">
+                  <input matInput value={{schoolFeeAssignment.feeAmount}} [disabled]="true">
+                </mat-form-field>
+              </div>
+            </div>
+            <div class="py-16 px-20 font-weight-600 font-size-18" fxLayout="row" fxLayoutAlign="space-between center">
+              <div>Total Amount</div>
+              <div fxLayout="column" fxFlex="0 1 auto" class="border-top text-right">{{feeTypeTranche.feeAmount}}</div>
+            </div>
+          </div>
+        </fuse-widget>
+      </div>
+      <div fxLayout="row" fxLayoutAlign="end center" class="pb-16 m-16">
+        <button *ngIf="isCreate || isEdit" class="mr-12 text-uppercase" mat-raised-button type="button"
+          (click)="closePanel()">{{'Cancel' | translate}}</button>
+        <button [disabled]="disbleSubmitBtn" *ngIf="isCreate" mat-raised-button type="submit" color="accent"
+          class="text-uppercase mr-12" mat-button
+          (click)="onSubmitManageFeeTranches(manageFeeTranchesForm)">{{'Create' | translate}}</button>
+        <button [disabled]="disbleSubmitBtn" *ngIf="isEdit" mat-raised-button type="submit" color="accent"
+          class="text-uppercase mr-12" mat-button
+          (click)="onUpdateManageFees(manageFeeTranchesForm)">{{'Update' | translate}}</button>
+      </div>
+    </div>
+  </form>
+</div>

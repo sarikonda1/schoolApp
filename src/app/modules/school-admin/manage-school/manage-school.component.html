@@ -1,0 +1,815 @@
+<div *ngIf="!hideStepper; else success" class="px-sm-48" fxLayout="column">
+  <div class="text-uppercase pl-12 mt-20 h2" translate>{{isUpdateForm ? 'editschool' : 'createNewSchool'}}</div>
+  <mat-horizontal-stepper class="custom-horizontal-step mat-elevation-z8 radius-t-20" [linear]="true" fxLayout="row"
+    fxFlex="100" #stepper (selectionChange)="OnSelectionChange($event)">
+    <mat-step [stepControl]="school">
+      <form fxLayout="column" [formGroup]="school">
+        <ng-template matStepLabel><span translate>{{isUpdateForm ? 'editschool': 'createNewSchool'}}</span>
+        </ng-template>
+        <div class="font-size-20" fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center"><span
+            translate>{{isUpdateForm ? 'editschool': 'createNewSchool'}}</span>
+
+          <button mat-button type='button' (click)="getHelpText('Add New School')" class="mb-20">
+            <mat-icon class="grey-600-fg">info</mat-icon>
+
+          </button>
+        </div>
+        <div fxLayout="column" fxLayout.gt-sm="row" class="pt-24" fxFlex="100" fxLayoutAlign="center center">
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+            <mat-label #name translate>Name</mat-label>
+            <input (keyup)="preventSpace($event,'school','name')" (blur)="trimTextBoxSpaces('school','name')" formControlName="name"
+              matInput required>
+            <mat-error>
+              <app-validation [labelName]='name.innerText' [validationControl]="school.controls.name"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50"
+            class="pl-sm-24">
+            <mat-label translate #theme>UI Theme</mat-label>
+            <mat-select formControlName="uiThemeId" required>
+              <mat-option *ngFor="let theme of availableThemes" [value]="theme.id">{{theme.name}}</mat-option>
+            </mat-select>
+            <mat-error>
+              <app-validation [labelName]='theme.innerText' [validationControl]="school.controls.uiThemeId"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div fxLayout.lt-sm="column" fxLayout.gt-sm="row" fxFlex="100" fxLayoutAlign="center center" class="pt-12">
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+            <mat-label translate #licence>Institution Licence</mat-label>
+            <mat-select [disabled]="isUpdateForm" formControlName="licenceId" required>
+              <mat-option *ngFor="let licence of institutionLicences" [value]="licence.id">{{licence.name}}</mat-option>
+            </mat-select>
+            <mat-error>
+              <app-validation [labelName]='licence.innerText' [validationControl]="school.controls.licenceId"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" class="pl-sm-24"
+            fxFlex.gt-sm="50">
+            <mat-label translate #currency>Currency Name</mat-label>
+            <mat-select formControlName="currencyId" [disabled]="isUpdateForm" required>
+              <mat-option *ngFor="let currency of currencyTypes" [value]="currency.id">{{currency.name}}</mat-option>
+            </mat-select>
+            <mat-error>
+              <app-validation [labelName]='currency.innerText' [validationControl]="school.controls.currencyId"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div fxLayout="column" fxLayout.gt-sm="row" class="pt-12" fxFlex="100" fxLayoutAlign="start center">
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+            <mat-label #code translate>Code</mat-label>
+            <input (keyup)="preventSpace($event,'school','schoolCode')" (blur)="trimTextBoxSpaces('school','schoolCode')"
+              formControlName="schoolCode" matInput required>
+            <mat-error>
+              <app-validation [labelName]='code.innerText' [validationControl]="school.controls.schoolCode"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="end center" class="mt-16">
+          <button mat-raised-button (click)="onCancel()" type="button" class="text-uppercase mr-12">
+            {{'Cancel' | translate}}
+          </button>
+          <button mat-raised-button matStepperNext type="button" color="accent" class="text-uppercase">
+            {{'Next' | translate}}
+          </button>
+        </div>
+      </form>
+    </mat-step>
+
+    <mat-step [stepControl]="boardForm">
+      <form fxLayout="column" [formGroup]="boardForm">
+        <ng-template matStepLabel><span translate>Board</span></ng-template>
+        <div class="pt-24 font-size-20" fxLayout="row" fxFlex="100" fxLayoutAlign="start center" translate>Board</div>
+        <div formArrayName="schoolBoardViewModel"
+          *ngFor="let item of addNewRowSchform.controls; let i = index,let f= first;">
+          <div [formGroupName]="i" fxLayout="column" class="pt-24" fxLayout.gt-sm="row" fxFlex="100"
+            fxLayoutAlign="start center">
+
+            <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+              <mat-label translate #boardText>Board</mat-label>
+              <mat-select [disabled]="!f" formControlName="boardId">
+                <mat-option [disabled]="school.disable" *ngFor="let school of schoolBoards" [value]="school.id">
+                  {{school.name}}</mat-option>
+              </mat-select>
+              <mat-error>
+                <app-validation [labelName]='boardText.innerText'
+                  [validationControl]="boardForm?.controls.schoolBoardViewModel?.controls[i].controls.boardId"
+                  [doValidate]="validate">
+                </app-validation>
+              </mat-error>
+            </mat-form-field>
+            
+            <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="40"
+              class="px-sm-24">
+              <mat-label translate #affCode>Affiliation Code</mat-label>
+              <input (keyup)="preventSpaceForArray($event,boardForm?.controls.schoolBoardViewModel?.controls[i].controls.affiliationCode)"
+                (blur)="onBlurAffCode(i,boardForm?.controls.schoolBoardViewModel?.controls[i].controls.affiliationCode.value)" [required]="boardForm?.controls.schoolBoardViewModel?.controls[i].controls.boardId.value ? true : false"
+                formControlName="affiliationCode" matInput>
+              <mat-error>
+                <app-validation [labelName]='affCode.innerText'
+                  [validationControl]="boardForm?.controls.schoolBoardViewModel?.controls[i].controls.affiliationCode"
+                  [doValidate]="validate">
+                </app-validation>
+              </mat-error>
+            </mat-form-field>
+
+            <div fxLayout="row" class="mb-32">
+              <button *ngIf="f" class mat-raised-button (click)="addItem(item?.value)" type="submit" color="accent"
+                [disabled]="disableBoardSelect()"
+                class="text-uppercase w-100 mt-20">
+                {{'Select' | translate}}
+              </button>
+              <button *ngIf="f" class="" mat-raised-button (click)="resetBoards()" type="submit" color="primary"
+                [disabled]="!boardForm.controls?.schoolBoardViewModel.value[0].boardId"
+                class="text-uppercase w-100 mt-20 ml-12">
+                {{'Clear' | translate}}
+              </button>
+              <button mat-icon-button [style.display]="f ? 'none' : 'block'">
+                <mat-icon class="grey-600-fg" (click)="resetFormArrayOnIndex(i,item?.value)">
+                  highlight_off
+                </mat-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="end center" class="mt-sm-20 mr-sm-28">
+          <button mat-raised-button matStepperPrevious type="button" class="text-uppercase mr-12">
+            {{'Previous' | translate}}
+          </button>
+          <button mat-raised-button matStepperNext type="button" color="accent" class="text-uppercase">
+            {{'Next' | translate}}
+          </button>
+        </div>
+      </form>
+    </mat-step>
+
+    <mat-step [stepControl]="contact">
+      <form fxLayout="column" [formGroup]="contact">
+        <ng-template matStepLabel><span translate>Contact</span></ng-template>
+        <div class="pt-24 font-size-20" fxLayout="row" fxFlex="100" fxLayoutAlign="start center" >
+          <span translate>contactDetails</span></div>
+        <div fxLayout="column" fxLayout.gt-sm="row" class="pt-24" fxFlex="100" fxLayoutAlign="center center">
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100">
+            <mat-label translate #email>email1</mat-label>
+            <input (keyup)="preventSpace($event,'contact','email1')" (blur)="trimTextBoxSpaces('contact','email1')"
+              formControlName="email1" matInput required>
+            <mat-error>
+              <app-validation [labelName]='email.innerText' [validationControl]="contact.controls.email1"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" class="pl-sm-24">
+            <mat-label translate #email2>email 2</mat-label>
+            <input (keyup)="preventSpace($event,'contact','email2')" (blur)="trimTextBoxSpaces('contact','email2')"
+              formControlName="email2" matInput>
+            <mat-error>
+              <app-validation [labelName]='email2.innerText' [validationControl]="contact.controls.email2"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div *ngIf="loaded" fxLayout="column" fxLayout.gt-sm="row" fxFlex="100" class="pt-12"
+          fxLayoutAlign="center center">
+          <mat-form-field class="coutline" appearance="outline" fxFlexFill fxLayout="column" fxFlex="100">
+            <mat-label translate #mobileNumber1>mobilenumber</mat-label>
+            <input type="text" required matInput formControlName="mobileTel" ng2TelInput
+              (hasError)="onError($event,'mobileTel')" [ng2TelInputOptions]="telOptions"
+              (ng2TelOutput)="getNumber($event,'mobileTel')"
+              (countryChange)="onCountryChangeMobile($event,'mobileTel')" />
+            <mat-error>
+              <app-validation [labelName]="mobileNumber1.innerText" [validationControl]="contact.controls.mobileTel"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" class="pl-sm-24 coutline">
+            <mat-label translate #mobileNumber2>alternatenumber</mat-label>
+            <input type="text" matInput formControlName="otherTel" ng2TelInput (hasError)="onError($event,'otherTel')"
+              [ng2TelInputOptions]="telOptions" (ng2TelOutput)="getNumber($event,'otherTel')"
+              (countryChange)="onCountryChangeMobile($event,'otherTel')" />
+            <mat-error>
+              <app-validation [labelName]="mobileNumber2.innerText" [validationControl]="contact.controls.otherTel"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div fxLayout="column" fxLayout.gt-sm="row" fxFlex="100" fxLayoutAlign="center center" class="pt-12">
+          <mat-form-field class="coutline" *ngIf="loaded" appearance="outline" fxFlexFill fxLayout="column"
+            fxFlex="100">
+            <mat-label translate #landline>landlinenumber</mat-label>
+            <input type="text" matInput formControlName="landTel" ng2TelInput (hasError)="onError($event,'landTel')"
+              [ng2TelInputOptions]="telOptions" (ng2TelOutput)="getNumber($event,'landTel')"
+              (countryChange)="onCountryChangeMobile($event,'landTel')" />
+            <mat-error>
+              <app-validation [labelName]="landline.innerText" [validationControl]="contact.controls.landTel"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" class="pl-sm-24">
+            <mat-label translate #wesite>website</mat-label>
+            <input (keyup)="preventSpace($event,'contact','website')" (blur)="trimTextBoxSpaces('contact','website')"
+              formControlName="website" matInput>
+            <mat-error>
+              <app-validation [labelName]='wesite.innerText' [validationControl]="contact.controls.website"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div fxLayout="row" fxLayoutAlign="end center" class="mt-sm-20">
+          <button mat-raised-button matStepperPrevious type="button" class="text-uppercase mr-12">
+            {{'Previous' | translate}}
+          </button>
+          <button mat-raised-button matStepperNext type="button" color="accent" class="text-uppercase">
+            {{'Next' | translate}}
+          </button>
+        </div>
+      </form>
+    </mat-step>
+
+    <mat-step [stepControl]="address" [completed]="address.valid">
+      <form fxLayout="column" [formGroup]="address">
+        <ng-template matStepLabel><span translate>Address</span></ng-template>
+        <div class="pt-24 font-size-20" fxLayout="row" fxFlex="100" fxLayoutAlign="start center" translate>Address</div>
+        <div fxLayout="column" class="pt-24" fxLayout.gt-sm="row" fxFlex="100" fxLayoutAlign="center center">
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+            <mat-label translate #addressLine1>Address Line 1</mat-label>
+            <input (keyup)="preventSpace($event,'address','line1')" (blur)="trimTextBoxSpaces('address','line1')" formControlName="line1"
+              matInput required>
+            <mat-error>
+              <app-validation [labelName]='addressLine1.innerText' [validationControl]="address.controls.line1"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50"
+            class="pl-sm-24">
+            <mat-label translate #addressLine2>Address Line 2</mat-label>
+            <input (keyup)="preventSpace($event,'address','line2')" (blur)="trimTextBoxSpaces('address','line2')" formControlName="line2"
+              matInput>
+            <mat-error>
+              <app-validation [labelName]='addressLine2.innerText' [validationControl]="address.controls.line2"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div fxLayout="column" fxLayout.gt-xs="row" fxFlex="100" fxLayoutAlign="center center" class="pt-12">
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+            <mat-label translate #addressLine3>Address Line 3</mat-label>
+            <input (keyup)="preventSpace($event,'address','line3')" (blur)="trimTextBoxSpaces('address','line3')" formControlName="line3"
+              matInput>
+            <mat-error>
+              <app-validation [labelName]='addressLine3.innerText' [validationControl]="address.controls.line3"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50"
+            class="pl-sm-24">
+            <mat-label translate #country>country</mat-label>
+            <mat-select (selectionChange)="countryChanged($event)" matInput required formControlName="countryId"
+              required>
+              <mat-option *ngFor="let country of countryOptionsSelect" [value]="country.id">{{country.name}}
+              </mat-option>
+            </mat-select>
+            <mat-error>
+              <app-validation [labelName]='country.innerText' [validationControl]="address.controls.countryId"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div fxLayout="column" class="pt-12" fxLayout.gt-xs="row" fxFlex="100" fxLayoutAlign="center center">
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+            <mat-label translate #state>state</mat-label>
+            <mat-select matInput formControlName="stateId" required>
+              <mat-option *ngFor="let state of stateOptionsSelect" [value]="state.id">{{state.name}}</mat-option>
+            </mat-select>
+            <mat-error>
+              <app-validation [labelName]='state.innerText' [validationControl]="address.controls.stateId"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50"
+            class="pl-sm-24">
+            <mat-label translate #city>city</mat-label>
+            <input (keyup)="preventSpace($event,'address','city')" (blur)="trimTextBoxSpaces('address','city')" formControlName="city"
+              matInput>
+            <mat-error>
+              <app-validation [labelName]='city.innerText' [validationControl]="address.controls.city"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div fxLayout="column" fxLayout.gt-xs="row" fxFlex="100" fxLayoutAlign="start center" class="pt-12">
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+            <mat-label translate #pincode>pincode</mat-label>
+            <input (keyup)="preventSpace($event, 'address','pincode')" (blur)="trimTextBoxSpaces('address','pincode')"
+              formControlName="pincode" matInput required>
+            <mat-error>
+              <app-validation [labelName]='pincode.innerText' [validationControl]="address.controls.pincode"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="end center" class="mt-sm-20">
+          <button mat-raised-button matStepperPrevious type="button" class="text-uppercase mr-12">
+            {{'Previous' | translate}}
+          </button>
+          <button mat-raised-button matStepperNext type="button" color="accent" class="text-uppercase">
+            {{'Next' | translate}}
+          </button>
+        </div>
+      </form>
+    </mat-step>
+
+    <mat-step [stepControl]="settings">
+      <form fxLayout="column" [formGroup]="settings">
+        <ng-template matStepLabel><span translate>Settings</span></ng-template>
+        <div class="pb-20 font-size-24" fxLayout="row" fxFlex="100" fxLayoutAlign="start center" translate><span translate>Settings</span>
+        </div>
+        <mat-list fxFlex="100" fxLayout="column" class="pt-0 confirm-table edit-settings border ">
+          <mat-list-item fxLayout="row" class="border-bottom">
+            <div fxLayout="column" fxFlex="70"><span translate>Moderate Parent Teacher Messages</span></div>
+            <div fxLayout="column" fxFlex="30" fxLayoutAlign="center center">
+              <mat-slide-toggle (change)="onChange($event,'moderateCommunication')"
+                formControlName="moderateCommunication"></mat-slide-toggle>
+            </div>
+          </mat-list-item>
+          <mat-list-item fxLayout="row">
+            <div fxLayout="column" fxFlex="70"><span translate>Moderate Student Health Records Updates</span></div>
+            <div fxLayout="column" fxFlex="30" fxLayoutAlign="center center">
+              <mat-slide-toggle (change)="onChange($event,'moderateStudentRecordUpdates')"
+                formControlName="moderateStudentRecordUpdates"></mat-slide-toggle>
+            </div>
+          </mat-list-item>
+          <mat-list-item fxLayout="row">
+            <div fxLayout="column" fxFlex="70"><span translate>Moderate Test Schedule Notifications</span></div>
+            <div fxLayout="column" fxFlex="30" fxLayoutAlign="center center">
+              <mat-slide-toggle (change)="onChange($event,'moderateTestNotifications')"
+                formControlName="moderateTestNotifications"></mat-slide-toggle>
+            </div>
+          </mat-list-item>
+          <mat-list-item fxLayout="row">
+            <div fxLayout="column" fxFlex="70"><span translate>Moderate Event Posting Notifications</span></div>
+            <div fxLayout="column" fxFlex="30" fxLayoutAlign="center center">
+              <mat-slide-toggle (change)="onChange($event,'moderateEventNotifications')"
+                formControlName="moderateEventNotifications"></mat-slide-toggle>
+            </div>
+          </mat-list-item>
+          <mat-list-item fxLayout="row">
+            <div fxLayout="column" fxFlex="70"><span translate>Moderate Assignments Notifications</span></div>
+            <div fxLayout="column" fxFlex="30" fxLayoutAlign="center center">
+              <mat-slide-toggle (change)="onChange($event,'moderateAssignmentNotifications')"
+                formControlName="moderateAssignmentNotifications"></mat-slide-toggle>
+            </div>
+          </mat-list-item>
+          <mat-list-item fxLayout="row">
+            <div fxLayout="column" fxFlex="70"><span translate>Online Student Applications</span></div>
+            <div fxLayout="column" fxFlex="30" fxLayoutAlign="center center">
+              <mat-slide-toggle (change)="onChange($event,'allowOnlineStudentApplications')"
+                formControlName="allowOnlineStudentApplications"></mat-slide-toggle>
+            </div>
+          </mat-list-item>
+          <mat-list-item fxLayout="row">
+            <div fxLayout="column" fxFlex="50"><span translate>Date Format</span></div>
+            <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="50" class="pt-16">
+              <mat-label translate #dateFormat>Date Format</mat-label>
+              <mat-select formControlName="dateFormatTypeId" required>
+                <mat-option *ngFor="let format of dateFormats" [value]="format.id">{{format.name}}</mat-option>
+              </mat-select>
+              <mat-error>
+                <app-validation [labelName]='dateFormat.innerText'
+                  [validationControl]="settings.controls.dateFormatTypeId" [doValidate]="validate">
+                </app-validation>
+              </mat-error>
+            </mat-form-field>
+          </mat-list-item>
+
+          <mat-list-item fxLayout="row">
+            <div fxLayout="column" fxFlex="50"><span translate>Name Format</span></div>
+            <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="50" class="pt-16">
+              <mat-label translate #nameFormat>Name Format</mat-label>
+              <mat-select formControlName="personNameFormatTypeId" required>
+                <mat-option *ngFor="let format of nameFormats" [value]="format.id">{{format.name}}</mat-option>
+              </mat-select>
+              <mat-error>
+                <app-validation [labelName]='nameFormat.innerText'
+                  [validationControl]="settings.controls.personNameFormatTypeId" [doValidate]="validate">
+                </app-validation>
+              </mat-error>
+            </mat-form-field>
+          </mat-list-item>
+          <mat-divider></mat-divider>
+          <div fxLayout="row" fxLayoutAlign="end center" class="m-16 py-12">
+            <button class="mr-12 text-uppercase" type="button" mat-raised-button matStepperPrevious>
+              {{'Previous' | translate}}</button>
+            <button mat-raised-button type="submit" class="text-uppercase" color="accent"
+              matStepperNext>{{'Next' | translate}}</button>
+          </div>
+        </mat-list>
+      </form>
+    </mat-step>
+
+    <mat-step [stepControl]="uploadImages" [optional]="true" [completed]="isStepCompleted(uploadImages)">
+      <form fxLayout="column" [formGroup]="uploadImages">
+        <ng-template matStepLabel translate><span translate>Upload Images</span></ng-template>
+        <div class="py-24 font-size-20" fxLayout="row" fxFlex="100" fxLayoutAlign="start center" translate><span translate>Upload Images</span>
+        </div>
+        <div fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="space-between center" class="branding-image">
+          <div fxLayout="column" fxFlex="50" fxLayoutAlign="start center">
+            <div fxLayout="row" fxLayoutAlign="space-between start" class="img-upload">
+              <mat-label class="font-size-18 pr-12">
+                <div translate>School</div>
+                <div><span translate>Symbol Logo</span>:</div>
+              </mat-label>
+              <div>
+                <button mat-raised-button color="primary" type="button"
+                  (click)="logoImgInput.value='';logoImgInput.click()">{{'Upload Image' | translate}}</button>
+                <button mat-icon-button [style.visibility]="logoImgProp?.src ? 'visible' : 'hidden'"
+                  (click)="logoImgInput.value='';clearImages(true)">
+                  <mat-icon class="mb-4 grey-600-fg">highlight_off</mat-icon>
+                </button>
+
+                <input [accept]="'image/*'" id="logoImgInput" (change)="imgChanged(logoImgInput.files,true)" fxHide
+                  type="file" #logoImgInput>
+                <div class="pt-4 primary-300-fg font-size-12">(<span translate>Preferred</span> 1:1)</div>
+                <div class="pt-8 logo-name break-word"
+                  [style.visibility]="uploadImages?.value?.schoolSymbolFileNameWithExtension ? 'visible' : 'hidden'"
+                  [style.display]="logoImgProp?.src ? 'block' : 'none'">
+                  {{uploadImages?.value?.schoolSymbolFileNameWithExtension}}</div>
+              </div>
+            </div>
+          </div>
+          <div fxFlex="50" fxLayout="column" fxLayoutAlign="center center" class="bl-1">
+            <div class="border symbolImage">
+              <img class="radius-5 w-80 h-80" [src]="logoImgProp?.src" *ngIf="logoImgProp?.src" alt="Launchship" />
+            </div>
+          </div>
+          <div fxLayout="column" fxFlex="50" fxLayoutAlign="start center" class="pt-44">
+            <div fxLayout="row" fxLayoutAlign="space-between start" class="img-upload">
+              <mat-label class="font-size-18 pr-12">
+                <div translate>School</div>
+                <div><span translate>Name Logo</span>:</div>
+              </mat-label>
+              <div>
+                <button mat-raised-button color="primary" type="button"
+                  (click)="nameImgInput.value='';nameImgInput.click()">{{'Upload Image' | translate}}</button>
+                <button mat-icon-button [style.visibility]="nameImgProp?.src ? 'visible' : 'hidden'"
+                  (click)="nameImgInput.value='';clearImages()">
+                  <mat-icon class="mb-4 grey-600-fg">highlight_off</mat-icon>
+                </button>
+                <input (change)="imgChanged(nameImgInput.files)" [accept]="'image/*'" fxHide type="file" #nameImgInput>
+                <div class="pt-4 primary-300-fg font-size-12">(<span translate>Preferred</span> 4:1)</div>
+                <!-- {{nameImgProp?.width}}px X {{nameImgProp?.height}}px -->
+                <div class="pt-8 logo-name break-word"
+                  [style.visibility]="uploadImages?.value?.schoolNameFileNameWithExtension ? 'visible' : 'hidden'"
+                  [style.display]="nameImgProp?.src ? 'block' : 'none'">
+                  {{uploadImages?.value?.schoolNameFileNameWithExtension}}</div>
+              </div>
+            </div>
+
+          </div>
+          <div fxFlex="50" fxLayout="column" fxLayoutAlign="start center" class="pt-24 pt-sm-48 bl-1">
+            <div class="border nameImage">
+              <img [src]="nameImgProp?.src" *ngIf="nameImgProp?.src"
+                title="Launchship Technology Solutions Private Limited" alt="Launchship" />
+            </div>
+          </div>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="end center" class="mr-sm-20 py-24 mt-sm-24">
+          <button mat-raised-button matStepperPrevious type="button" class="text-uppercase mr-12">
+            {{'Previous' | translate}}
+          </button>
+          <button mat-raised-button matStepperNext type="button" color="accent" class="text-uppercase">
+            {{'Next' | translate}}
+          </button>
+        </div>
+      </form>
+    </mat-step>
+    <mat-step [stepControl]="sequenceForm" [completed]="stepper.selectedIndex > 6" [optional]="isSequenceOptional(sequenceForm?.value)"
+      *ngIf="isSequenceStepRequired">
+      
+      <form [formGroup]="sequenceForm" (ngSubmit)="onSubmit(sequenceForm,false);onSequenceSubmit(sequenceForm)"
+        #sequenceFormData="ngForm">
+        <ng-template matStepLabel translate><span translate>Sequence Configuration</span></ng-template>
+        <div fxFlexFill fxLayout="column" fxLayout.gt-sm="row" class="pt-24">
+          <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="25">
+            <mat-label #sequenceCategoryId translate>Sequence Category</mat-label>
+            <mat-select formControlName="sequenceCategoryId" required>
+              <mat-option value="option1" *ngFor="let sequencecategorytype of sequenceCategoryTypesdropdown"
+                [value]="sequencecategorytype.id" ngDefaultControl>
+                {{sequencecategorytype.name}}
+              </mat-option>
+            </mat-select>
+
+            <mat-error>
+              <app-validation [labelName]='sequenceCategoryId.innerText'
+                [validationControl]="sequenceForm.controls.sequenceCategoryId" [doValidate]="sequenceFormSubmitted">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" class="px-sm-20"
+            fxFlex.gt-sm="30">
+            <mat-label #sequenceParameterId translate>Sequence Parameter</mat-label>
+            <mat-select formControlName="sequenceParameterId" (selectionChange)="onSequenceSelect($event)"
+              [required]="submitted ? false : true">
+              <mat-option value="option1" *ngFor="let sequenceparameterType of sequnceParameterList"
+                [disabled]="sequenceparameterType.disabled" [value]="sequenceparameterType.value" ngDefaultControl>
+                {{sequenceparameterType.label}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="30">
+            <mat-label #sequencecode translate>{{dynamicPlaceholder | translate}}</mat-label>
+            <input matInput #sequenceCode [required]="sequenceCodeRequired ? true : false"
+              formControlName="sequencecode" (keydown.space)="$event.preventDefault()">
+            <mat-error>
+              <app-validation [labelName]='sequencecode.innerText'
+                [validationControl]="sequenceForm.controls.sequencecode" [doValidate]="'true'">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+
+          <div fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="20" class="w-144">
+            <button mat-raised-button class="mx-12 mt-16 text-uppercase" [disabled]="isValid" type="button"
+              color="accent"
+              (click)="onSequenceYes(sequenceForm.controls.sequenceParameterId.value)">{{'Select' | translate}}</button>
+          </div>
+        </div>
+        <div fxFlexFill fxLayout="column" fxLayout.gt-xs="row" class="pt-12 pt-sm-20">
+          <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100">
+            <mat-label #sequenceformat translate>Sequence Format</mat-label>
+            <input matInput formControlName="sequenceformat" autocomplete="off" readonly required>
+            <mat-error>
+              <span>{{requiredSequence}}</span>
+            </mat-error>
+          </mat-form-field>
+          <div>
+            <button mat-icon-button class="ml-12 mt-16" type="button" (click)="onClearSequenceFormat()">
+              <mat-icon>clear</mat-icon>
+            </button>
+          </div>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="end center" class="pb-24 mr-12">
+          <button mat-raised-button color="primary" class="mr-12 text-uppercase" type="button"
+            (click)="sequenceCancel()">{{'Reset' | translate}}</button>
+          <button mat-raised-button class="text-uppercase" type="submit" color="accent">{{'Add' | translate}}</button>
+        </div>
+      </form>
+      <table class="mat-elevation-z3 simple clickable radius-10 my-20" fxFlex="100">
+        <thead>
+          <tr>
+            <th class="text-left" translate>Sequence Category</th>
+            <th class="text-left" translate>Sequence</th>
+            <th class="text-left" translate>Starting Sequence</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let sequence of sequenceDetails">
+            <td>{{sequence.sequenceCategory}}</td>
+            <td>{{sequence.sequence}}</td>
+            <td>{{sequence.startingSequence}}</td>
+            <td class="text-right py-4"><button mat-icon-button (click)="onSequenceDelete(sequence)">
+                <mat-icon>delete</mat-icon>
+              </button></td>
+          </tr>
+          <tr>
+            <td colspan="4" class="text-center p-24" *ngIf="!sequenceDetails.length">No Data Found</td>
+          </tr>
+        </tbody>
+      </table>
+      <div fxLayout="row" fxLayoutAlign="end center" class="mr-sm-20 py-24 mt-sm-24">
+        <button mat-raised-button matStepperPrevious type="button" class="text-uppercase mr-12">
+          {{'Previous' | translate}}
+        </button>
+        <button mat-raised-button matStepperNext type="submit" color="accent" class="text-uppercase">
+          {{'Next' | translate}}
+        </button>
+      </div>
+    </mat-step>
+
+    <mat-step>
+      <ng-template matStepLabel><span translate>Done</span></ng-template>
+      <div fxFlex="80" class="font-size-20 py-12" translate>confirmInformation</div>
+
+      <mat-list fxLayout.gt-xs="row wrap" fxFlex="100" fxLayout.lt-sm="column"
+        class="institution-details pt-0 confirm-table border btfs">
+
+
+        <mat-list-item fxLayout="column" fxFlex.gt-xs="50">
+          <div fxLayout="row" fxFlex="50"><strong><span translate>School Name</span></strong></div>
+          <div fxLayout="row" fxFlex="50"><span class="pr-4">:</span>{{school?.controls?.name?.value}}</div>
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex.gt-xs="50">
+          <div fxLayout="row" fxFlex="50"><strong><span translate>UI Theme</span></strong></div>
+          <div fxLayout="row" fxFlex="50"><span class="pr-4">:</span> {{getBillingCycle('theme',school.controls?.uiThemeId?.value)}}</div>
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex.gt-xs="50">
+          <div fxLayout="row" fxFlex="50"><strong><span translate>Institution Licence</span></strong></div>
+          <div fxLayout="row" fxFlex="50"> <span class="pr-4">:</span>{{getBillingCycle('licence',school.controls?.licenceId?.value)}}</div>
+        </mat-list-item>
+
+        <mat-list-item *ngIf="currencyTypes?.length" fxLayout="column" fxFlex.gt-xs="50">
+          <div fxLayout="row" fxFlex="50"><strong><span translate>Currency Name</span></strong></div>
+          <div fxLayout="row" fxFlex="50"><span class="pr-4">:</span> {{getBillingCycle('currency',school.controls?.currencyId?.value)}}</div>
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex.gt-xs="50">
+          <div fxLayout="row" fxFlex="50"><strong><span translate>Code</span></strong></div>
+          <div fxLayout="row" fxFlex="50"><span class="pr-4">:</span> {{school.controls?.schoolCode?.value}}</div>
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex.gt-xs="50">
+        </mat-list-item>
+
+        <div fxLayout="column" class="pl-16 py-16 font-size-18 accent-fg border-bottom border-top"
+          *ngIf="boardForm.controls?.schoolBoardViewModel?.value?.length > 1" fxFlex.gt-xs="100">
+          <strong translate>boarddetails</strong>
+        </div>
+
+        <div fxLayout="row" class="pl-16 py-12" fxFlex="100" fxFlexFill
+          *ngFor="let board of boardForm.controls?.schoolBoardViewModel.value | slice:1;let f = first;">
+          <div fxLayout="column" fxFlexFill fxFlex="50"><span><strong><span translate>Board</span></strong>:
+              {{getBillingCycle('board',board?.boardId)}}</span></div>
+          <div fxLayout="column" fxFlexFill fxFlex="50"><span> <strong><span translate>Affiliation Code</span></strong>:
+              {{board?.affiliationCode}}</span></div>
+        </div>
+
+        <!-- <mat-list-item *ngIf="(boardForm.controls?.schoolBoardViewModel.value?.length-1) % 2" fxLayout="column"
+          fxFlex.gt-xs="50">
+        </mat-list-item> -->
+
+        <mat-list-item fxLayout="column" fxFlex.gt-xs="50">
+          <div fxLayout="row" fxFlexFill fxFlex="50" fxLayoutAlign="start"><strong><span
+                translate>Address</span></strong></div>
+          <div fxLayout="row" fxFlex="50"><span class="pr-4">:</span>{{getCustomAddress()}}</div>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex.gt-xs="50" class="two-rows">
+          <div fxLayout="row wrap" fxFlexFill fxFlex="100">
+            <mat-list-item fxLayout="column" fxFlex.gt-xs="100" class="px-16">
+              <div fxLayout="row" fxFlex="50"><strong><span translate>state</span> </strong></div>
+              <div fxLayout="row" fxFlex="50"><span class="pr-4">:</span>{{getBillingCycle('state',address?.controls?.stateId?.value)}}</div>
+            </mat-list-item>
+            <mat-list-item fxLayout="column" fxFlex.gt-xs="100" class="px-16">
+              <div fxLayout="row" fxFlex="50"><strong><span translate>country</span></strong></div>
+              <div fxLayout="row" fxFlex="50">
+                <span class="pr-4">:</span>{{getBillingCycle('country',address?.controls?.countryId?.value)}}</div>
+            </mat-list-item>
+          </div>
+        </mat-list-item>
+        <mat-list-item *ngIf="address?.controls?.city?.value" fxLayout="column" fxFlex.gt-xs="50">
+          <div fxLayout="row" fxFlex="50"><strong><span translate>city</span></strong></div>
+          <div fxLayout="row" fxFlex="50"><span class="pr-4">:</span> {{address?.controls?.city?.value}}</div>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex.gt-xs="50">
+          <div fxLayout="row" fxFlex="50"><strong><span translate>pincode</span></strong></div>
+          <div fxLayout="row" fxFlex="50"><span class="pr-4">:</span> {{address?.controls?.pincode?.value}}</div>
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex.gt-xs="50">
+          <div fxLayout="row" fxFlex="50"><strong><span translate>mobilenumber</span></strong></div>
+          <div fxLayout="row" fxFlex="50"><span class="pr-4">:</span> {{finalMobileNumbers.mobileTel}}</div>
+        </mat-list-item>
+        <mat-list-item *ngIf="contact?.controls?.otherTel?.value" fxLayout="column" fxFlex.gt-xs="50">
+          <div fxLayout="row" fxFlex="50"><strong><span translate>alternatenumber</span></strong></div>
+          <div *ngIf="contact?.controls?.otherTel?.value" fxLayout="row" fxFlex="50"><span class="pr-4">:</span>{{finalMobileNumbers.otherTel}}
+          </div>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" *ngIf="contact?.controls?.landTel?.value" fxFlex.gt-xs="50">
+          <div fxLayout="row" fxFlex="50"><strong><span translate>landlinenumber</span></strong></div>
+          <div fxLayout="row" fxFlex="50"><span class="pr-4">:</span>{{finalMobileNumbers.landTel}}</div>
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex.gt-xs="50">
+          <div fxLayout="row" fxFlex="50"><strong><span translate>email1</span></strong></div>
+          <div fxLayout="row" fxFlex="50"><span class="pr-4">:</span>{{contact?.controls?.email1?.value}}</div>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" *ngIf="contact?.controls?.email2?.value" fxFlex.gt-xs="50">
+          <div fxLayout="row" fxFlex="50"><strong><span translate>email 2</span></strong></div>
+          <div fxLayout="row" fxFlex="50"><span class="pr-4">:</span>{{contact?.controls?.email2?.value}}</div>
+        </mat-list-item>
+
+        <mat-list-item *ngIf="contact?.controls?.website?.value" fxLayout="column" fxFlex.gt-xs="50">
+          <div fxLayout="row" fxFlex="50"><strong><span translate>website</span></strong></div>
+          <div fxLayout="row" fxFlex="50"><span class="pr-4">:</span>{{contact?.controls?.website?.value}}</div>
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex.gt-xs="50">
+          <div fxLayout="row" fxFlex="50"><strong><span translate>Moderate Parent Teacher Messages</span></strong>
+          </div>
+          <div fxLayout="row" fxFlex="50"><span class="pr-4">:</span> {{settings?.controls?.moderateCommunication?.value ?'Yes':'No'}}</div>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex.gt-xs="50">
+          <div fxLayout="row" fxFlex="50"><strong><span translate>Moderate Student Health Records
+                Updates</span></strong></div>
+          <div fxLayout="row" fxFlex="50"><span class="pr-4">:</span> {{settings?.controls?.moderateStudentRecordUpdates?.value ?'Yes':'No'}}</div>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex.gt-xs="50">
+          <div fxLayout="row" fxFlex="50"><strong><span translate>Moderate Test Schedule Notifications</span></strong>
+          </div>
+          <div fxLayout="row" fxFlex="50"><span class="pr-4">:</span> {{settings?.controls?.moderateTestNotifications?.value ?'Yes':'No'}}</div>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex.gt-xs="50">
+          <div fxLayout="row" fxFlex="50"><strong><span translate>Moderate Event Posting Notifications</span></strong>
+          </div>
+          <div fxLayout="row" fxFlex="50"><span class="pr-4">:</span> {{settings?.controls?.moderateEventNotifications?.value ?'Yes':'No'}}</div>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex.gt-xs="50">
+          <div fxLayout="row" fxFlex="50"><strong><span translate>Moderate Assignments Notifications</span></strong>
+          </div>
+          <div fxLayout="row" fxFlex="50"><span class="pr-4">:</span> {{settings?.controls?.moderateAssignmentNotifications?.value ?'Yes':'No'}}
+          </div>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex.gt-xs="50">
+          <div fxLayout="row" fxFlex="50"><strong><span translate>Online Student Applications</span></strong></div>
+          <div fxLayout="row" fxFlex="50"><span class="pr-4">:</span> {{settings?.controls?.allowOnlineStudentApplications?.value ?'Yes':'No'}}
+          </div>
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex.gt-xs="50">
+          <div fxLayout="row" fxFlex="50"><strong><span translate>Date Format</span></strong></div>
+          <div fxLayout="row" fxFlex="50"><span class="pr-4">:</span> {{getBillingCycle('date',settings?.controls?.dateFormatTypeId?.value)}}</div>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex.gt-xs="50">
+          <div fxLayout="row" fxFlex="50"><strong><span translate>Name Format</span></strong></div>
+          <div fxLayout="row" fxFlex="50">
+            <span class="pr-4">:</span>{{getBillingCycle('name',settings?.controls?.personNameFormatTypeId?.value)}}
+          </div>
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex.gt-sm="50" fxFlex="100" class="border-right py-8">
+          <div fxLayout="row" fxFlex="50"><strong><span translate>symbollogo:</span></strong></div>
+          <div fxLayout="row" fxflex="50"><span class="pr-4"></span>
+            <img class="w-60 h-60 primary-bg" [src]="logoImgProp?.src" *ngIf="logoImgProp?.src" alt="Launchship" />
+          </div>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex.gt-sm="50" class="py-8">
+          <div fxLayout="row" fxFlex="50"><strong><span translate>namelogo:</span></strong></div>
+          <div fxLayout="row" fxflex="50"><span class="pr-4"></span>
+            <img class="primary-bg  name-logo" [src]="nameImgProp?.src" *ngIf="nameImgProp?.src" alt="Launchship" />
+          </div>
+        </mat-list-item>
+
+      </mat-list>
+      <div fxLayout="row" fxLayoutAlign="center center" class="mt-32 pt-24">
+        <button mat-raised-button matStepperPrevious type="submit"
+          class="text-uppercase mr-12">{{'Previous' | translate}}</button>
+        <button mat-raised-button type="submit" class="text-uppercase" color="accent"
+          (click)="isUpdateForm ? updatedSchool() : submitSchool()">{{(isUpdateForm ? 'Update' : 'Submit') | translate}}
+        </button>
+      </div>
+    </mat-step>
+  </mat-horizontal-stepper>
+</div>
+<ng-template #success>
+  <div [@animate]="{value:'*',params:{delay:'300ms',x:'-25px'}}"
+    class="mx-sm-48 mt-48 h1 font-weight-800 message-box success" translate fxLayoutAlign="center center" id="success-header">
+    <mat-icon class="mr-4">check_circle</mat-icon>Success
+  </div>
+  <div fxLayout="column" class="mat-elevation-z3 simple-table-container p-24 radius-5 mx-sm-48">
+    <div class="font-size-18 secondary-text text-center" translate>
+      <div class="pb-4"> School has been succesfully created.</div>
+      <div> Would you like to create an Administrative User for the School that you have just created ?</div>
+      <div class="pb-20"> Click Yes to Create a user who can Administer this School or No to go to the School Details.
+      </div>
+    </div>
+    <div fxLayout="row" fxLayoutAlign="end center" class="mt-sm-20">
+      <button mat-raised-button type="button" class="text-uppercase mr-12"
+        [routerLink]="['/manage-school/school-details']" routerLinkActive="router-link-active">
+        <span translate>No</span>
+      </button>
+      <button mat-raised-button type="button" [routerLink]="['/manage-school/school-users/', setSchool.id]"
+        routerLinkActive="router-link-active"
+         class="text-uppercase accent">
+        <span translate>Yes</span>
+      </button>
+    </div>
+  </div>
+</ng-template> 

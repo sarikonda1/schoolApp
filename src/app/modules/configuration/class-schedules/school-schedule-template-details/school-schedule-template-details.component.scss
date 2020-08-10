@@ -1,0 +1,13 @@
+.school-period {
+   // max-width: 788px;
+    overflow-y: auto;
+    overflow: overlay;
+    // .mw-100-p {
+    //     min-width: 100%;
+    //  }
+    .weekDay {
+        position: sticky;
+        left: 0px;
+        z-index: 1;
+    }
+}

@@ -1,0 +1,16 @@
+version: '3'
+services:
+  academyfront-app:
+    image: ${DOCKER_REGISTRY}academyfront-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: academyfront-app
+    networks:
+      - academyfront-web
+    ports:
+      - '80:80'
+      - '443:443'
+networks:
+  academyfront-web:
+    driver: bridge

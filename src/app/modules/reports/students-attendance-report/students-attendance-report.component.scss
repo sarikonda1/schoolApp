@@ -1,0 +1,10 @@
+@import "../common-reports.scss";
+.scroll-table{
+   overflow: auto;
+   overflow: overlay;
+}
+.attendance2 tr th,
+.attendance2 tr td {
+   min-width: 120px;
+}
+

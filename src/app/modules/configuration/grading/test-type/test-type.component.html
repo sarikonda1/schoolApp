@@ -1,0 +1,55 @@
+<app-table  [settings]="tabSettings" (getTableData)='getTableData($event)'
+    (rowBasedAction)='onTableSelect($event)' [templateRef]='addTestTypeTemplate' (deleteAllRows)="deleteAll()"
+     [closeRowForm]='closeAddPanel'
+    (openAddForm)='addRow()' (selectedRows)='selectedRows($event)'></app-table>
+
+<ng-template #addTestTypeTemplate>
+    <form [formGroup]="testTypeForm" (ngSubmit)="onSubmitTestType(testTypeForm)" #userTestTypeForm="ngForm">
+        <div fxFlexFill fxLayout="column" fxLayout.gt-xs="row" class="pt-24">
+            <mat-form-field appearance="outline" fxLayout="column" fxFlex="100">
+                <mat-label #testTypeName translate>Test Type Name</mat-label>
+                <input (keyup)="preventSpace($event,'testTypeForm','name')" matInput formControlName="name" autocomplete="off" required  (blur)="trimTextBoxSpaces('testTypeForm','name')">
+                <mat-error>
+                    <app-validation [labelName]="testTypeName.innerText"
+                        [validationControl]="testTypeForm.controls.name" [doValidate]="isValidate">
+                    </app-validation>
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="pl-sm-20" fxLayout="column" fxFlex="100">
+                <mat-label #testTypeCode translate>Test Type Code</mat-label>
+                <input (keyup)="preventSpace($event,'testTypeForm','code')" matInput formControlName="code" autocomplete="off"  (blur)="trimTextBoxSpaces('testTypeForm','code')">
+                <mat-error>
+                    <app-validation [labelName]="testTypeCode.innerText"
+                        [validationControl]="testTypeForm.controls.code" [doValidate]="isValidate">
+                    </app-validation>
+                </mat-error>
+            </mat-form-field>
+        </div>
+        <div fxFlexFill fxLayout="column" fxLayout.gt-xs="row">
+            <mat-form-field appearance="outline" fxLayout="column" fxFlex="100">
+                <mat-label #questionCount translate>Question Count</mat-label>
+                <input (keyup)="preventSpace($event,'testTypeForm','questionCount')" matInput formControlName="questionCount" autocomplete="off"  (blur)="trimTextBoxSpaces('testTypeForm','questionCount')">
+                <mat-error>
+                    <app-validation [labelName]="questionCount.innerText"
+                        [validationControl]="testTypeForm.controls.questionCount" [doValidate]="isValidate">
+                    </app-validation>
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="pl-sm-20" fxLayout="column" fxFlex="100">
+                <mat-label #marksCount translate>Marks Count</mat-label>
+                <input (keyup)="preventSpace($event,'testTypeForm','marksCount')" matInput formControlName="marksCount" autocomplete="off"  (blur)="trimTextBoxSpaces('testTypeForm','marksCount')">
+                <mat-error>
+                    <app-validation [labelName]="marksCount.innerText"
+                        [validationControl]="testTypeForm.controls.marksCount" [doValidate]="isValidate">
+                    </app-validation>
+                </mat-error>
+            </mat-form-field>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="end center" class="pt-16 pb-8">
+            <button class="mr-12 text-uppercase" mat-raised-button type="button" (click)="closePanel()" translate>
+                {{'Cancel' | translate}}
+            </button>
+            <button [disabled]="disbleSubmitBtn" mat-raised-button type="submit" class="text-uppercase" color="accent">{{(isUpdate ? 'Update':'Create') | translate}}</button>
+        </div>
+    </form>
+</ng-template>

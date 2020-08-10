@@ -1,0 +1,115 @@
+<app-af-details [keyValues]="studentBasicDataView" [title]="'Student Information'" [isBackButtonRequired]=true
+  [header]="'Payment Details'" id="payment-details" [infoKey]="'Payment Details'">
+</app-af-details>
+<span *ngIf="isCorrection">
+  <app-add-edit-payment-correction [isAddCorrection]="isAddCorrection" [paymentId]="paymentId"
+    [paymentCorrectionId]="paymentCorrectionId">
+  </app-add-edit-payment-correction>
+</span>
+<app-af-details [keyValues]="paymentDetails" [title]="'Payment Information'" [actions]="actions"
+  (action)=operations($event)></app-af-details>
+<ng-container>
+
+  <ng-container *ngIf="paymentCorrectionDetails.length">
+    <app-af-details [keyValues]="paymentCorrectionDetails" [title]="'Pending Payment Correction'"
+      [actions]="paymentCorrectionActions" (action)=operations($event)></app-af-details>
+  </ng-container>
+
+  <app-table [settings]="settingTableData" (rowBasedAction)='onRowActions($event)'>
+  </app-table>
+
+
+  <ng-template #approveRejectTemplate>
+    <div *ngIf="!isPaymentLink" fxLayout="column">
+      <form [formGroup]="paymentUpdateForm" fxLayout="column">
+      <mat-label *ngIf="paymentCorrectionStatusModel.isApprove && !isCancelled" translate>Please Confirm to Approve
+        Payment Correction</mat-label>
+      <mat-label *ngIf="!paymentCorrectionStatusModel.isApprove && !isCancelled" translate>Please Confirm to Reject
+        Payment Correction</mat-label>
+      <mat-label *ngIf="isCancelled" translate>Please Confirm to Cancel Payment Correction</mat-label>
+      <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" class="pt-4">
+        <mat-label #reasons translate>Reason</mat-label>
+        <textarea matInput [(ngModel)]="reason" formControlName="reason" (keyup)="preventSpace($event,'paymentUpdateForm','reason')"
+        (blur)="trimTextBoxSpaces('paymentUpdateForm','reason')" [ngModelOptions]="{standalone: true}"></textarea>
+        <mat-error>
+          <app-validation [labelName]="reasons.innerText" [validationControl]="paymentUpdateForm.controls.reason"
+            [doValidate]="isFormValidated">
+          </app-validation>
+        </mat-error>
+      </mat-form-field>
+      <div fxLayout="row" fxLayoutAlign="start center">
+        <div fxFlex="100" fxLayout="column" fxLayoutAlign="end">
+          <div fxLayout="row" fxLayoutAlign="end center">
+            <button type="button" mat-raised-button class="mr-16 text-uppercase"
+              (click)="closePaymentConfirmationForm()">{{'Cancel' | translate}}</button>
+            
+            <button type="submit" mat-raised-button color="accent" class="text-uppercase" (click)="approveRejectPaymentCorrection()"
+              translate>{{(paymentCorrectionStatusModel.isApprove ? 'Approve': isCancelled ? 'Submit' :'Reject') | translate}}</button>
+          </div>
+        </div>
+      </div>
+      </form>
+    </div>
+    <div *ngIf="isPaymentLink" fxLayout="column">
+      <div translate>Operation Successful - Payment Correction has been Approved. Please  
+        <a (click)="newPage()" class="cursor-pointer">Click Here</a> to go to the Corrected Payment Details page</div>
+      <div fxLayoutAlign="end center" class="mt-12">
+        <button type="button" mat-raised-button class="mr-16 text-uppercase"
+        (click)="closeDialog();">{{'Close' | translate}}</button>
+      </div>
+   
+    </div>
+  </ng-template>
+  <ng-template #paymentTemplate>
+    <form [formGroup]="paymentUpdateForm" (ngSubmit)="updatePayment(paymentUpdateForm)" fxLayout="column">
+      <div fxLayout="row" fxLayoutAlign="space-between center">
+        <div class="font-size-18 pb-4">{{isPaymentConfirmed ? 'Confirm Pending Payment': 'Fail Pending Payment' | translate}} </div>
+      </div>
+      <ng-container *ngIf="isPaymentConfirmed">
+        <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex.gt-xs="34" fxFlex="100" class="icon-center">
+          <mat-label #date translate>realizedDate</mat-label>
+          <input matInput (keyup)="forceValidation('realizedDate',paymentUpdateForm)" [matDatepicker]="start_date"
+            required formControlName="realizedDate">
+          <mat-datepicker-toggle matSuffix [for]="start_date"></mat-datepicker-toggle>
+          <mat-datepicker #start_date></mat-datepicker>
+          <mat-error>
+            <app-validation [labelName]="date.innerText" [validationControl]="paymentUpdateForm.controls.realizedDate"
+              [doValidate]="true">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+          <mat-label #referenceNumber translate>Reference Number</mat-label>
+          <input (keyup)="preventSpace($event,'paymentUpdateForm','referenceNumber')" (blur)="trimTextBoxSpaces('paymentUpdateForm','referenceNumber')" formControlName="referenceNumber" matInput required autocomplete="off">
+          <mat-error>
+            <app-validation [labelName]='referenceNumber.innerText'
+              [validationControl]="paymentUpdateForm.controls.referenceNumber" [doValidate]="true">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+      </ng-container>
+
+
+      <mat-form-field appearance="outline" *ngIf="!isPaymentConfirmed">
+        <mat-label #additionalInformation translate>Additional Information</mat-label>
+        <textarea matInput placeholder="Additional Information" formControlName="additionalInformation"
+          (keyup)="preventSpace($event,'paymentUpdateForm','additionalInformation')" (blur)="trimTextBoxSpaces('paymentUpdateForm','additionalInformation')"></textarea>
+        <mat-error>
+          <app-validation [labelName]='additionalInformation.innerText'
+            [validationControl]="paymentUpdateForm.controls.additionalInformation" [doValidate]="true">
+          </app-validation>
+        </mat-error>
+      </mat-form-field>
+
+      <div fxLayout="row" fxLayoutAlign="start center" class="pt-20">
+        <div fxFlex="100" fxLayout="column" fxLayoutAlign="end">
+          <div fxLayout="row" fxLayoutAlign="end center">
+            <button type="button" mat-raised-button class="mr-16"
+              (click)="closePaymentConfirmationForm()">{{'Cancel' | translate}}</button>
+            <button type="submit" mat-raised-button color="accent" translate>{{'Submit' | translate}}</button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </ng-template>

@@ -1,0 +1,14 @@
+@import "../../../@fuse/scss/core";
+.cborder-list{
+    margin-bottom: 20px;
+    .clist-items{
+        // Import Fuse core library
+        border-bottom: $border-style;
+        &:last-child{
+            border-bottom: none;
+        }
+    }
+}
+.bx:first-child{
+    border-top: $border-style;  
+}

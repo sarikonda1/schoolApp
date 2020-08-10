@@ -1,0 +1,39 @@
+<div class="px-sm-40 pt-sm-40">
+  <form [formGroup]="searchForm" (ngSubmit)="searchStaff(searchForm.value)">
+    <div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign="center center">
+      <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="30">
+        <mat-label translate #staffType>StaffType</mat-label>
+        <mat-select formControlName="staffTypeIds">
+          <mat-option *ngFor="let staffType of staffTypes" [value]="staffType.value">
+            {{ staffType.label }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="60" class="px-sm-20">
+        <input #staffName matInput placeholder="{{'Search Staff' | translate}}" formControlName="staffName" aria-label="StaffName"
+          matInput [matAutocomplete]="auto"
+          (keyup)="preventSpace($event,'searchForm','staffName')" 
+          (blur)="trimTextBoxSpaces('searchForm','staffName')"
+          >
+          <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn"
+          (optionSelected)='getSelectedStaff($event.option.value)'>
+          <mat-option *ngFor="let option of filterdStaffs" [value]="option.staffName">
+            {{option.staffName}}
+            <span class="grey-400-fg"> {{option.position}} </span>
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+   
+      <div class="pb-20" fxLayout="row">
+        <button mat-raised-button color="accent" type="submit" class=" text-uppercase mr-12">{{'Search' | translate}}
+          <!-- <mat-icon class="ml-8">search</mat-icon> -->
+        </button>
+        <button mat-raised-button type="button" class="text-uppercase" (click)="onClear(true)">
+          {{'Clear' | translate}}
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
+<app-table [settings]='tableSettings' (getTableData)='tableData($event)' (rowBasedAction)='actions($event)'
+  [closeRowForm]=closeForm (openAddForm)='openForm()' (resetFilter)='onClear()'>
+</app-table>

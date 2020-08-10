@@ -1,0 +1,128 @@
+<div class="simple-table-container radius-t-20 mat-elevation-z8 mx-40 mb-20" *ngIf="communicationList">
+  <div fxLayoutAlign="end center" class="border-bottom p-12 mr-12" *ngIf="ApproveButton || rejectButton">
+    <button id="navButton_1" mat-raised-button color="accent" (click)="approveCommunication()" class="mr-8" *ngIf="ApproveButton" translate>{{'Approve' | translate}}</button>
+    <button id="reject-button" mat-raised-button (click)="rejectCommunication()" *ngIf="rejectButton" translate>{{'Cancel' | translate}}</button>
+  </div>
+  <div fxLayoutAlign="space-between start" class="mb-20 p-12">
+    <mat-list fxLayout="row wrap" fxFlex="55" class="pr-8">
+      <mat-list-item fxLayout="column" fxFlex="35"><span translate>Communication Type</span></mat-list-item>
+      <mat-list-item fxLayout="column" fxFlex="2">:</mat-list-item>
+      <mat-list-item fxLayout="column" fxFlex="60"><div class="break-word">{{communicationList.communicationType}}</div></mat-list-item>
+      <mat-list-item fxLayout="column" fxFlex="35"><span translate>Title</span></mat-list-item>
+      <mat-list-item fxLayout="column" fxFlex="2">:</mat-list-item>
+      <mat-list-item fxLayout="column" fxFlex="60"><div class="break-word">{{communicationList.title}}</div></mat-list-item>
+      <mat-list-item fxLayout="column" fxFlex="35"><span translate>Status</span></mat-list-item>
+      <mat-list-item fxLayout="column" fxFlex="2">:</mat-list-item>
+      <mat-list-item fxLayout="column" fxFlex="60">{{communicationList.status}}</mat-list-item>
+
+      <mat-list-item fxLayout="column" fxFlex="35"><span translate>Created By</span></mat-list-item>
+      <mat-list-item fxLayout="column" fxFlex="2">:</mat-list-item>
+      <mat-list-item fxLayout="column" fxFlex="60"><div class="break-word">{{communicationList.createdBy? (communicationList.createdBy) : "--"}}</div>
+      </mat-list-item>
+
+      <mat-list-item fxLayout="column" fxFlex="35"><span translate>Entry Date</span></mat-list-item>
+      <mat-list-item fxLayout="column" fxFlex="2">:</mat-list-item>
+      <mat-list-item fxLayout="column" fxFlex="60">{{communicationList.entryDate? (communicationList.entryDate): "--"}}
+      </mat-list-item>
+
+      <mat-list-item fxLayout="column" fxFlex="35"><span translate>Approved By</span></mat-list-item>
+      <mat-list-item fxLayout="column" fxFlex="2">:</mat-list-item>
+      <mat-list-item fxLayout="column" fxFlex="60">
+        <div class="break-word"> {{communicationList.approvedBy? (communicationList.approvedBy): "--"}}</div></mat-list-item>
+
+      <mat-list-item fxLayout="column" fxFlex="35"><span translate>Approval Date</span></mat-list-item>
+      <mat-list-item fxLayout="column" fxFlex="2">:</mat-list-item>
+      <mat-list-item fxLayout="column" fxFlex="60">
+        {{communicationList.approvelDate? (communicationList.approvelDate): "--"}}</mat-list-item>
+
+      <mat-list-item fxLayout="column" fxFlex="35"><span translate>Schedule Date & Time</span></mat-list-item>
+      <mat-list-item fxLayout="column" fxFlex="2">:</mat-list-item>
+      <mat-list-item fxLayout="column" fxFlex="60">
+        {{communicationList.scheduleDate? (communicationList.scheduleDate): "--"}}</mat-list-item>
+    </mat-list>
+    <div fxLayout="column" fxFlex="45" class="px-20 pt-12">
+      <div class="h2 text-uppercase" translate>Recipients</div>
+      <mat-list fxLayout="row wrap" fxFlex="100" class="border pt-0 recipients last-border-none mh-350">
+        <mat-list-item fxLayout="column" fxFlex="100" *ngFor="let item of communicationList.reciepents"
+          class="border-bottom">
+          <!-- <div>{{item.name + ' ' + item.admissionNumber + '' +item.staffCode}}</div>
+          <div>{{item.class + ' ' + item.section}}</div> -->
+          <div fxLayout="column" fxFlex="100" class="py-8">
+            <div fxLayout="row">
+              <div class="break-word pr-8" fxFlex="60">{{item.name}}</div> 
+              <div *ngIf="item.admissionNumber != '' " class="break-word" fxFlex="40">{{item.admissionNumber}}</div>
+              <div *ngIf="item.staffCode != '' " class="break-word" fxFlex="40">{{item.staffCode}}</div>
+            </div>
+            <div fxLayout="row">
+              <div class="break-word pr-8" fxFlex="60">{{item.class}}</div> 
+              <div class="break-word" fxFlex="40">{{item.section}}</div>
+            </div>
+          </div>
+                
+        </mat-list-item>
+      </mat-list>
+    </div>
+  </div>
+
+  <div class="p-24 border-top" fxLayout="row wrap"
+    *ngIf="communicationList.emailContent || communicationList.smsContent || communicationList.noticeBoardContent || communicationList.pushMessage">
+    <div fxLayout="column" fxFlex="50" *ngIf="communicationList.emailContent" class="px-12">
+      <div class="mt-16 mb-4" translate>Email Content</div>
+      <div fxLayout="column" class="p-20 border mb-20">
+        <mat-form-field appearance="outline" fxLayout="column" fxFlex="100">
+          <mat-label translate>Subject</mat-label>
+          <input matInput autocomplete="off" [value]="communicationList.emailContent.subject" readonly>
+        </mat-form-field>
+        <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" class="formfield-pb-0">
+          <mat-label translate>Message</mat-label>
+          <textarea matInput autocomplete="off" [value]="nl2br(communicationList.emailContent.message)" readonly></textarea>
+        </mat-form-field>
+        <div fxLayout="column" fxFlex.gt-xs="32" fxFlex="100"
+          *ngIf="communicationList.emailContent.attachment.fileName">
+          <div fxLayout="row" fxLayoutAlign="start center" class="mt-8">
+            <span class="secondary-text pr-20" translate>Attachment :</span> <button mat-button color="accent"
+              (click)="download()">
+              <u>View Attachment</u></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div fxLayout="column" fxFlex="50" class="px-12" *ngIf="communicationList.smsContent">
+      <div class="mt-16 mb-4" translate>SMS Content</div>
+      <div fxLayout="column" class="p-20 border mb-20">
+        <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" class="formfield-pb-0">
+          <mat-label translate>Sms</mat-label>
+          <textarea matInput autocomplete="off" [value]="communicationList.smsContent" readonly></textarea>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div fxLayout="column" fxFlex="50" *ngIf="communicationList.noticeBoardContent" class="px-12">
+      <div class="mt-16 mb-4" translate>Notice Board Content</div>
+      <div fxLayout="column" class="p-20 border mb-20">
+        <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" class="formfield-pb-0">
+          <mat-label translate>Notice Board</mat-label>
+          <textarea matInput autocomplete="off" [value]="communicationList.noticeBoardContent" readonly></textarea>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div fxLayout="column" fxFlex="50" class="px-12" *ngIf="communicationList.pushMessage">
+      <div class="mt-16 mb-4" translate>Push Notification Content</div>
+      <div fxLayout="column" class="p-20 border mb-20">
+        <mat-form-field appearance="outline" fxLayout="column" fxFlex="100">
+          <mat-label translate>Title</mat-label>
+          <input matInput autocomplete="off" [value]="communicationList.pushMessage.title" readonly>
+        </mat-form-field>
+        <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" class="formfield-pb-0">
+          <mat-label translate>Push Notification</mat-label>
+          <textarea matInput autocomplete="off" [value]="communicationList.pushMessage.message" readonly></textarea>
+        </mat-form-field>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-custom-card *ngIf="!communicationList" [inputMessage]="'No Records Found'">
+</app-custom-card>

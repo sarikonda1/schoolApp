@@ -1,0 +1,79 @@
+<app-table [settings]="tabSettings"  (getTableData)='getAllCourses($event)'
+    (rowBasedAction)="rowWiseActions($event)"  [disabled]="disbleSubmitBtn"  [templateRef]="addCourseTemplate" [closeAddForm]="closeAddPanel"
+    (openAddForm)="onAddFormClick()" [closeRowForm]='closeAddPanel'>
+</app-table>
+
+<ng-template #addCourseTemplate>
+    <form [formGroup]="courseForm" #course="ngForm">
+        <div fxFlexFill fxLayout="column" fxLayout.gt-xs="row" class="pt-24">
+            <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex.gt-xs="50" fxFlex="100">
+                <mat-label #coursetypeid translate>coursetype</mat-label>
+                <mat-select formControlName="courseTypeId" required>
+                    <mat-option *ngFor="let courseType of courseTypesdropDown" [value]="courseType.id" >
+                        {{courseType.name}}
+                    </mat-option>
+                </mat-select>
+                <mat-error>
+                    <app-validation [labelName]='coursetypeid.innerText'
+                        [validationControl]="courseForm.controls.courseTypeId" [doValidate]="courseFormSubmitted">
+                    </app-validation>
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field fxFlexFill appearance="outline" class="pl-sm-20" fxLayout="column" fxFlex.gt-xs="50" fxFlex="100">
+                <mat-label #coursename translate>coursename</mat-label>
+                <input (keyup)="preventSpace($event,'courseForm','courseName')" (blur)="trimTextBoxSpaces('courseForm','courseName')" matInput formControlName="courseName" required #focusField>
+                <mat-error>
+                    <app-validation [labelName]='coursename.innerText'
+                        [validationControl]="courseForm.controls.courseName" [doValidate]="courseFormSubmitted">
+                    </app-validation>
+                </mat-error>
+            </mat-form-field>
+
+        </div>
+        <div fxFlexFill fxLayout="column" fxLayout.gt-xs="row">
+            <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex.gt-xs="50" fxFlex="100">
+                <mat-label translate #descriptions>description</mat-label>
+                <input matInput formControlName="description" autocomplete="off" (keyup)="preventSpace($event,'courseForm','description')">
+                <mat-error>
+                    <app-validation [labelName]='descriptions.innerText'
+                        [validationControl]="courseForm.controls.description" [doValidate]="courseFormSubmitted">
+                    </app-validation>
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex.gt-xs="50" fxFlex="100" class="pl-sm-20">
+            <mat-label translate #displayName>displayname</mat-label>
+            <input matInput formControlName="displayName" autocomplete="off" (keyup)="preventSpace($event,'courseForm','displayName')">
+            <mat-error>
+            <app-validation [labelName]='displayName.innerText'
+            [validationControl]="courseForm.controls.displayName" [doValidate]="courseFormSubmitted">
+        </app-validation>
+        </mat-error>
+        </mat-form-field>
+        </div>
+
+      
+
+        <div fxFlexFill fxLayout="column" fxLayout.gt-xs="row">
+            <mat-form-field fxFlexFill appearance="outline" fxLayout="column"
+                fxFlex.gt-xs="50" fxFlex="100">
+                <mat-label translate #code>code</mat-label>
+                <input matInput formControlName="code" autocomplete="off" (keyup)="preventSpace($event,'courseForm','code')">
+                <mat-error>
+                    <app-validation [labelName]='code.innerText'
+                    [validationControl]="courseForm.controls.code" [doValidate]="courseFormSubmitted">
+                </app-validation>
+                </mat-error>
+            </mat-form-field>
+        </div>
+
+        <div fxLayout="row" fxLayoutAlign="end center" class="pt-16 pb-8">
+            <button mat-raised-button class="mr-12 text-uppercase" type="button" (click)="cancel()">{{'cancel' | translate}}</button>
+            <button type="submit" (click)="onSubmit(courseForm)" mat-raised-button class="mr-12 text-uppercase" color="accent" *ngIf="!updateBtn">{{'create' | translate}}</button>
+
+            <button *ngIf="!updateBtn" type="submit" mat-raised-button (click)="onSubmit(courseForm, true);focusField.focus()" class="text-uppercase" color="primary" >{{'Create and Continue' | translate}}</button>
+
+            <button type="submit" (click)="onSubmit(courseForm)" mat-raised-button class="text-uppercase" type="submit" color="accent" *ngIf="updateBtn">{{'Update' | translate}}</button>
+        </div>
+    </form>
+</ng-template>

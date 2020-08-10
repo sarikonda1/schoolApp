@@ -1,0 +1,20 @@
+<!-- <app-table [settings]="tabSettings" (getTableData)='tableData($event)' (rowBasedAction)="rowWiseActions($event)" [templateRef]="addJobApplicationForm"></app-table>
+
+<ng-template #addJobApplicationForm >
+    <div fxLayout="column">
+        <h4 class="text-uppercase pl-12" translate>New Staff Job Application</h4>
+        <app-add-job-applications [resetStepper]="resetStepper" (cancel)="onCancel($event)"></app-add-job-applications>
+    </div>
+   
+</ng-template> -->
+
+
+<app-table [settings]="tabSettings" (getTableData)='tableData($event)' (rowBasedAction)="rowWiseActions($event)"
+    (openAddForm)='openForm()' [closeRowForm]="closeForm" [templateRef]="addJobApplicationFormRef" [matExpansioncustomClass]="true"></app-table>
+
+<ng-template #addJobApplicationFormRef>
+    <div fxLayout="column">
+        <app-add-job-applications (cancel)="onCancel($event)"></app-add-job-applications>
+    </div>
+
+</ng-template>

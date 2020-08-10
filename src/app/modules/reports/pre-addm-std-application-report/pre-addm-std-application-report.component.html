@@ -1,0 +1,67 @@
+<af-filters [inputFilters]="filters" (search)="getPreStudentApplicationReports()"
+    (selectFilterOption)="onSelectFilter($event)" [isDownloadExcelDisabled]="!resultApplicationReports"
+    [isDownloadPdfDisabled]="!resultApplicationReports" [isResetDisabled]="!resultApplicationReports"
+    (resetFilter)="reset()"></af-filters>
+
+<app-custom-card
+    *ngIf="!(filters?.length) && !(resultApplicationReports?.studentApplicationDetailsView?.pendingApplications?.length || resultApplicationReports?.studentApplicationDetailsView?.approvedApplications?.length || resultApplicationReports?.studentApplicationDetailsView?.rejectedApplications?.length)"
+    [inputMessage]="'No Record Found'">
+</app-custom-card>
+
+<div fxLayout="row" fxLayoutAlign="end center" class="px-32 py-12"
+    *ngIf="(resultApplicationReports?.studentApplicationDetailsView?.pendingApplications?.length || resultApplicationReports?.studentApplicationDetailsView?.approvedApplications?.length || resultApplicationReports?.studentApplicationDetailsView?.rejectedApplications?.length)">
+    <button mat-stroked-button class="mr-12" (click)="generateReport('generatePdfReport')">
+        <mat-icon class="mr-4">save_alt</mat-icon>Download PDF
+    </button>
+    <button mat-stroked-button (click)="generateReport('generateExcelReport')">
+        <mat-icon class="mr-4">save_alt</mat-icon> Download EXCEL
+    </button>
+</div>
+<div class='invoice-container' id="admitted-std"
+    *ngIf="(resultApplicationReports?.studentApplicationDetailsView?.pendingApplications?.length || resultApplicationReports?.studentApplicationDetailsView?.approvedApplications?.length || resultApplicationReports?.studentApplicationDetailsView?.rejectedApplications?.length)" style="padding: 25px; padding-top: 0px;">
+    <span class="dark-theme-color" style="color:#fff">A</span>
+    <div class='b flex-d-c invoice-body' style='overflow: hidden; '>
+        <h3 class="text-center text-uppercase">Pre Admission Student Applications Report</h3>
+        <div class="p-10 mb-20 main-title">
+            <div class="left-align">Report Generated On : {{ date }}</div>
+            <div class="right-align flex" *ngIf="acadmicSession">
+                {{acadmicSession?.name}} ({{acadmicSession?.startDate | date: 'MMM d, y'}} -
+                {{acadmicSession?.endDate | date: 'MMM d, y'}})
+            </div>
+        </div>
+        <div style="font-size: 18px;" class="px-20 pt-20"
+            *ngIf="resultApplicationReports?.studentApplicationDetailsView?.pendingApplications?.length > 0">Pending
+            Applications</div>
+        <div *ngIf="resultApplicationReports?.studentApplicationDetailsView?.pendingApplications?.length > 0">
+            <app-af-report-table
+                [inputData]="resultApplicationReports?.studentApplicationDetailsView?.pendingApplications"
+                [tableId]="'pnd-std-app'" [columns]="columns"></app-af-report-table>
+        </div>
+        <div style="font-size: 18px;" class="px-20 pt-20"
+            *ngIf="resultApplicationReports?.studentApplicationDetailsView?.approvedApplications?.length > 0">Approved
+            Applications</div>
+        <div *ngIf="resultApplicationReports?.studentApplicationDetailsView?.approvedApplications?.length > 0">
+            <app-af-report-table
+                [inputData]="resultApplicationReports?.studentApplicationDetailsView?.approvedApplications"
+                [tableId]="'approved-std-app'" [columns]="columns"></app-af-report-table>
+        </div>
+        <div style="font-size: 18px;" class="px-20 pt-20"
+            *ngIf="resultApplicationReports?.studentApplicationDetailsView?.rejectedApplications?.length > 0">Rejected
+            Applications</div>
+        <div *ngIf="resultApplicationReports?.studentApplicationDetailsView?.rejectedApplications?.length > 0">
+            <app-af-report-table
+                [inputData]="resultApplicationReports?.studentApplicationDetailsView?.rejectedApplications"
+                [tableId]="'rejected-std-app'" [columns]="columns"></app-af-report-table>
+        </div>
+        <div class="p-10"
+            *ngIf="(resultApplicationReports?.studentApplicationDetailsView?.pendingApplications?.length || resultApplicationReports?.studentApplicationDetailsView?.approvedApplications?.length || resultApplicationReports?.studentApplicationDetailsView?.rejectedApplications?.length)">
+            <table class="attendance b" *ngIf="applicants">
+                <tr>
+                    <td>
+                        {{applicants}}
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>

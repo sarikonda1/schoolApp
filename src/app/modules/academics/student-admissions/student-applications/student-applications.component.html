@@ -1,0 +1,13 @@
+<app-table [settings]="tableSettings" [closeRowForm]="closeForm" [templateRef]="addEditStudentApplicationFormRef"
+  (getTableData)='tableData($event)' [matExpansioncustomClass]="true" (rowBasedAction)='actions($event)' (openAddForm)='openForm()'>
+</app-table>
+
+<ng-template #addEditStudentApplicationFormRef  >
+    <div fxLayout="column">
+        <!-- <h1 class="text-uppercase pl-12" translate>Student Application</h1> -->
+        <app-add-edit-student-application [resetStepper]="resetStepper" (cancel)="onCancel($event)"></app-add-edit-student-application>
+    </div>
+   
+</ng-template>
+
+

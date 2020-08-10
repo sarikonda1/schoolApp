@@ -1,0 +1,752 @@
+<app-table [matExpansioncustomClass]="true" [settings]="tableSettings" [closeRowForm]=closeForm
+  (getTableData)='filtertableData($event)' [templateRef]="addSyllabus" (rowBasedAction)='actions($event)'
+  (openAddForm)='openForm()'>
+</app-table>
+<ng-template #addSyllabus>
+  <mat-horizontal-stepper class="custom-horizontal-step" [linear]="false" fxLayout="row" fxFlex="100" #stepper
+    (selectionChange)="onSelectionChange($event)">
+    <mat-step [stepControl]="basicInfo" [completed]="stepper?.selectedIndex > 0">
+      <form fxLayout="column" [formGroup]="basicInfo" #infoForm="ngForm">
+        <ng-template matStepLabel><span translate>{{'Basic Information'}}</span>
+        </ng-template>
+        <div class="pt-24 font-size-20" fxLayout="row" fxFlex="100" fxLayoutAlign="start center" translate>Basic Information</div>
+        <div fxLayout="column" fxLayout.gt-sm="row" class="pt-24" fxFlex="100">
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="33">
+            <mat-label translate #board>Board</mat-label>
+            <mat-select (selectionChange)="boardOrClassChanged($event)" formControlName="schoolBoardId" required>
+              <mat-option *ngFor="let board of schoolBoardList" [value]="board.value">{{board.label}}</mat-option>
+            </mat-select>
+            <mat-error>
+              <app-validation [labelName]='board.innerText' [validationControl]="basicInfo.controls.schoolBoardId"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="36"
+            class="px-sm-16">
+            <mat-label translate #class>Class</mat-label>
+            <mat-select (selectionChange)="boardOrClassChanged($event)" formControlName="classId" required>
+              <mat-option *ngFor="let class of schoolClassesList" [value]="class.value">{{class.label}}</mat-option>
+            </mat-select>
+            <mat-error>
+              <app-validation [labelName]='class.innerText' [validationControl]="basicInfo.controls.classId"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="33">
+            <mat-label translate #course>Course</mat-label>
+            <mat-select (selectionChange)="courseChanged($event)" formControlName="courseId" required>
+              <mat-option *ngFor="let course of coursesList" [value]="course.value">{{course.label}}</mat-option>
+            </mat-select>
+            <mat-error>
+              <app-validation [labelName]='course.innerText' [validationControl]="basicInfo.controls.courseId"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div fxLayout="row" class="pt-12 pl-4" fxFlex="100" >
+          <span translate>Based on your selection of Board, Class and Course, you may choose a pre-defined Syllabaus from the following
+          available options.</span>
+        </div>
+        <div fxLayout="row" class="pt-12" fxFlex="100">
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+            <mat-label translate #boardSyllabus>Board Syllabus</mat-label>
+            <mat-select [disabled]="syllabusEryId" formControlName="boardSyllabusId">
+              <mat-option *ngFor="let syllabus of boardSyllabusList" [value]="syllabus.id">{{syllabus.name}}
+              </mat-option>
+            </mat-select>
+            <mat-error>
+              <app-validation [labelName]='boardSyllabus.innerText'
+                [validationControl]="basicInfo.controls.boardSyllabusId" [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div fxLayout="row" class="pt-12 pl-4" fxFlex="100" >
+         <span translate>Please enter an optional Name and Code for this Syllabus Configuration</span> 
+        </div>
+        <div fxLayout="column" fxLayout.gt-sm="row" class="pt-12" fxFlex="100">
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="55"
+            class="pr-sm-16">
+            <mat-label #name translate>Name</mat-label>
+            <input 
+            (keyup)="preventSpace($event,'basicInfo','name')" (blur)="trimTextBoxSpaces('basicInfo','name')"
+             formControlName="name"
+              matInput>
+            <mat-error>
+              <app-validation [labelName]='name.innerText' [validationControl]="basicInfo.controls.name"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="30"
+            class="pr-sm-16">
+            <mat-label translate #code>Code</mat-label>
+            <input (keyup)="preventSpace($event,'basicInfo','code')" (blur)="trimTextBoxSpaces('basicInfo','code')"
+             formControlName="code"
+              matInput>
+            <mat-error>
+              <app-validation [labelName]='code.innerText' [validationControl]="basicInfo.controls.code"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <div fxFlexFill fxLayout="column" class="pt-12" fxFlex="100" fxFlex.gt-sm="1 1 0">
+            <div fxLayout="row">
+              <button mat-raised-button color="primary" type="button"
+                (click)="syllabus_attachment.value='';syllabus_attachment.click()">
+                <mat-icon>attach_file</mat-icon>{{'Upload Attachment' | translate}}
+              </button>
+            </div>
+            <input [accept]="AcceptImagesApplicationType" #syllabus_attachment id="syllabus_attachment"
+              (change)="imgChanged(syllabus_attachment.files,'syllabus')" fxHide type="file" #fatherImage>
+            <div class="pl-4 logo-name" fxLayoutAlign="center center"
+              [style.visibility]="basicInfo?.value?.attachment?.fileName ? 'visible' : 'hidden'">
+              <!-- <span>{{basicInfo?.value?.attachment?.fileName}} </span> -->
+              <ng-template *ngTemplateOutlet="imageName;context:{attachment: basicInfo?.value?.attachment}">
+              </ng-template>
+              <button (click)="removeAttachment('syllabus')" mat-icon-button type="button" class="ml-8 red-300-fg">
+                <mat-icon>cancel</mat-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="end center" class="mt-16">
+          <button mat-raised-button id="reset-button" (click)="onCancel()" type="reset" class="text-uppercase mr-12">
+            {{'Cancel' | translate}}
+          </button>
+          <button mat-raised-button color="accent" class="text-uppercase" (click)="onCreateSyllabus()">
+            <span translate>{{syllabusEryId ? 'Update' : 'Save & Continue'}}</span>
+          </button>
+        </div>
+      </form>
+    </mat-step>
+    <mat-step [aria-labelledby]="syllabusEryId ? null : 'disabled_Resi'" [stepControl]="chaptersInfo"
+      [completed]="isStepComplete(1)">
+      <form fxLayout="column" [formGroup]="chaptersInfo" #chapterForm="ngForm">
+        <ng-template matStepLabel><span translate >{{'Syllabus Chapters'}}</span>
+        </ng-template>
+        <div class="pt-24 font-size-20" fxLayout="row" fxFlex="100" fxLayoutAlign="start center" translate>Syllabus Chapters</div>
+        <div id="chapter-form" fxLayout="column" fxLayout.gt-sm="row" class="pt-12 pl-4" fxFlex="100" translate>
+          <span translate>Please enter the chapters to be covered in this syllabus.</span> 
+        </div>
+        <div fxLayout="column" fxLayout.gt-sm="row" class="pt-12" fxFlex="100">
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="55"
+            class="pr-sm-16">
+            <mat-label #chapterName translate>Chapter</mat-label>
+            <input (keyup)="preventSpace($event,'chaptersInfo','name')" (blur)="trimTextBoxSpaces('chaptersInfo','name')"
+              formControlName="name" required matInput>
+            <mat-error>
+              <app-validation [labelName]='chapterName.innerText' [validationControl]="chaptersInfo.controls.name"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="30"
+            class="pr-sm-16">
+            <mat-label #chaptercode translate>Code</mat-label>
+            <input (keyup)="preventSpace($event,'chaptersInfo','code')" (blur)="trimTextBoxSpaces('chaptersInfo','code')"
+              formControlName="code" matInput>
+            <mat-error>
+              <app-validation [labelName]='chaptercode.innerText' [validationControl]="chaptersInfo.controls.code"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <div fxLayout="row" fxFlex="100" fxFlex.gt-sm="1 1 0" class="pt-12">
+            <div fxLayout="column">
+              <div fxLayout="row">
+                <button mat-raised-button color="primary" type="button"
+                  (click)="syllabus_chapters.value='';syllabus_chapters.click()">
+                  <mat-icon>attach_file</mat-icon>{{'Upload Attachment' | translate}}
+                </button>
+              </div>
+              <input [accept]="AcceptImagesApplicationType" #syllabus_chapters id="syllabus_chapters"
+                (change)="imgChanged(syllabus_chapters.files,'chapters')" fxHide type="file" #fatherImage>
+              <div fxLayoutAlign="center center"
+                [style.visibility]="chaptersInfo?.value?.attachment?.fileName ? 'visible' : 'hidden'" class="logo-name">
+                <ng-template *ngTemplateOutlet="imageName;context:{attachment: chaptersInfo?.value?.attachment}">
+                </ng-template>
+                <button (click)="removeAttachment('chapters')" mat-icon-button type="button" class="ml-8 red-300-fg">
+                  <mat-icon>cancel</mat-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div fxLayout="row" class="pt-12" fxFlex="100" fxLayoutAlign="end center">
+          <button [disabled]="disableAllDataAdding" mat-raised-button (click)="addChapter()" type="submit"
+            color="accent" class="text-uppercase">
+            <span translate>{{isNumber(chaptersInfo?.value?.chapterIndex) ? 'Update' : 'Select'}}</span> 
+          </button>
+          <button mat-raised-button color="primary" (click)="resetChapters()" type="reset" class="text-uppercase ml-4">
+            {{'Clear' | translate}}
+          </button>
+        </div>
+        <div *ngIf="disableAllDataAdding" class="message-box error" translate>{{checkPointsMsg}}</div>
+        <div fxLayout="column" *ngIf="syllabusList?.length">
+          <div class="font-size-18 pt-20 pb-12" translate>Selected Chapters</div>
+          <div [cdkDropListData]="syllabusList" cdkDropList class="dragdrop border w-500-px"
+            (cdkDropListDropped)="drop($event, 'chapter')">
+            <div [cdkDragDisabled]="disableAllDataAdding" class="drag-box border-bottom p-12 white" fxLayout="row"
+              fxLayoutAlign="start center" *ngFor="let chapter of syllabusList; let i = index" cdkDrag
+              [cdkDragData]="chapter" (click)="onClickChapter(chapter, i)">
+              <div fxFlex="30" class="pr-12">
+                <span class="break-word">{{chapter?.name}}</span> <span *ngIf="chapter?.code"
+                  class="secondary-text pr-20">({{chapter?.code}})</span>
+              </div>
+              <ng-template *ngTemplateOutlet="imageName;context:{attachment: chapter?.attachment}"></ng-template>
+              <div fxFlex="10">
+                <button type="button" [disabled]="disableAllDataAdding" mat-icon-button
+                  (click)="removeChapter(chapter, i);$event.stopPropagation()">
+                  <mat-icon class="red-300-fg">delete</mat-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div fxLayout="row" fxLayoutAlign="end center" class="mt-24">
+          <button mat-raised-button matStepperPrevious type="button" class="text-uppercase mr-12">
+            {{'Previous' | translate}}
+          </button>
+          <button [disabled]="disableAllDataAdding" mat-raised-button (click)="onChaptersCreate()" type="button"
+            color="accent" class="text-uppercase">
+            <span translate>{{ isCurrentStepIsUpdate ? 'Update' : 'Save & Continue'}}</span>
+          </button>
+        </div>
+      </form>
+    </mat-step>
+
+    <mat-step [aria-labelledby]="syllabusEryId ? null : 'disabled_Resi'" [stepControl]="topics"
+    [completed]="isStepComplete(2)">
+      <form fxLayout="column" [formGroup]="topics" #topicsForm="ngForm">
+        <ng-template matStepLabel><span translate>{{'Chapter Topics'}}</span>
+        </ng-template>
+        <div class="pt-24 font-size-20" fxLayout="row" fxFlex="100" fxLayoutAlign="start center" translate>Chapter Topics</div>
+        <div id="topics-form" fxLayout="column" fxLayout.gt-sm="row" class="pt-12 pl-4" fxFlex="100">
+          <span translate>Please enter the Topics in each Chapter or Topic directly to the syllabus.</span>
+        </div>
+        <div fxLayout="column" fxLayout.gt-sm="row" class="pt-12" fxFlex="100">
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+            <mat-label #chapterTopicName translate>Chapter</mat-label>
+            <mat-select [disabled]="isNumber(topics.value.chapterIndex)" formControlName="syllabusChapterId">
+              <mat-option [value]="null" *ngIf="syllabusList.length"></mat-option>
+              <mat-option *ngFor="let chapter of syllabusList" [style.display]="chapter.id ? '' : 'none'"
+                [value]="chapter.id">{{chapter.name}}</mat-option>
+            </mat-select>
+            <mat-error>
+              <app-validation [labelName]='chapterTopicName.innerText'
+                [validationControl]="topics.controls.syllabusChapterId" [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50"
+            class="pl-sm-16">
+            <mat-label #topicName translate>Topic</mat-label>
+            <input (keyup)="preventSpace($event,'topics','name')" (blur)="trimTextBoxSpaces('topics','name')" formControlName="name"
+              required matInput>
+            <mat-error>
+              <app-validation [labelName]='topicName.innerText' [validationControl]="topics.controls.name"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div fxLayout="column" fxLayout.gt-sm="row" class="py-12" fxFlex="100">
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="30">
+            <mat-label #TopicCode translate>Code</mat-label>
+            <input formControlName="code" matInput (keyup)="preventSpace($event, 'topics','code')"
+              (blur)="trimTextBoxSpaces('topics','code')">
+            <mat-error>
+              <app-validation [labelName]='TopicCode.innerText' [validationControl]="topics.controls.code"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <div fxLayout="row" class="pt-12 pl-sm-16" fxFlex="100" fxFlex.gt-sm="70">
+            <div fxLayout="column">
+              <div fxLayout="row">
+                <button mat-raised-button color="primary" type="button"
+                  (click)="chapters_topics.value='';chapters_topics.click()">
+                  <mat-icon>attach_file</mat-icon>{{'Upload Attachment' | translate}}
+                </button>
+              </div>
+              <input [accept]="AcceptImagesApplicationType" #chapters_topics id="chapters_topics"
+                (change)="imgChanged(chapters_topics.files,'topics')" fxHide type="file">
+              <div [style.visibility]="topics?.value?.attachment?.fileName ? 'visible' : 'hidden'"
+                fxLayoutAlign="center center" class="logo-name">
+                <ng-template *ngTemplateOutlet="imageName;context:{attachment: topics?.value?.attachment}">
+                </ng-template>
+                <button (click)="removeAttachment('topics')" mat-icon-button type="button" class="ml-8 red-300-fg">
+                  <mat-icon>cancel</mat-icon>
+                </button>
+              </div>
+            </div>
+            <div fxLayout="column" class="pl-12">
+              <div>
+                <button [disabled]="disableAllDataAdding" class mat-raised-button (click)="addTopic()" type="submit"
+                  color="accent" class="text-uppercase">
+                  <span translate>{{isNumber(topics.value.chapterIndex) ? 'Update' : 'Select'}}</span> 
+                </button>
+                <button class mat-raised-button color="primary" (click)="resetTopics()" type="reset"
+                  class="text-uppercase ml-8">
+                  {{'Clear' | translate}}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="disableAllDataAdding" class="message-box error" translate>{{checkPointsMsg}}</div>
+        <table mat-table [dataSource]="dataSource" *ngIf="topicsGridList?.length" class="border w-100-p">
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef class="font-size-16"><strong translate>Chapter</strong></th>
+            <td mat-cell *matCellDef="let element" class="pr-4 w-180 break-word">
+              <span>{{element.name ? element.name : '(No Chapter)'}} </span></td>
+          </ng-container>
+          <ng-container matColumnDef="topics" cdkDropListGroup>
+            <th mat-header-cell *matHeaderCellDef class="font-size-16"><strong translate>Topics</strong></th>
+            <td mat-cell *matCellDef="let element; let i = index" class="pr-0">
+              <div cdkDropList class="dragdrop" [cdkDropListData]="element.topics"
+                (cdkDropListDropped)="drop($event, 'topics')">
+                <div [cdkDragDisabled]="disableAllDataAdding" class="drag-box border-bottom border-left p-4 white"
+                  fxLayout="row" cdkDrag
+                  *ngFor="let item of element.topics;let topicIndex = index"
+                  (click)="onClickTopic(item, i, topicIndex)">
+                  <div fxLayout="row" fxFlex="100">
+                    <span class="pr-12 break-word" fxFlex="30">{{item.name}}<span class="secondary-text pl-4"
+                        *ngIf="item?.code">({{item.code}})</span></span>
+                    <ng-template *ngTemplateOutlet="imageName;context:{attachment: item.attachment}"></ng-template>
+                  </div>
+                  <button type="button" [disabled]="disableAllDataAdding" mat-icon-button
+                    (click)="removeTopic(item, i, topicIndex);$event.stopPropagation()">
+                    <mat-icon class="red-300-fg">delete</mat-icon>
+                  </button>
+                </div>
+              </div>
+            </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="topicsDisplayedColumns"></tr>
+          <tr mat-row [ngClass]="{ 'hide-row': !row?.topics?.length }"
+            *matRowDef="let row; columns: topicsDisplayedColumns;"></tr>
+        </table>
+
+        <div fxLayout="row" fxLayoutAlign="end center" class="mt-24">
+          <button mat-raised-button matStepperPrevious type="button" class="text-uppercase mr-12">
+            {{'Previous' | translate}}
+          </button>
+          <button [disabled]="disableAllDataAdding" mat-raised-button (click)="onSaveTopics()" type="button"
+            color="accent" class="text-uppercase">
+            <span translate>{{isCurrentStepIsUpdate ? 'Update' : 'Save & Continue'}}</span> 
+          </button>
+        </div>
+      </form>
+    </mat-step>
+    <mat-step
+      [aria-labelledby]="isStepEnable() ? null : 'disabled_Resi'"
+      [stepControl]="subTopics" [completed]="isStepComplete(3)">
+      <form fxLayout="column" [formGroup]="subTopics" #subTopicForm="ngForm">
+        <ng-template matStepLabel><span translate>{{'Sub Topics'}}</span>
+        </ng-template>
+        <div class="pt-24 font-size-20" fxLayout="row" fxFlex="100" fxLayoutAlign="start center" translate>Sub Topics</div>
+        <div id="sub-topic-form" fxLayout="column" fxLayout.gt-sm="row" class="pt-12 pl-4" fxFlex="100">
+         <span translate>Please enter the Sub-Topics for each Chapter-Topic or Topic.</span> 
+        </div>
+        <div fxLayout="column" fxLayout.gt-sm="row" class="pt-24" fxFlex="100">
+          <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+            <mat-label #chapterTopicName translate>Chapter</mat-label>
+            <mat-select [disabled]="isNumber(subTopics.value.subTopicIndex)"
+              (selectionChange)="getTopicsBasedOnChapter($event.value)" formControlName="syllabusChapterId">
+              <mat-option [value]="null" *ngIf="syllabusList.length"></mat-option>
+              <mat-option *ngFor="let chapter of syllabusList" [style.display]="chapter.id ? '' : 'none'"
+                [value]="chapter.id">{{chapter.name}}</mat-option>
+            </mat-select>
+            <mat-error>
+              <app-validation [labelName]='chapterTopicName.innerText'
+                [validationControl]="subTopics.controls.syllabusChapterId" [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" class="pl-sm-16">
+            <mat-label #chapterTopicName translate>Topic</mat-label>
+            <mat-select [disabled]="isNumber(subTopics.value.subTopicIndex)" required formControlName="syllabusTopicId">
+              <mat-option *ngFor="let topic of topicsList" [value]="topic.id">
+                {{topic.name}}</mat-option>
+            </mat-select>
+            <mat-error>
+              <app-validation [labelName]='chapterTopicName.innerText'
+                [validationControl]="subTopics.controls.syllabusTopicId" [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+
+
+        <div fxLayout="column" fxLayout.gt-sm="row" class="pt-12" fxFlex="100">
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="45">
+            <mat-label #subTopicName translate>Sub Topic</mat-label>
+            <input (keyup)="preventSpace($event,'subTopics','name')" (blur)="trimTextBoxSpaces('subTopics','name')" formControlName="name"
+              required matInput>
+            <mat-error>
+              <app-validation [labelName]='subTopicName.innerText' [validationControl]="subTopics.controls.name"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="20"
+            class="pl-sm-20">
+            <mat-label #subTopicCode translate>Code</mat-label>
+            <input (keyup)="preventSpace($event,'subTopics','code')" (blur)="trimTextBoxSpaces('subTopics','code')" formControlName="code"
+              matInput>
+            <mat-error>
+              <app-validation [labelName]='subTopicCode.innerText' [validationControl]="subTopics.controls.code"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <div fxLayout="row" fxFlex="100" fxFlex.gt-sm="1 1 0" class="pt-12 pl-sm-16">
+            <div fxLayout="column">
+              <div fxLayout="row">
+                <button mat-raised-button color="primary" type="button"
+                  (click)="sub_topics.value='';sub_topics.click()">
+                  <mat-icon>attach_file</mat-icon>{{'Upload Attachment' | translate}}
+                </button>
+              </div>
+              <input [accept]="AcceptImagesApplicationType" #sub_topics id="sub_topics"
+                (change)="imgChanged(sub_topics.files,'subTopics')" fxHide type="file">
+              <div [style.visibility]="subTopics?.value?.attachment?.fileName ? 'visible' : 'hidden'" class="name=logo"
+                fxLayoutAlign="center center">
+                <ng-template *ngTemplateOutlet="imageName;context:{attachment: subTopics?.value?.attachment}">
+                </ng-template>
+                <button (click)="removeAttachment('subTopics')" mat-icon-button type="button" class="ml-8 red-300-fg">
+                  <mat-icon>cancel</mat-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="disableAllDataAdding" class="message-box error" translate>{{checkPointsMsg}}</div>
+        <div fxLayout="row" class="pt-12" fxFlex="100" fxLayoutAlign="end center">
+          <div class="pl-12">
+            <button [disabled]="disableAllDataAdding" mat-raised-button (click)="addSubTopic()" type="submit"
+              color="accent" class="text-uppercase">
+              <span translate>{{isNumber(subTopics.value.subTopicIndex) ? 'Update' : 'Select'}}</span> 
+            </button>
+            <button mat-raised-button (click)="getTopicsBasedOnChapter();resetSubTopics()" color="primary" type="reset"
+              class="text-uppercase ml-8">
+              {{'Clear' | translate}}
+            </button>
+          </div>
+        </div>
+        <table mat-table [dataSource]="supTopicsTableData" *ngIf="subTopicsList?.length" class="border mt-20 w-100-p">
+          <ng-container matColumnDef="chapterName">
+            <th mat-header-cell *matHeaderCellDef class="font-size-16 text-left"><strong translate>Chapter</strong></th>
+            <td mat-cell *matCellDef="let element; let i = index" class="pr-4 w-20-p break-word" [attr.rowspan]="getRowsSpan(element, i)" [style.display]="getRowsSpan(element, i) ? '' : 'none'">
+              <span>{{element.chapterName ? element.chapterName : '(No Chapter)'}}</span></td>
+          </ng-container>
+          <ng-container matColumnDef="topicName">
+            <th mat-header-cell *matHeaderCellDef class="font-size-16 text-left"><strong translate>Topic</strong></th>
+            <td mat-cell *matCellDef="let element" class="pr-4 w-20-p break-word border-left p-4 white">
+              <span>{{element.topicName}}</span></td>
+          </ng-container>
+          <ng-container matColumnDef="subTopics" cdkDropListGroup>
+            <th mat-header-cell *matHeaderCellDef class="font-size-16"><strong translate>Sub Topics</strong></th>
+            <td mat-cell *matCellDef="let element; let i = index">
+              <div cdkDropList class="dragdrop" [cdkDropListData]="element.subTopics"
+                (cdkDropListDropped)="drop($event, 'subTopics')">
+                <div [cdkDragDisabled]="disableAllDataAdding" class="drag-box border-bottom border-left p-4 white"
+                  fxLayout="row" fxLayoutAlign="space-between center" cdkDrag
+                  *ngFor="let item of element.subTopics;let subIndex = index"
+                  (click)="onClickSubTopic(element, item, i, subIndex)">
+                  <div fxLayout="row" fxFlex="100"><span class="pr-12 break-word">{{item.name}}<span class="secondary-text pl-4"
+                        *ngIf="item?.code">({{item.code}})</span></span>
+                    <ng-template *ngTemplateOutlet="imageName;context:{attachment: item.attachment}"></ng-template>
+                  </div>
+                  <button type="button" [disabled]="disableAllDataAdding" mat-icon-button
+                    (click)="removeSubTopic(item, i, subIndex);$event.stopPropagation()">
+                    <mat-icon class="red-300-fg">delete</mat-icon>
+                  </button>
+                </div>
+              </div>
+
+            </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="subTopicsDisplayedColumns"></tr>
+          <tr mat-row [ngClass]="{ 'hide-row': !row?.subTopics?.length }"
+            *matRowDef="let row; columns: subTopicsDisplayedColumns;"></tr>
+        </table>
+
+        <div fxLayout="row" fxLayoutAlign="end center" class="mt-16">
+          <button mat-raised-button matStepperPrevious type="button" class="text-uppercase mr-12">
+            {{'Previous' | translate}}
+          </button>
+          <button [disabled]="disableAllDataAdding" mat-raised-button (click)="onSaveSubTopics()" type="button"
+            color="accent" class="text-uppercase">
+            <span translate>{{isCurrentStepIsUpdate ? 'Update' : 'Save & Continue'}}</span> 
+          </button>
+        </div>
+      </form>
+    </mat-step>
+
+    <mat-step
+      [aria-labelledby]="isStepEnable() ? null : 'disabled_Resi'"
+      [stepControl]="checkPoints" [completed]="isStepComplete(4)">
+      <form fxLayout="column" [formGroup]="checkPoints">
+        <ng-template matStepLabel><span translate>{{'Check Points (Tests)'}}</span>
+        </ng-template>
+        <div class="pt-24 font-size-20" fxLayout="row" fxFlex="100" fxLayoutAlign="start center" translate>Check Points (Tests)</div>
+        <div fxLayout="column" class="pt-12 secondary-text" fxLayoutAlign="center center">
+          <div>
+            <span translate>You may create check points to assess the progress by defing Tests at various steps in the syllabus.</span> 
+          </div>
+          <div class="py-12" translate>
+            <span translate>This is an optional configuration that will allow you to define different Tests that may be conducted for the classess that this syllabus is assigned to.</span> 
+          </div>
+          <div translate>
+           <span translate>Would you like to define Tests that will be conducted at various stage of the syllabus ?</span> 
+          </div>
+        </div>
+
+
+        <div fxLayout="column" class="pt-24" fxFlex="100" fxLayoutAlign="center center">
+          <span translate>
+            If Yes, you will be able to record the various type of tets that may be conducted by the school on
+            completion
+            of the slected topics from the syllabus.
+          </span>
+          <mat-radio-group aria-label="Select an option" formControlName="checkPoint"
+            (change)="onChangeCheckPoint($event.value)">
+            <mat-radio-button [value]="true">Yes</mat-radio-button>
+            <mat-radio-button [value]="false" class="pl-20">No</mat-radio-button>
+          </mat-radio-group>
+        </div>
+        <div *ngIf="checkPoints.value.checkPoint && checkPointsList?.length" class="pt-20" >
+         <span translate>Please Add the check Point (Test) using the menu option at the desired steps in the table below</span> 
+        </div>
+        <ng-template *ngTemplateOutlet="tablewithCheckPoints;context:{isCompleteStep: false}"></ng-template>
+        <div fxLayout="row" fxLayoutAlign="end center" class="mt-16">
+          <button mat-raised-button matStepperPrevious type="button" class="text-uppercase mr-12">
+            {{'Previous' | translate}}
+          </button>
+          <button matStepperNext mat-raised-button type="button" color="accent" class="text-uppercase">
+            {{'Next' | translate}}
+          </button>
+        </div>
+      </form>
+    </mat-step>
+
+    <mat-step
+      [aria-labelledby]="isStepEnable() ? null : 'disabled_Resi'"
+      [stepControl]="completeData" [completed]="isStepComplete(5)">
+      <form fxLayout="column" [formGroup]="completeData">
+        <ng-template matStepLabel><span translate>{{'Complete Details'}}</span>
+        </ng-template>
+        <div class="pt-24 font-size-20" fxLayout="row" fxFlex="100" fxLayoutAlign="start center" translate>Complete Details</div>
+        <div class="pt-24" id="last-step" ><span translate>Summary of the syllabus information saved in the system.</span> </div>
+
+        <div fxLayout="column" fxLayout.gt-sm="row" class="pt-12" fxFlex="100">
+          <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="25" class="pr-sm-12">
+            <mat-label translate>Board</mat-label>
+            <mat-select disabled formControlName="schoolBoardId" required>
+              <mat-option *ngFor="let board of schoolBoardList" [value]="board.value">{{board.label}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="25" class="pr-sm-12">
+            <mat-label translate>Class</mat-label>
+            <mat-select disabled formControlName="classId" required>
+              <mat-option *ngFor="let class of schoolClassesList" [value]="class.value">{{class.label}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+            <mat-label translate>Course</mat-label>
+            <mat-select disabled formControlName="courseId" required>
+              <mat-option *ngFor="let course of coursesList" [value]="course.value">{{course.label}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div fxLayout="column" fxLayout.gt-sm="row" class="pt-12" fxFlex="100" translate>
+          <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" class="pr-sm-12">
+            <mat-label #name translate>Name</mat-label>
+            <input [readonly]="true" formControlName="name" matInput>
+            <mat-error>
+              <app-validation [labelName]='name.innerText' [validationControl]="completeData.controls.name"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+            <mat-label translate #code>Code</mat-label>
+            <input [readonly]="true" formControlName="code" matInput>
+            <mat-error>
+              <app-validation [labelName]='code.innerText' [validationControl]="completeData.controls.code"
+                [doValidate]="validate">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <ng-template *ngTemplateOutlet="tablewithCheckPoints;context:{isCompleteStep: true}"></ng-template>
+
+        <div fxLayout="row" fxLayoutAlign="end center" class="mt-16">
+          <button mat-raised-button matStepperPrevious type="button" class="text-uppercase mr-12">
+            {{'Previous' | translate}}
+          </button>
+          <button (click)="onCancel(true)" mat-raised-button type="reset" color="accent" class="text-uppercase">
+            {{'Close' | translate}}
+          </button>
+        </div>
+      </form>
+    </mat-step>
+  </mat-horizontal-stepper>
+</ng-template>
+
+
+
+<ng-template #tablewithCheckPoints let-isCompleteStep="isCompleteStep">
+  <div class="border mt-28" *ngIf="checkPoints.value.checkPoint && syllabusDataList?.length">
+    <table class="simple table secondary-table">
+      <thead class="font-weight-600 mat-header-cell">
+        <tr>
+          <th translate><strong>Chapter</strong></th>
+          <th translate><strong>Topic</strong></th>
+          <th translate><strong>Sub Topic</strong></th>
+          <th *ngIf="!isCompleteStep" translate class="w-100"><strong>Action</strong></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of syllabusDataList; let i = index; let f = first; let l = last"
+          [class]="item?.syllabusCheckPointId ? 'accent' : ''">
+          <ng-container *ngIf="!item?.syllabusCheckPointId">
+            <td class="break-word" [ngClass]="isCompleteStep ? 'w-40-p' : 'w-30-p'" ><span class="p-4">
+                {{ item?.chapter }} </span><span *ngIf="isCompleteStep && item?.chapterCode"
+                class="secondary-text pr-20">({{item?.chapterCode}})</span>
+              <a *ngIf="isCompleteStep && item?.chapterFileName" class="cursor-pointer"
+                [href]="getFileNamewithPath(item?.chapterFileName)" target="_blank">Attachment</a>
+            </td>
+            <td class="w-30-p break-word"><span class="p-4"> {{ item?.topic }}
+              </span><span *ngIf="isCompleteStep && item?.topicCode"
+              class="secondary-text pr-20">({{item?.topicCode}})</span>
+              <a *ngIf="isCompleteStep && item?.topicFileName" class="cursor-pointer"
+                [href]="getFileNamewithPath(item?.topicFileName)" target="_blank">Attachment</a>
+            </td>
+            <td class="w-30-p break-word"><span class="p-4"> {{item?.subTopic}} </span><span *ngIf="isCompleteStep && item?.subTopicCode"
+              class="secondary-text pr-20">({{item?.subTopicCode}})</span>
+              <a *ngIf="isCompleteStep && item?.subTopicFileName" class="cursor-pointer"
+                  [href]="getFileNamewithPath(item?.subTopicFileName)" target="_blank" translate>Attachment</a>
+            </td>
+            <td *ngIf="!isCompleteStep" class="w-10-p">
+              <button mat-icon-button aria-label="More" [matMenuTriggerFor]="menu">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+          <ng-container *ngIf="item?.syllabusCheckPointId">
+            <td><span class="p-4"> {{ item?.syllabusCheckPoint }} </span>
+            </td>
+            <td><span class="p-4">
+                {{ item?.checkPointTestType}} </span>
+            </td>
+            <td><span class="p-4">
+               <span translate>{{item.isCumulative ? 'Cumulative' : 'Incremental'}}</span> 
+              </span>
+            </td>
+            <td *ngIf="!isCompleteStep">
+              <button mat-icon-button aria-label="More" [matMenuTriggerFor]="menu">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+          <mat-menu #menu="matMenu">
+            <ng-container *ngIf="!item?.syllabusCheckPointId">
+              <button *ngIf="!f" mat-menu-item (click)="onInsertTest(i)" translate>
+                <mat-icon class="mr-8">vertical_align_top</mat-icon>
+                <span translate>{{'Insert Test Before This Step'}}</span>
+              </button>
+              <button mat-menu-item (click)="onInsertTest(i, false)" translate>
+                <mat-icon class="mr-8">vertical_align_bottom</mat-icon>
+                <span translate>{{'Insert Test After This Step'}}</span>
+              </button>
+            </ng-container>
+            <ng-container *ngIf="item?.syllabusCheckPointId">
+              <button mat-menu-item (click)="deleteCheckPoint(item);$event.stopPropagation()" translate>
+                <mat-icon class="mr-8">delete</mat-icon>
+                <span translate>{{'Delete Check Point'}}</span>
+              </button>
+            </ng-container>
+          </mat-menu>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</ng-template>
+
+
+
+<ng-template #checkPointTestDialog>
+  <div class="text-uppercase font-size-18 text-center p-16 accent">Insert Check point Test</div>
+  <form [formGroup]="checkPointTestForm" #checkPointForm="ngForm" fxLayout="column" class="p-20">
+    <div class="pb-12 font-size-18">Select test type to insert at this check point</div>
+
+    <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100">
+      <mat-label #testTypeId translate>Test Type</mat-label>
+      <mat-select formControlName="testTypeId" required>
+        <mat-option *ngFor="let type of testTypes" [value]="type.id">
+          {{type.name}}</mat-option>
+      </mat-select>
+      <mat-error>
+        <app-validation [labelName]='testTypeId.innerText' [validationControl]="checkPointTestForm.controls.testTypeId"
+          [doValidate]="validate">
+        </app-validation>
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100">
+      <mat-label #name translate>Name</mat-label>
+      <input (keyup)="preventSpace($event,'checkPointTestForm','name')" (blur)="trimTextBoxSpaces('checkPointTestForm','name')"
+        formControlName="name" required matInput>
+      <mat-error>
+        <app-validation [labelName]='name.innerText' [validationControl]="checkPointTestForm.controls.name"
+          [doValidate]="validate">
+        </app-validation>
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100">
+      <mat-label #checkPointTypeId translate>Syllabus Inclusions for Test</mat-label>
+      <mat-select formControlName="iscumulative" required>
+        <mat-option *ngFor="let point of checkPointTypes" [value]="point.value">
+          {{point.name}}</mat-option>
+      </mat-select>
+      <mat-error>
+        <app-validation [labelName]='checkPointTypeId.innerText'
+          [validationControl]="checkPointTestForm.controls.iscumulative" [doValidate]="validate">
+        </app-validation>
+      </mat-error>
+    </mat-form-field>
+
+
+    <div fxLayout="row" fxLayoutAlign="end center" class="py-12">
+      <button class="mr-12 text-uppercase" mat-raised-button (click)="onCancelCheckPoints()" type="reset"
+        matDialogClose>{{'Cancel' | translate}}</button>
+      <button mat-raised-button type="submit" (click)="onSubmitCheckPointForm()" class="text-uppercase"
+        color="accent">{{'Ok' | translate}}</button>
+    </div>
+  </form>
+</ng-template>
+
+<ng-template #imageName let-attachment="attachment">
+  <div fxFlex="60">
+    <span *ngIf="attachment?.fileValue; else server_file" class="break-word">
+      {{attachment.fileName}}
+    </span>
+    <ng-template #server_file>
+      <span *ngIf="attachment?.fileName" (click)="$event.stopPropagation()">
+        <a class="cursor-pointer" [href]="getFileNamewithPath(attachment)" target="_blank">Attachment</a>
+      </span>
+    </ng-template>
+  </div>
+</ng-template>

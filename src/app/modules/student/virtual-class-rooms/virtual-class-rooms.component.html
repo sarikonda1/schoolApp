@@ -1,0 +1,47 @@
+<!-- <ng-container *ngFor="let item of virtualClassRoomsList">
+  <button mat-menu-item (click)="onSelectAction(item)">
+    <mat-icon>class</mat-icon>{{item.label | translate}}
+  </button>
+</ng-container> -->
+
+
+<div id="virtual-class-cards" class="page-layout simple fullwidth">
+
+  <!-- CONTENT -->
+  <div class="content" class="preview">
+
+    <div class="virtual-class-cards">
+
+      <div class="virtual-class-card" *ngFor="let item of virtualClassRoomsList">
+        <div class="virtual-class-card-preview">
+
+          <div class="fuse-card">
+
+            <div class="p-16">
+              <div class="h3">{{item.label | translate}}</div>
+            </div>
+
+            <!-- <div class="p-16 pt-0 line-height-1.75">
+              {{item.label | translate}}
+            </div> -->
+
+            <div class="p-8 pt-0" fxLayout="row" fxLayoutAlign="end center">
+              <button (click)="onSelectAction(item)" mat-raised-button color="accent">
+                <span translate>Join Room</span>
+              </button>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <!-- / CONTENT -->
+
+</div>
+
+<div *ngIf="!virtualClassRoomsList.length" class="errorMsg">
+  <p class="red-text text-center mb-0 font-weight-bold p-24" translate>No Virtual Class Rooms For the Student Class and/or Section</p>
+</div>

@@ -1,0 +1,69 @@
+<div fxLayout="row" fxLayout.lt-sm="column" fxLayoutAlign.gt-sm="center center" class="px-sm-60 mt-32">
+  <div fxlayout="column" fxFlex="30" fxFlex.lt-sm="100" fxLayoutAlign.lt-sm="center" fxLayoutAlign="start center"
+    class="text-uppercase pb-20" translate>manageschools</div>
+  <div fxlayout="column" fxFlex="40" fxFlex.lt-sm="100" fxLayoutAlign.lt-sm="center" class="px-12"
+    fxLayoutAlign="center center">
+    <mat-form-field appearance="outline" class="w-100-p">
+      <mat-label #typeid translate>School</mat-label>
+      <mat-select [(ngModel)]="schoolid" (selectionChange)="schoolNameDetails($event)" class="one">
+            <mat-select-trigger *ngIf="getSchoolNameByValue(schoolid) !== undefined">
+              <div fxLayout="row" fxFlex="0 1 auto" class="text-truncate">
+              <div class="text-truncate w-80-p">{{selectedSchoolDetails.name}}</div> 
+              <div class="w-84 secondary-text pl-4">({{selectedSchoolDetails.code}})</div>
+            </div>
+          </mat-select-trigger>
+        <mat-option *ngFor="let schoolNames of schools" [value]="schoolNames.id">
+         <div fxLayout="row" fxFlex="0 1 auto" class="text-truncate">
+            <div class="text-truncate w-80-p">{{schoolNames.name}}</div> 
+            <div class="w-84 secondary-text pl-4">({{schoolNames.code}})</div>
+          </div>
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+  <div fxlayout="column" fxFlex="30" fxFlex.lt-sm="100" fxLayoutAlign.lt-sm="center" fxLayoutAlign="end center"
+    class="pb-20">
+    <button (click)="addSchool()" mat-raised-button type="button" color="accent" class="text-uppercase">{{'addschool' | translate}}
+    </button>
+  </div>
+</div>
+
+<mat-tab-group *ngIf="display" [selectedIndex]="index" (selectedIndexChange)="selected($event)" class="manage-institue">
+
+  <mat-tab label="{{'SCHOOL DETAILS' | translate }}" >
+    <div *ngIf="showSchoolDetails">
+      <app-school-details [data]="selectedChanged"></app-school-details>
+    </div>
+  </mat-tab>
+
+  <mat-tab label="{{'SCHOOL INFRASTRUCTURE' | translate}}">
+    <div *ngIf="showSchoolInfrastructure">
+      <app-school-infrastructure [data]="selectedChanged"></app-school-infrastructure>
+    </div>
+  </mat-tab>
+
+  <mat-tab label="{{'MANAGE USERS' | translate}}">
+    <div *ngIf="showUsers">
+      <app-school-user  [data]="selectedChanged"></app-school-user>
+    </div>
+  </mat-tab>
+
+  <mat-tab label="{{'SCHOOL SETTINGS' | translate}}">
+    <div *ngIf="showEditSchoolDetails">
+      <app-edit-settings [data]="selectedChanged"></app-edit-settings>
+    </div>
+  </mat-tab>
+
+  <mat-tab label="{{'SEQUENCE CONFIGURATION' | translate}}">
+    <div *ngIf="showSequenceConfiguartion">
+      <app-sequence-configuration [data]="selectedChanged"></app-sequence-configuration>
+    </div>
+  </mat-tab>
+
+  <mat-tab label="{{'SERVICE PROVIDER CONFIGURATION' | translate}}">
+    <div *ngIf="showServiceConfiguration">
+      <app-service-configuration [data]="selectedChanged"></app-service-configuration>
+    </div>
+  </mat-tab>
+
+</mat-tab-group>

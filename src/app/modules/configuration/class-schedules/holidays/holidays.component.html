@@ -1,0 +1,97 @@
+<app-table [settings]="tabSettings" (selectedRows)="selectAllData($event)"
+(getTableData)='holidayTableData($event)' (rowBasedAction)='rowActions($event)'
+ [closeRowForm]='closeAddPanel' (openAddForm)="addForm()" [templateRef]="addTemplateRef" 
+ (deleteAllRows)='deleteAll()' 
+ (rowSelect)='onTableRowSelect($event)' (rowUnselect)='onTableRowUnSelect($event)'>
+</app-table>
+
+
+
+<ng-template #addTemplateRef>
+  <form [formGroup]="holidaysGrpForm" (ngSubmit)="saveHolidayConfiguration(holidaysGrpForm)" #holidayConfigurationsForm="ngForm">
+    <div fxFlexFill fxLayout="column" fxLayout.gt-xs="row" class="pt-24">
+
+      <mat-form-field appearance="outline" class="mr-sm-20 icon-center" fxFlexFill fxFlex="100" fxFlex.gt-sm="36" fxLayout="column">
+        <mat-label #fromDate translate>From Date</mat-label>
+        <input matInput (keyup)="forceValidation('fromDate',holidaysGrpForm)" [matDatepicker]="picker" formControlName="fromDate" required [min]="startDate" [max]="endDate">
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+        <mat-error>
+          <app-validation [labelName]="fromDate.innerText" [validationControl]="holidaysGrpForm.controls.fromDate"
+            [doValidate]="doValidate">
+          </app-validation>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="mr-sm-20 icon-center" fxLayout="column" fxFlexFill fxFlex="100" fxFlex.gt-sm="36">
+        <mat-label #toDate translate>To Date</mat-label>
+        <input matInput (keyup)="forceValidation('toDate',holidaysGrpForm)" [min]="holidaysGrpForm.controls.fromDate.value" [options]="myToDatePickerOptions"
+          [matDatepicker]="picker1" formControlName="toDate" required [max]="endDate">
+        <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+        <mat-datepicker #picker1 [startAt]="holidaysGrpForm.value.fromDate"></mat-datepicker>
+        <mat-error>
+          <app-validation [labelName]="toDate.innerText" [validationControl]="holidaysGrpForm.controls.toDate"
+            [doValidate]="doValidate">
+          </app-validation>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" fxLayout="column" fxFlexFill fxFlex="100" fxFlex.gt-sm="36">
+        <mat-label #holidayReason translate>description</mat-label>
+        <input (keyup)="preventSpace($event,'holidaysGrpForm','holidayReason')" (blur)="trimTextBoxSpaces('holidaysGrpForm','holidayReason')" matInput autocomplete="off" formControlName="holidayReason" required>
+        <mat-error>
+          <app-validation [labelName]="holidayReason.innerText" [validationControl]="holidaysGrpForm.controls.holidayReason"
+            [doValidate]="doValidate">
+          </app-validation>
+        </mat-error>
+      </mat-form-field>
+
+    </div>
+
+    <div fxFlexFill fxLayout="column" fxLayout.gt-xs="row" class="pt-12">
+      <div fxFlex="100" fxLayout="column" class="mr-sm-20 radio-btn" fxFlex.gt-sm="15">   
+          <mat-label #isStaffHoliday translate class="
+           pb-8">isstaffholiday?</mat-label>
+        <mat-radio-group class="grey-500-fg text-semibold" aria-label="Select an option" fxFlexFill fxLayout="row" fxFlex="100" formControlName="isStaffHoliday">
+          <mat-radio-button *ngFor="let radio of YesOrNo" [value]="radio.value" (change)="onStaffChange(radio.value)">{{radio.label |
+            translate}}</mat-radio-button>
+        </mat-radio-group>
+      </div>
+      <div fxLayout="column" class="mr-sm-20 radio-btn" fxFlex="100" fxFlex.gt-sm="30">
+        <label class="pb-8" #IsPostCalender translate>Do you Want to post this Holiday Information To Student Calendar ?</label>
+        <mat-radio-group fxLayout="row" fxFlex="100" required formControlName="isPostToCalender">
+          <mat-radio-button *ngFor="let radio of YesOrNo" [value]="radio.value">{{radio.label |
+            translate}}</mat-radio-button>
+        </mat-radio-group>
+      </div>
+
+      <mat-form-field appearance="outline" class="mr-sm-20" fxLayout="column" fxFlex="100" fxFlexFill fxFlex.gt-sm="25">
+        <mat-label #classId translate>Class</mat-label>
+        <mat-select formControlName="classId" (selectionChange)="onSelectClass($event)" [disabled]="holidaysGrpForm.value.isStaffHoliday == 1">
+          <mat-option *ngIf="classNames?.length"></mat-option>
+          <mat-option *ngFor="let class of classNames" [value]="class.value">
+            {{class.label}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlexFill fxFlex.gt-sm="30" *ngIf="holidaysGrpForm.controls.classId.value">
+        <mat-label #sectionId translate>Section</mat-label>
+        <mat-select formControlName="sectionId" [disabled]="holidaysGrpForm.value.isStaffHoliday == 1">
+          <mat-option *ngIf="sectionNames?.length"></mat-option>
+          <mat-option *ngFor="let section of sectionNames" [value]="section.value">
+            {{section.label}}
+            <span *ngIf="section.boardName!=null">({{section.boardName}})</span>
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div fxLayout="row" fxLayoutAlign="end center" class="my-12">
+      <button class="mr-12 text-uppercase" mat-raised-button type="button" (click)="onCancelClick()">{{'Cancel' | translate}}</button>
+      <button [disabled]="disbleSubmitBtn" mat-raised-button type="submit" class="text-uppercase" color="accent">
+        {{(isUpdateData ? 'Update':'Submit') | translate}}</button>
+    </div>
+
+  </form>
+</ng-template>

@@ -1,0 +1,401 @@
+<div class="px-sm-28 mb-20 newBuildAdd" (window:resize)="getdeviceSize()">
+
+  <div class="mat-elevation-z8 radius-20 simple-table-container" [ngClass]="desiablePage ? 'add-building-overlay' : '' "
+    fxLayout="column" id="boards">
+
+    <div fxLayout="row" fxLayoutAlign="start center" class="p-20 border-bottom events">
+      <div fxLayout="column" fxFlex="70">
+        <div class="font-size-16" *ngIf="buildingFormShow" translate>Add Building</div>
+        <div fxLayout="row" fxLayoutAlign="start center" *ngIf="buildingDetailsShow">
+          <button mat-raised-button color="primary" class="text-uppercase w-76" (click)="onBackClick()" translate>
+           {{'Back' | translate}}
+          </button>
+          <div class="font-size-16 pl-20 text-truncate">
+            {{buildingDetails?.schoolBuildingName}}
+          </div>
+          <div class="px-16 w-152 text-truncate">
+            <span class="secondary-text" translate>Total Floors:
+              {{floorsCount}}</span>
+          </div>
+          <div class="px-16 w-152 text-truncate">
+            <span class="secondary-text" translate>Total Rooms: {{roomCount}}</span>
+          </div>
+        </div>
+      </div>
+      <div class="text-right" fxFlex="30" fxLayout="column" fxLayoutAlign="end">
+        <div fxLayout="row" fxLayoutAlign="end center">
+          <button mat-icon-button [matMenuTriggerFor]="menuEdit" class="mr-16" *ngIf="buildingDetailsShow">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <button mat-raised-button color="accent" class="text-uppercase" *ngIf="buildingDetailsShow"
+            (click)="onAddFloorClick()">{{'Add Floor' | translate}}</button>
+          <button mat-button (click)="getHelpText('School Infrastructure')">
+            <mat-icon class="grey-600-fg">info</mat-icon>
+          </button>
+        </div>
+        <mat-menu #menuEdit="matMenu">
+          <button mat-menu-item (click)="onBuildingEdit()">
+            <mat-icon>edit</mat-icon>{{'Edit' | translate}}
+          </button>
+          <button mat-menu-item (click)="onBuildingDelete()">
+            <mat-icon>delete</mat-icon>
+            {{'Delete' | translate}}
+          </button>
+        </mat-menu>
+      </div>
+    </div>
+
+    <div fxLayout="row" fxLayoutAlign="start start" class="add-building p-12" [style.height.px]="innerWidth" *ngIf="buildingDetailsShow;let i=index">
+      <mat-card class="card theme-color mat-elevation-z1 m-8 radius-10 p-0"
+        *ngFor="let floor of buildingDetails?.schoolFloors ;let floorIndex=index" edit-floor-overlay  [ngClass]="(desiableForm && !desiableRoomForm && (floorIndex==floorsIndex)) ? 'add-building-overlay' : '' ">
+        <mat-card-header 
+         >
+          <mat-card-title class="px-8 pt-8">
+            <!-- Edit Floors -->
+            <div class="list new-list" fxLayout="column"
+              *ngIf="(isNewFloor || isFloorEdit) && (floorIndex==floorsIndex)">
+              <form (ngSubmit)="onFloorSubmit(floorsForm,floor.id)" class="new-list-form" [formGroup]="floorsForm"
+                fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto">
+                <div class="add-floor-error" fxFlex="1 0 auto">
+                  <input formControlName="floorName" class="w-100-p border-bottom px-8 py-4 font-size-14" #floorname fxFlex
+                    placeholder="Floor Name" value="{{floor.name}}" required (keyup)="preventSpace($event,'floorsForm','floorName')" (blur)="trimTextBoxSpaces('floorsForm','floorName')">
+                  <mat-label translate #floorName fxHide translate>Floor Name</mat-label>
+                  <mat-error *ngIf="!floorsForm.controls.floorName.valid && floorsForm.controls.floorName.touched">
+                    <app-validation [labelName]='floorName.innerText'
+                      [validationControl]="floorsForm.controls.floorName" [doValidate]="floorIsValid">
+                    </app-validation>
+                  </mat-error>
+                </div>
+                <button type="submit" [disabled]="submitBtnDisable" mat-icon-button fxFlex="0 1 auto">
+                  <mat-icon>check</mat-icon>
+                </button>
+                <button mat-icon-button fxFlex="0 1 auto" (click)="closeFloorForm()">
+                  <mat-icon>close</mat-icon>
+                </button>
+              </form>
+            </div>
+            <!-- End Edit Floors -->
+
+            <!-- Floors  -->
+            <div *ngIf="(floor.id=='new'?false:true)">
+              <div fxLayout="row" fxFlexFill fxLayoutAlign="space-between center"
+                *ngIf="!isFloorEdit||(floorIndex!=floorsIndex)">
+                <div class="secondary-text font-size-16 text-truncate">{{floor.name}}</div>
+                <button mat-icon-button [matMenuTriggerFor]="menu">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+
+              </div>
+              <mat-menu #menu="matMenu">
+                <button mat-menu-item (click)="editFloorDetails(floorIndex)">
+                  <mat-icon>edit</mat-icon>{{'Edit' | translate}}
+                </button>
+                <button mat-menu-item (click)="deleteFloor(floor)">
+                  <mat-icon>delete</mat-icon>
+                  {{'Delete' | translate}}
+                </button>
+              </mat-menu>
+            </div>
+            <!-- End Floors -->
+          </mat-card-title>
+        </mat-card-header>
+       
+        <div *ngIf="(floor.id==''?false:true)">
+          <mat-divider></mat-divider>
+          <mat-card-content class="pt-8 mb-0 px-8" *ngFor="let room of floor.schoolRooms; let RI=index"
+          [ngClass]="desiableRoomForm && (!editRoomForm) && (floorIndex==floorsIndex)&&(room.id==roomId?true:false) ? 'add-building-overlay' : '' " id='roomScroll'>
+            <!-- Rooms Details -->
+            <mat-list *ngIf="room.id!=roomId?true:false" class="simple-table-container border">
+              <mat-list-item class="border-bottom">
+                <div fxLayout="row" fxFlexFill fxLayoutAlign="center center">
+                  <div fxLayout="column" fxFlex="50" class="secondary-text" translate>Room Name</div>
+                  <div fxLayout="column" fxFlex="40">{{room.name}}</div>
+                  <div fxLayout="column" fxFlex="10">
+                    <button mat-icon-button [matMenuTriggerFor]="menu">
+                      <mat-icon>more_vert</mat-icon>
+                    </button>
+                    <mat-menu #menu="matMenu">
+                      <button mat-menu-item (click)="onRoomEdit(room,room.id,floorIndex)">
+                        <mat-icon>edit</mat-icon>Edit
+                      </button>
+                      <button mat-menu-item (click)="onDeleteRoom(room.id)">
+                        <mat-icon>delete</mat-icon>Delete
+                      </button>
+                    </mat-menu>
+                  </div>
+                </div>
+              </mat-list-item>
+
+              <mat-list-item class="border-bottom">
+                <div fxLayout="row" fxFlexFill fxLayoutAlign="center center">
+                  <div fxLayout="column" fxFlex="50" class="secondary-text" translate>Room Number</div>
+                  <div fxLayout="column" fxFlex="50">{{room.roomNumber}}</div>
+                </div>
+              </mat-list-item>
+              <mat-list-item class="border-bottom">
+                <div fxLayout="row" fxFlexFill fxLayoutAlign="center center">
+                  <div fxLayout="column" fxFlex="50" class="secondary-text" translate>Capacity</div>
+                  <div fxLayout="column" fxFlex="50">{{room.roomCapacity}}</div>
+                </div>
+              </mat-list-item>
+              <mat-list-item>
+                <div fxLayout="row" fxFlexFill fxLayoutAlign="center center">
+                  <div fxLayout="column" fxFlex="50" class="secondary-text" translate>Room Type</div>
+                  <div fxLayout="column" fxFlex="50">{{room.roomType}}</div>
+                </div>
+              </mat-list-item>
+            </mat-list>
+            <!--End Rooms Details -->
+            <!-- Edit Rooms -->
+              <form [formGroup]="roomsForm.controls.rooms"  
+              (ngSubmit)="onSubmitRoom(roomsForm,floor?.id,room?.id)"
+                *ngIf="(editRoom&&(room.id==roomId?true:false)&&(floorIndex==floorsIndex?true:false))"
+                (ngSubmit)="onSubmitRoom(addRoomForm,floor.id,room.id)" class="simple-table-container border">
+                <div>
+                  <div  fxFlexFill fxLayout="column" fxFlex="100" class="p-16">
+                    <mat-form-field>
+                      <input autofocus matInput formControlName="name" ngModel="{{room.name}}" required autofocus autocomplete="off" (keyup)="preventSpace($event,'roomsForm','name')"
+                       (blur)="trimTextBoxSpacesForRooms(roomsForm.controls.rooms,'name')" #roomName>
+                      <mat-label #roomName translate>Room Name</mat-label>
+                      <mat-error>
+                        <app-validation [labelName]='roomName.innerText' [validationControl]="roomsForm.controls.rooms.controls.name"
+                          [doValidate]="roomFormSubmitted">
+                        </app-validation>
+                      </mat-error>
+                    </mat-form-field>
+                    <mat-form-field>
+                      <input matInput formControlName="roomNumber" ngModel="{{room.roomNumber}}" autocomplete="off"
+                      (keyup)="preventSpace($event,'roomsForm','roomNumber')" (blur)="trimTextBoxSpacesForRooms(roomsForm.controls.rooms,'roomNumber')" >
+                      <mat-label #number translate>Room Number</mat-label>
+                      <mat-error>
+                        <app-validation [labelName]='number.innerText' [validationControl]="roomsForm.controls.rooms.controls.roomNumber"
+                          [doValidate]="roomFormSubmitted">
+                        </app-validation>
+                      </mat-error>
+                    </mat-form-field>
+                    <mat-form-field>
+                      <input matInput formControlName="roomCapacity" ngModel="{{room.roomCapacity}}" autocomplete="off" (keyup)="preventSpace($event,'roomsForm','roomCapacity')"
+                      (blur)="trimTextBoxSpacesForRooms(roomsForm.controls.rooms,'roomCapacity')">
+                      <mat-label #capacity translate>Capacity</mat-label>
+                      <mat-error>
+                        <app-validation [labelName]='capacity.innerText'
+                          [validationControl]="roomsForm.controls.rooms.controls.roomCapacity" [doValidate]="roomFormSubmitted">
+                        </app-validation>
+                      </mat-error>
+                    </mat-form-field>
+                    <mat-form-field>
+                      <mat-select formControlName="typeId" required [(ngModel)]="room.typeId">
+
+                        <mat-option *ngFor="let roomType of roomTypesList" [value]="roomType.value">
+                          {{ roomType.label }}</mat-option>
+                      </mat-select>
+                      <mat-label #roomType translate translate>Room Type</mat-label>
+                      <mat-error>
+                        <app-validation [labelName]='roomType.innerText' [validationControl]="roomsForm.controls.rooms.controls.typeId"
+                          [doValidate]="roomFormSubmitted">
+                        </app-validation>
+                      </mat-error>
+                    </mat-form-field>
+                  </div>
+                </div>
+                <div fxLayoutAlign="end center" class="p-12 border-top">
+                  <button mat-button type="button" class="text-uppercase mr-16" (click)="cancelRoom()" translate>
+                    {{'Cancel' | translate}}</button>
+                  <button type="submit" mat-raised-button class="text-uppercase" color="accent" translate
+                    [disabled]="submitBtnDisable">{{'Update' | translate}}</button>
+                </div>
+              </form>
+            <!--End Edit Rooms -->
+
+          </mat-card-content>
+          <!-- New Rooms -->
+          <div *ngIf="editRoomForm">
+            <mat-card-content class="simple-table-container border edit-floor p-16"
+              *ngIf="!editRoom &&(floorIndex==floorsIndex?true:false)"
+              [ngClass]="desiableRoomForm && (floorIndex==floorsIndex) ? 'add-building-overlay' : '' " id='roomScroll'>
+
+              <form id="rooms-form" [formGroup]="roomsForm.controls.rooms"  
+                (ngSubmit)="onSubmitRoom(roomsForm,floor.id,room?.id)">
+                <div >
+                  <div  fxFlexFill fxLayout="column" fxFlex="100">
+                    <mat-form-field>
+                      <input matInput formControlName="name"  required autocomplete="off" autofocus
+                      (keyup)="preventSpace($event,roomsForm.controls.rooms)" (blur)="trimTextBoxSpacesForRooms(roomsForm.controls.rooms,'name')" #roomName>
+                      <mat-label #roomName translate>Room Name</mat-label>
+                      <mat-error>
+                        <app-validation [labelName]='roomName.innerText' [validationControl]="roomsForm.controls.rooms.controls.name"
+                          [doValidate]="roomFormSubmitted">
+                        </app-validation>
+                      </mat-error>
+                    </mat-form-field>
+                    <mat-form-field>
+                      <input matInput formControlName="roomNumber" autocomplete="off"
+                      (keyup)="preventSpace($event)" (blur)="trimTextBoxSpacesForRooms(roomsForm.controls.rooms,'roomNumber')">
+                      <mat-label #number translate>Room Number</mat-label>
+                      <mat-error>
+                        <app-validation [labelName]='number.innerText' [validationControl]="roomsForm.controls.rooms.controls.roomNumber"
+                          [doValidate]="roomFormSubmitted">
+                        </app-validation>
+                      </mat-error>
+                    </mat-form-field>
+                    <mat-form-field>
+                      <input matInput formControlName="roomCapacity" autocomplete="off"
+                       (blur)="trimTextBoxSpacesForRooms(roomsForm.controls.rooms,'roomCapacity')">
+                      <mat-label #capacity translate>Capacity</mat-label>
+                      <mat-error>
+                        <app-validation [labelName]='capacity.innerText'
+                          [validationControl]="roomsForm.controls.rooms.controls.roomCapacity" [doValidate]="roomFormSubmitted">
+                        </app-validation>
+                      </mat-error>
+                    </mat-form-field>
+                    <mat-form-field class="pb-12">
+                      <mat-label #roomType translate>Room Type</mat-label>
+                      <mat-select placeholder="Room Type" formControlName="typeId" required>
+
+                        <mat-option *ngFor="let roomType of roomTypesList" [value]="roomType.value">
+                          {{ roomType.label }}</mat-option>
+                      </mat-select>
+                      <mat-error>
+                        <app-validation [labelName]='roomType.innerText' [validationControl]="roomsForm.controls.rooms.controls.typeId"
+                          [doValidate]="roomFormSubmitted">
+                        </app-validation>
+                      </mat-error>
+                    </mat-form-field>
+                  </div>
+                </div>
+                <mat-divider></mat-divider>
+                <div fxLayoutAlign="end center" class="pt-16">
+                  <button type="button" mat-button class="text-uppercase mr-16" (click)="cancelRoom()" translate>{{'Cancel' | translate}}</button>
+                  <button type="submit" mat-raised-button class="text-uppercase" color="accent" translate
+                    [disabled]="submitBtnDisable">{{'Add' | translate}}</button>
+                </div>
+              </form>
+            </mat-card-content>
+          </div>
+          <div *ngIf="floor.schoolRooms.length == 0" class="text-center pt-20">No rooms available</div>
+          <mat-divider class="mt-8"></mat-divider>
+          <mat-card-actions fxLayoutAlign="end center" class="pt-20 m-0">
+            <button mat-button class="text-uppercase" (click)="onNewRoomClick(floorIndex)"
+              *ngIf="(isAddRoomShow||floorIndex!=floorsIndex)" [disabled]="addRoomBtnDisable" translate>
+              <mat-icon color="accent">add</mat-icon>{{'Add Room' | translate}}
+            </button>
+          </mat-card-actions>
+          <!--End New Rooms -->
+        </div>
+      </mat-card>
+    </div>
+    <!-- All buildings Show With Icons-->
+    <div class="board-list p-0" fxFlex="0 0 auto" fxLayout="row wrap" fxLayoutAlign="start center"
+      [@animateStagger]="{value:'50'}" *ngIf="buildingIcons">
+
+      <div class="board-list-item" fxLayout="column" fxLayoutAlign="center center"
+        [@animate]="{value:'*',params:{x:'100%'}}" *ngFor="let building of schoolBuildings"
+        (click)="onBuildingClick(building)">
+        <mat-icon class="s-56">account_balance</mat-icon>
+        <div class="board-name">{{building.name}}</div>
+      </div>
+      <div class="board-list-item add-new-board" fxLayout="column" fxLayoutAlign="center center" (click)="newBuilding()"
+        [@animate]="{value:'*',params:{y:'100%'}}">
+        <mat-icon class="s-56">add_circle</mat-icon>
+        <div class="board-name" translate>Add New Building</div>
+      </div>
+    </div>
+    <!-- End All buildings Show -->
+
+    <!-- Add Buildings Form -->
+    <form [formGroup]="addBuildingForm" *ngIf="buildingFormShow" (ngSubmit)="onSubmitBuildings(addBuildingForm)"
+      class="px-20 mt-20">
+
+      <div [@animate]="{value:'*',params:{y:'100%'}}" formArrayName="buildings"
+        *ngFor="let itemrow of addRowBuildingForm.controls; let i=index">
+        <div fxFlexFill fxLayout.lt-sm="column" class="pt-12" fxLayout.gt-xs="row" fxLayoutAlign="center center"
+          [formGroupName]="i">
+          <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-xs="60">
+            <mat-label for="form-{{i}}" translate #name>Name</mat-label>
+            <input matInput #buildingName id="form-{{i}}" autocomplete="off" formControlName="name" required  (keyup)="preventSpaceForArray($event, itemrow.controls.name)" 
+              (blur)="trimTextBoxSpacesForRooms(itemrow,'name')" autofocus>
+            <mat-error>
+              <app-validation [labelName]='name.innerText' [validationControl]="itemrow.controls.name"
+                [doValidate]="addBuildingFormSubmitted">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="pl-sm-20" fxFlexFill fxLayout="column" fxFlex="100"
+            fxFlex.gt-xs="30">
+            <mat-label translate #code>Code</mat-label>
+            <input matInput autocomplete="off" formControlName="code" 
+            (keyup)="preventSpaceForArray($event, itemrow.controls.code)" 
+            (blur)="trimTextBoxSpacesForRooms(itemrow,'code')">
+            <mat-error>
+              <app-validation [labelName]='code.innerText' [validationControl]="itemrow.controls.code"
+                [doValidate]="addBuildingFormSubmitted">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <button type="button" mat-icon-button class="mb-24" *ngIf="addRowBuildingForm.controls.length==1?false:true"
+             (click)="onClearBuilding(i)">
+            <mat-icon class="red-400-fg">delete</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <div fxLayout="row" fxLayoutAlign="start center" class="py-20">
+        <div fxLayout="column" fxFlex="40">
+          <div class="font-size-16">
+            <button type="button" class="text-uppercase" color="accent" mat-raised-button translate (click)="addNewBuilding()"
+              [disabled]="!addBuildingForm.valid" translate><span translate>Add Building</span></button>
+          </div>
+        </div>
+        <div class="text-right" fxFlex="60" fxLayout="column" fxLayoutAlign="end">
+          <div fxLayout="row" fxLayoutAlign="end center">
+            <button type="button" mat-raised-button class="mr-16 text-uppercase" (click)="onBuildingCancel()" translate>{{'Cancel' | translate}}</button>
+            <button type="submit" [disabled]="submitBtnDisable" class="text-uppercase" mat-raised-button color="primary" translate translate>{{'Create' | translate}}</button>
+          </div>
+        </div>
+      </div>
+    </form>
+    <!-- End  Buildings Form -->
+  </div>
+</div>
+
+<!-- Coustom Dialog for Edit Building -->
+<ng-template #myTemplate>
+    <form [formGroup]="addBuildingForm" (ngSubmit)="onSubmitBuildings(addBuildingForm)">
+
+      <div [@animate]="{value:'*',params:{y:'100%'}}" formArrayName="buildings"
+        *ngFor="let itemrow of addRowBuildingForm.controls; let i=index">
+        <div fxFlexFill fxLayout="column" class="pt-24" fxLayoutAlign="center center" [formGroupName]="i">
+          <mat-form-field appearance="outline" fxFlexFill>
+            <mat-label for="form-{{i}}" translate #name>Name</mat-label>
+            <input matInput id="form-{{i}}" autocomplete="off" formControlName="name" autocomplete="off" (keyup)="preventSpaceForArray($event, itemrow.controls.name)" 
+              [(ngModel)]="buildingData.name"  (blur)="trimTextBoxSpacesForRooms(itemrow,'name')">
+            <mat-error>
+              <app-validation [labelName]='name.innerText' [validationControl]="itemrow.controls.name"
+                [doValidate]="addBuildingFormSubmitted">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline" fxFlexFill class="pt-12">
+            <mat-label translate #code>Code</mat-label>
+            <input matInput autocomplete="off" formControlName="code" autocomplete="off" [(ngModel)]="buildingData.code"
+            (keyup)="preventSpaceForArray($event, itemrow.controls.code)" 
+            (blur)="trimTextBoxSpacesForRooms(itemrow,'code')">
+            <mat-error>
+              <app-validation [labelName]='code.innerText' [validationControl]="itemrow.controls.code"
+                [doValidate]="addBuildingFormSubmitted">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+      <div fxLayout="row" fxLayoutAlign="start center" class="pt-20">
+        <div fxFlex="100" fxLayout="column" fxLayoutAlign="end">
+          <div fxLayout="row" fxLayoutAlign="end center">
+            <button type="button" mat-raised-button class="mr-16" type="button" (click)="closeDialog()">{{'Cancel' | translate}}</button>
+            <button [disabled]="submitBtnDisable" type="submit" mat-raised-button color="accent" translate>{{'Update' | translate}}</button>
+          </div>
+        </div>
+      </div>
+    </form>
+</ng-template>
+<!-- End Coustom Dialog  -->

@@ -1,0 +1,18 @@
+.subCat{
+    position: absolute;
+    top: 50px;
+    color: red;
+    }
+
+    .tabs-table-padding0 {
+       ::ng-deep .mat-expansion-panel-body {
+            padding: 0 0px 0px;
+        }
+    }
+   .min-w-200{
+       min-width: 120px;
+   }
+
+::ng-deep .mat-step-optional{
+  display: none !important;
+}

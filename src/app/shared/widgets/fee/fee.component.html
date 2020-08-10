@@ -1,0 +1,17 @@
+<div fxLayout="row" fxFlex="100" fxLayoutAlign="center center" *ngIf="!feeData.noDataFound && !isLoading">
+<div class="h-300 w-100-p">
+      <ngx-charts-advanced-pie-chart  [scheme]="feeWidget.scheme"
+                                      [animations] = "animations"
+                                      [percentageFormatting]="percentageFormatting"
+                                     [valueFormatting]="valueFormatting"
+                                     [results]="feeData?.mainChart" label="Total Invoiced Amount">
+        </ngx-charts-advanced-pie-chart>
+      </div>
+</div>
+<div *ngIf="feeData.noDataFound && !isLoading" fxLayoutAlign="center center" fxFlexFill>
+    <p class="text-center text-uppercase font-size-16 secondary-text" translate>No Data To Display</p>
+</div>
+
+<div *ngIf="isLoading" fxFlexFill fxLayoutAlign="center center">
+  <app-af-loader></app-af-loader>
+</div>

@@ -1,0 +1,378 @@
+<div class="p-32">
+  <div class="text-uppercase font-size-18 pl-12" translate>{{eventTitle}}</div>
+  <div class="w-100-p simple-table-container radius-t-20 mat-elevation-z3 mb-16">
+    <div fxLayout="row" fxLayoutAlign="end center" class="border-bottom p-16">
+      <button mat-raised-button class="text-uppercase" color="primary" (click)="return()"><span
+          translate>Back</span></button>
+      <button mat-button (click)="getHelpText('School Events')">
+        <mat-icon class="grey-600-fg">info</mat-icon>
+      </button>
+    </div>
+    <div *ngIf="editDetails">
+      <form class="p-20" [formGroup]="eventForm" (ngSubmit)="onSubmit(eventForm)" #eventDataForm="ngForm">
+        <div fxLayout="column" fxLayout.gt-sm="row wrap" class="pt-12">
+          <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50"
+            class="pr-sm-20">
+            <mat-label #eventTypeId translate>Event Type</mat-label>
+            <mat-select formControlName="eventTypeId" required (selectionChange)="onEventTypeSelect($event.value)"
+              [disabled]="(addEventId !== undefined)">
+              <mat-option *ngFor="let eventTypes of eventTypesList" [value]="eventTypes.value">
+                {{eventTypes.label}}
+              </mat-option>
+            </mat-select>
+            <mat-error>
+              <app-validation [labelName]='eventTypeId.innerText' [validationControl]="eventForm.controls.eventTypeId"
+                [doValidate]="true">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" fxFlexFill fxFlex.gt-sm="50" fxFlex="100" fxLayout="column"
+            class="icon-center">
+            <mat-label #announcedDate translate>Announce Date</mat-label>
+            <input matInput (keyup)="forceValidation('announcedDate',eventForm)" [matDatepicker]="announcedDatePicker"
+              formControlName="announcedDate" required  [min]="startDate" [max]="endDate">
+            <mat-datepicker-toggle matSuffix [for]="announcedDatePicker"></mat-datepicker-toggle>
+            <mat-datepicker #announcedDatePicker></mat-datepicker>
+            <mat-error>
+              <app-validation [labelName]='announcedDate.innerText'
+                [validationControl]="eventForm.controls.announcedDate" [doValidate]="true">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50"
+            class="pr-sm-20 icon-center pt-12" *ngIf="!hideFromToDate">
+            <mat-label #fromDate translate>From Date</mat-label>
+            <input matInput [matDatepicker]="fromDatePicker" (keyup)="forceValidation('fromDate',eventForm)" required
+              formControlName="fromDate" [min]="eventForm.controls.announcedDate.value" [max]="endDate">
+            <mat-datepicker-toggle matSuffix [for]="fromDatePicker"></mat-datepicker-toggle>
+            <mat-datepicker #fromDatePicker></mat-datepicker>
+
+            <mat-error>
+              <app-validation [labelName]='fromDate.innerText' [validationControl]="eventForm.controls.fromDate"
+                [doValidate]="true">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50"
+            class="icon-center pt-12" *ngIf="!hideFromToDate">
+            <mat-label #toDate translate>To Date</mat-label>
+            <input matInput [matDatepicker]="toDatePicker" (keyup)="forceValidation('toDate',eventForm)" required
+              formControlName="toDate"
+              [min]="eventForm.controls.fromDate.value || eventForm.controls.announcedDate.value" [max]="endDate">
+            <mat-datepicker-toggle matSuffix [for]="toDatePicker"></mat-datepicker-toggle>
+            <mat-datepicker #toDatePicker></mat-datepicker>
+            <mat-error>
+              <app-validation [labelName]='toDate.innerText' [validationControl]="eventForm.controls.toDate"
+                [doValidate]="true">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div fxLayout="column" fxLayout.gt-sm="row" class="pt-12">
+          <ng-container *ngIf="loadData | async">
+            <af-select [isValueIsObject]="isValueIsObject" class="pr-sm-20" fxLayout="column" fxFlex="100"
+              fxFlex.gt-sm="50" appearance="outline" [optionGroupRequired]="true" [groups]="classSections"
+              placeholder="{{'Class And Sections' | translate}}" [multiple]="true" formControlName="eventClassSections"
+              (selectionChange)="onSelectSection($event)" [value]="selectedItems"></af-select>
+          </ng-container>
+          <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50"
+            class="pr-sm-20" *ngIf="!hideFromToDate">
+            <mat-label #statusId translate>Status</mat-label>
+            <mat-select formControlName="statusId" required>
+              <mat-option *ngFor="let eventStatus of eventstatusList" [value]="eventStatus.value">
+                {{eventStatus.label}}
+              </mat-option>
+            </mat-select>
+            <mat-error>
+              <app-validation [labelName]='statusId.innerText' [validationControl]="eventForm.controls.statusId"
+                [doValidate]="true">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <div fxLayout="column" class="pt-sm-12 pr-sm-20" fxFlex="100" fxFlex.gt-sm="40">
+            <label class="mb-12 fuse-black-500-fg" #IsPostCalender>{{'Do you Want to post this Event
+              Information To School Calender ?' | translate}}</label>
+            <mat-radio-group fxLayout="row" fxFlex="100" required formControlName="isPostToCalender">
+              <mat-radio-button class="ml-24" value="Yes">Yes</mat-radio-button>
+              <mat-radio-button class="ml-24" value="No">No</mat-radio-button>
+            </mat-radio-group>
+          </div>
+          <div fxLayout="column">
+            <div fxLayout="row" fxLayoutAlign="start center" class="mt-8">
+              <button mat-raised-button color="primary" (click)="fileInput.value='';fileInput.click()" type="button"
+                translate>
+                {{'Upload Image' | translate}}
+              </button>
+
+              <button *ngIf="eventForm?.value?.attachment?.fileName" mat-icon-button  type="button">
+                <mat-icon class="mb-4 grey-600-fg" (click)="fileInput.value='';clearImages(true)">highlight_off
+                </mat-icon>
+              </button>
+            </div>
+            <input [accept]="'.doc,.docx,image/jpeg,image/jpg,image/png,application/pdf,image/*'" id="fileInput"
+              (change)="imgChanged(fileInput.files,eventForm)" fxHide type="file" #fileInput>
+            <div *ngIf="!isUpdateOrView"
+              [style.visibility]="eventForm?.value?.attachment?.fileName ? 'visible' : 'hidden'"
+              class="pt-4 primary-300-fg font-size-12 text-left pr-36">
+              {{eventForm?.value?.attachment?.fileName}}
+            </div>
+            <a *ngIf="isUpdateOrView" target="_blank" [href]="nameImgProp"
+              [style.visibility]="eventForm?.value?.attachment?.fileName ? 'visible' : 'hidden'"
+              class="pt-4 primary-300-fg font-size-12 text-left pr-36">View Attachment</a>
+          </div>
+        </div>
+
+        <div fxLayout="row" class="pt-12">
+          <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100">
+            <mat-label #eventDescription translate>Event Description</mat-label>
+            <textarea formControlName="eventDescription" matInput required
+              (keyup)="preventSpace($event,'eventForm','eventDescription')"
+              (blur)="trimTextBoxSpaces('eventForm','eventDescription')"></textarea>
+            <mat-error>
+              <app-validation [labelName]='eventDescription.innerText'
+                [validationControl]="eventForm.controls.eventDescription" [doValidate]="true">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div fxLayout.gt-sm="row" fxLayout="column" fxLayoutAlign="end">
+          <div fxLayout="column" class="mt-8 mr-20" translate *ngIf="!hideFromToDate">After Submission of
+            Event,Participants &Finalist & winners
+            Can be selected for Competition Events</div>
+          <button mat-raised-button class="mx-sm-12 text-uppercase" type="button" (click)="return()"
+            translate>{{'Cancel' | translate}}</button>
+          <button mat-raised-button color="accent" class="text-uppercase"
+            translate>{{(updateButtonShow ? 'Update':'Create') | translate}}</button>
+        </div>
+      </form>
+    </div>
+
+    <div *ngIf="viewDetails" class="p-24" fxLayout="column">
+      <form class="p-20" [formGroup]="eventForm" (ngSubmit)="onSubmit(eventForm)" fxLayout="column"
+        fxLayout.gt-sm="row">
+        <div fxLayout="column" fxFlex.gt-sm="{{fxFlexSize}}" fxFlex="100">
+          <div fxLayout="column" fxLayout.gt-sm="row" class="pt-12">
+            <mat-form-field appearance="outline" fxFlexFill fxFlex.gt-xs="33" fxFlex="100" fxLayout="column">
+              <mat-label #announcedDate translate>Announce Date</mat-label>
+              <input matInput (keyup)="forceValidation('announcedDate',eventForm)" [matDatepicker]="announcedDatePicker"
+                formControlName="announcedDate" readonly>
+              <mat-datepicker #announcedDatePicker></mat-datepicker>
+            </mat-form-field>
+
+            <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="34"
+              class="px-sm-20">
+              <mat-label #fromDate translate>From Date</mat-label>
+              <input matInput [matDatepicker]="fromDatePicker" (keyup)="forceValidation('fromDate',eventForm)" required
+                formControlName="fromDate" [min]="eventForm.controls.announcedDate.value" readonly>
+              <mat-datepicker #fromDatePicker [startAt]="eventForm.value.announcedDate"></mat-datepicker>
+            </mat-form-field>
+
+            <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="33"
+              class="pr-sm-20">
+              <mat-label #toDate translate>To Date</mat-label>
+              <input matInput [matDatepicker]="toDatePicker" (keyup)="forceValidation('toDate',eventForm)" required
+                formControlName="toDate"
+                [min]="eventForm.controls.fromDate.value || eventForm.controls.announcedDate.value" readonly>
+              <mat-datepicker #toDatePicker [startAt]="eventForm.value.fromDate"></mat-datepicker>
+            </mat-form-field>
+          </div>
+
+          <div fxLayout="column" fxLayout.gt-sm="row" class="pt-12">
+            <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="33">
+              <mat-label translate>Event Type</mat-label>
+              <input matInput [value]="eventTypeName? eventTypeName: ''" readonly>
+            </mat-form-field>
+            <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="34"
+              class="px-sm-20">
+              <mat-label translate>Status</mat-label>
+              <input matInput [value]="eventTypeStatus ? eventTypeStatus: ''" readonly>
+            </mat-form-field>
+            <div fxLayout="column" class="pt-sm-12 pr-sm-20" fxFlex="100" fxFlex.gt-sm="33">
+              <label class="mb-12 fuse-black-500-fg" #IsPostCalender translate>Do you Want to post this Event
+                Information To School Calender ?</label>
+              <mat-radio-group fxLayout="row" fxFlex="100" disabled="true" formControlName="isPostToCalender">
+                <mat-radio-button class="ml-24" value="Yes">Yes</mat-radio-button>
+                <mat-radio-button class="ml-24" value="No">No</mat-radio-button>
+              </mat-radio-group>
+            </div>        
+          </div>        
+            <div fxLayout="row" class="py-16" *ngIf="attachmentDetails">
+              <button mat-raised-button type="button" color="primary" (click)="download()">
+                <mat-icon class="mr-8">attachment</mat-icon><span translate>Preview Attachment</span>
+              </button>
+            </div>          
+          <div fxLayout="row" class="pt-12">
+            <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" class="pr-sm-20">
+              <mat-label translate>Event Description</mat-label>
+              <textarea formControlName="eventDescription" matInput required readonly></textarea>
+            </mat-form-field>
+          </div>
+        </div>
+        <div fxLayout="column" fxFlex.gt-sm="40" fxFlex="100" *ngIf="viewClassSection?.length">
+          <mat-list class="pt-0 confirm-table border mt-16" fxLayout.gt-sm="row wrap" fxLayoutAlign="center start">
+            <mat-list-item fxLayout="column" fxFlex="50" class="stickyx"><strong translate>Class</strong>
+            </mat-list-item>
+            <mat-list-item fxLayout="column" fxFlex="50" class="stickyx"><strong translate>Section</strong>
+            </mat-list-item>
+            <div *ngFor="let classSection of viewClassSection" fxLayout="row" fxFlex="100" class="border-top">
+              <mat-list-item fxLayout="column" fxFlex="50">{{classSection.className}}</mat-list-item>
+              <mat-list-item fxLayout="column" fxFlex="50">{{classSection.sectionName}}</mat-list-item>
+            </div>
+          </mat-list>
+        </div>
+      </form>
+    </div>
+  </div>
+  <ng-template #eventsActions>
+    <form [formGroup]="winnerPositionForm" (ngSubmit)="onClickArray(winnerPositionForm, winnerPositionForm.value.positionId)" #winnerForm="ngForm">
+      <div fxLayout="row" fxFlex="100" fxLayoutAlign="center center">
+        <mat-form-field class="pr-20 pl-4 mw-200">
+          <mat-label #sectionId translate>Winner Type</mat-label>
+          <mat-select placeholder="Winner Type" formControlName="positionId" required>
+            <mat-option *ngFor="let positionDetail of positionDetails" [value]="positionDetail.value">
+              {{ positionDetail.label }}</mat-option>
+          </mat-select>
+          <mat-error>
+            <app-validation [labelName]='sectionId.innerText'
+              [validationControl]="winnerPositionForm.controls.positionId" [doValidate]="winnerValidate">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+        <div fxLayout="column">
+          <button type="submit" mat-raised-button class="text-uppercase mr-8" translate color="accent"
+            [disabled]="!winnerPositionForm.value.positionId">
+            {{'Apply' | translate}}
+          </button>
+        </div>
+      </div>
+    </form>
+  </ng-template>
+  <ng-template #eventsFinalistActions>
+    <form [formGroup]="winnerPositionForm" (ngSubmit)="onClickArray(winnerPositionForm,winnerPositionForm.value.positionFinalistId)" #winnerForm="ngForm">
+      <div fxLayout="row" fxFlex="100" fxLayoutAlign="center center">
+        <mat-form-field class="pr-20 pl-4 mw-200">
+          <mat-label #sectionId translate>Winner Type</mat-label>
+          <mat-select formControlName="positionFinalistId" placeholder="Winner Type" required>
+            <mat-option *ngFor="let positionDetail of positionFinalistDetails" [value]="positionDetail.value">
+              {{ positionDetail.label }}</mat-option>
+          </mat-select>
+          <mat-error>
+            <app-validation [labelName]='sectionId.innerText'
+              [validationControl]="winnerPositionForm.controls.positionFinalistId" [doValidate]="winnerValidate">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+        <div fxLayout="column">
+          <button type="submit" mat-raised-button class="text-uppercase mr-8" translate color="accent"
+            [disabled]="!winnerPositionForm.value.positionFinalistId">
+            {{'Apply' | translate}}
+          </button>
+        </div>
+      </div>
+    </form>
+  </ng-template>
+  <ng-template #eventsWinnerActions>
+    <form [formGroup]="winnerPositionForm" (ngSubmit)="onClickArray(winnerPositionForm, winnerPositionForm.value.positionWinnerId)"
+      #winnerForm="ngForm">
+      <div fxLayout="row" fxFlex="100" fxLayoutAlign="center center">
+        <mat-form-field class="pr-20 pl-4 mw-200">
+          <mat-label #sectionId translate>Winner Type</mat-label>
+          <mat-select formControlName="positionWinnerId" placeholder="Winner Type" required>
+            <mat-option *ngFor="let positionDetail of positionWinnerDetails" [value]="positionDetail.value">
+              {{ positionDetail.label }}</mat-option>
+          </mat-select>
+          <mat-error>
+            <app-validation [labelName]='sectionId.innerText'
+              [validationControl]="winnerPositionForm.controls.positionWinnerId" [doValidate]="winnerValidate">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+        <div fxLayout="column">
+          <button type="submit" mat-raised-button class="text-uppercase mr-8" translate color="accent"
+            [disabled]="!winnerPositionForm.value.positionWinnerId">
+            {{'Apply' | translate}}
+          </button>
+        </div>
+      </div>
+    </form>
+  </ng-template>
+  <mat-accordion multi class="tabs-table-padding0" *ngIf="addEventId !== undefined && isCompetation">
+    <mat-expansion-panel *ngIf="isPanel" class="mb-12">
+      <mat-expansion-panel-header>
+        <mat-panel-title translate class="text-uppercase">Student List</mat-panel-title>
+      </mat-expansion-panel-header>
+      <app-table [massActionTemplateRef]="eventsActions" [settings]="tableSettings"
+        (selectedRows)='selectedRows($event)' (getTableData)='participantStudentDetails($event)'>
+      </app-table>
+    </mat-expansion-panel>
+    <mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = false" class="mb-12">
+      <mat-expansion-panel-header>
+        <mat-panel-title translate class="text-uppercase">List Of Participants</mat-panel-title>
+      </mat-expansion-panel-header>
+      <app-table [massActionTemplateRef]="eventsFinalistActions" [settings]="participantTabSetting"
+        (selectedRows)='selectedRows($event)' (deleteAllRows)='deleteAll()'>
+      </app-table>
+    </mat-expansion-panel>
+    <mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = false" class="mb-12">
+      <mat-expansion-panel-header>
+        <mat-panel-title translate class="text-uppercase">List Of Finalist</mat-panel-title>
+      </mat-expansion-panel-header>
+      <app-table [massActionTemplateRef]="eventsWinnerActions" [settings]="finalistTableSettings"
+        (selectedRows)='selectedRows($event)' (deleteAllRows)='deleteFinalist()'>
+      </app-table>
+    </mat-expansion-panel>
+    <mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = false" class="mb-12">
+      <mat-expansion-panel-header>
+        <mat-panel-title translate class="text-uppercase">List Of Winners</mat-panel-title>
+      </mat-expansion-panel-header>
+      <app-table [settings]="winnerTabSetting" (selectedRows)='selectedRows($event)' (deleteAllRows)='deleteWinner()'>
+      </app-table>
+    </mat-expansion-panel>
+  </mat-accordion>
+</div>
+<!-- Coustom Dialog for winning Position-->
+<ng-template #winnerPositionTemplate>
+  <mat-table [dataSource]="selectedStudentIds" class="mh-300">
+    <ng-container matColumnDef="studentName">
+      <mat-header-cell *matHeaderCellDef class="px-4">Student Name</mat-header-cell>
+      <mat-cell *matCellDef="let element" class="px-4"> {{element.studentName}}</mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="className">
+      <mat-header-cell *matHeaderCellDef class="px-4"> Class Name </mat-header-cell>
+      <mat-cell *matCellDef="let element" class="px-4"> {{element.className}} </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="sectionName">
+      <mat-header-cell *matHeaderCellDef class="px-4"> Section Name </mat-header-cell>
+      <mat-cell *matCellDef="let element" class="px-4"> {{element.sectionName}} </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="admissionNumber">
+      <mat-header-cell *matHeaderCellDef class="px-4"> Admission Number </mat-header-cell>
+      <mat-cell *matCellDef="let element" class="px-4"> {{element.admissionNumber}} </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="position">
+      <mat-header-cell *matHeaderCellDef class="px-4"> Winning Position </mat-header-cell>
+      <mat-cell *matCellDef="let element" class="px-4">
+        <mat-form-field fxFlexFill fxLayout="column" fxFlex="100" class="input-padding0">
+          <mat-label>Position</mat-label>
+          <mat-select (selectionChange)="element.winningPosition=($event.value)">
+            <mat-option *ngFor="let winninPosition of winninPositions" [value]="winninPosition.value">
+              {{winninPosition.label}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </mat-cell>
+    </ng-container>
+    <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+  </mat-table>
+  <div fxLayout="row" fxLayoutAlign="end center" class="pt-16">
+    <button class="mr-12 text-uppercase" mat-raised-button type="button" matDialogClose (click)="cancelClick()"
+      translate>{{'Cancel' | translate}}</button>
+    <button mat-raised-button type="submit" class="text-uppercase" color="accent" (click)="winningPositionClick()"
+      translate>{{'Submit' | translate}}</button>
+  </div>
+</ng-template>
+<!-- End Coustom Dialog  -->

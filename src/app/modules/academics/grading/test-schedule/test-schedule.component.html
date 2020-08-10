@@ -1,0 +1,460 @@
+<mat-tab-group [selectedIndex]="index" (selectedIndexChange)="selected($event)" class="manage-institue mt-28">
+  <mat-tab [active]="isTestsViewActive">
+    <ng-template mat-tab-label><span translate>TESTS VIEW</span></ng-template>
+    <div [active]="isTestsViewActive">
+      <ng-template matTabContent>
+        <app-table [settings]="tabSettings" [templateRef]="testSchedules" (getTableData)='testScheduleTableData($event)'
+          (rowBasedAction)='rowActions($event)' [rowExpandRef]="testClassSections" (openAddForm)="onAddFormClick()"
+          [closeRowForm]='closeAddPanel'>
+        </app-table>
+      </ng-template>
+    </div>
+  </mat-tab>
+
+  <mat-tab>
+    <ng-template mat-tab-label translate><span translate>SCHEDULES VIEW</span></ng-template>
+    <div [active]="!isTestsViewActive">
+      <ng-template matTabContent>
+        <app-schedules-list></app-schedules-list>
+      </ng-template>
+    </div>
+  </mat-tab>
+
+  <ng-template #testClassSections>
+    <app-table fxFlex="100" [settings]="tableSettings" (getTableData)='testClassSectionsTableData($event)'
+      (rowBasedAction)='ClassSectionrowActions($event)'>
+    </app-table>
+  </ng-template>
+
+  <ng-template #testSchedules>
+    <mat-vertical-stepper [linear]="true" #stepper (selectionChange)="OnSelectionChange($event)"
+      (animationDone)="onStepperAnimationDone(stepper.selectedIndex)">
+      <mat-step [stepControl]="testTypeAndGradingForm" [completed]="testTypeAndGradingForm.valid">
+        <form fxLayout="column" fxFlex="100" [formGroup]="testTypeAndGradingForm">
+          <ng-template matStepLabel><span translate>TestType & GradeTerm</span></ng-template>
+          <div class="pt-24 font-size-18" translate>Please Select The Type And Grading Term For this Test</div>
+          <div fxLayout="column" fxLayout.gt-sm="row" class="pt-24" fxFlex="100">
+            <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+              <mat-label #board translate>Board</mat-label>
+              <mat-select formControlName="boardId" (selectionChange)="onSelectSchoolBoard($event.value)" required>
+                <mat-option *ngFor="let board of schoolBoardsList" [value]="board.value">
+                  {{board.label}}</mat-option>
+              </mat-select>
+              <mat-error>
+                <app-validation [labelName]='board.innerText'
+                  [validationControl]="testTypeAndGradingForm.controls.boardId" [doValidate]="validate">
+                </app-validation>
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50"
+              class="pl-sm-20">
+              <mat-label #gradeTerm translate>Grading Term</mat-label>
+              <mat-select formControlName="gradeTermId" (selectionChange)="onSelectGradingTerm($event.value)" required>
+                <mat-option *ngFor="let gradeTerm of gradeTermList" [value]="gradeTerm.value">
+                  {{gradeTerm.label}}</mat-option>
+              </mat-select>
+              <mat-error>
+                <app-validation [labelName]='gradeTerm.innerText'
+                  [validationControl]="testTypeAndGradingForm.controls.gradeTermId" [doValidate]="validate">
+                </app-validation>
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <div fxLayout.lt-sm="column" fxLayout.gt-sm="row" fxFlex="100" class="pt-sm-12">
+            <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+              <mat-label #testType translate>Test Type</mat-label>
+              <mat-select formControlName="testTypeId" required (selectionChange)="onTestTypeSelect($event.value)">
+                <mat-option *ngFor="let testTypeId of testTypesList" [value]="testTypeId.value">
+                  {{testTypeId.label}}</mat-option>
+              </mat-select>
+              <mat-error>
+                <app-validation [labelName]='testType.innerText'
+                  [validationControl]="testTypeAndGradingForm.controls.testTypeId" [doValidate]="validate">
+                </app-validation>
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50"
+              class="pl-sm-20" *ngIf="!isTestEdit">
+              <mat-label #testMarks translate>Test Max Marks</mat-label>
+              <input (keyup)="preventSpace($event,'testTypeAndGradingForm','testMaxMarks')" matInput formControlName="testMaxMarks">
+              <mat-error>
+                <app-validation [labelName]='testMarks.innerText'
+                  [validationControl]="testTypeAndGradingForm.controls.testMaxMarks" [doValidate]="validate">
+                </app-validation>
+              </mat-error>
+            </mat-form-field>
+
+          </div>
+
+          <div fxLayout="row" fxLayoutAlign="center center" class="mt-28">
+            <button #resetButtonStepper mat-raised-button id="resetButtonStepper" (click)="onCancel()" type="reset"
+              class="text-uppercase mr-12" translate>{{'Cancel' | translate}}
+            </button>
+            <button mat-raised-button matStepperNext type="button" color="accent" class="text-uppercase"
+              translate>{{'Next' | translate}}
+            </button>
+          </div>
+        </form>
+      </mat-step>
+
+      <mat-step [stepControl]="testDetailsForm" [completed]="testDetailsForm.valid">
+        <div fxLayout="column" fxLayout.gt-sm="row" fxFlexFill>
+          <form fxLayout="column" fxFlex="100" [formGroup]="testDetailsForm" class="pr-16" #testDetailForm="ngForm">
+            <ng-template matStepLabel><span translate>Test Details</span></ng-template>
+            <div class="pt-24 font-size-18" translate>Please Enter Details Regarding this Test</div>
+            <div fxLayout="column" fxLayout.gt-sm="row" class="pt-24" fxFlex="100">
+              <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+                <mat-label #testName translate>Name</mat-label>
+                <input (keyup)="preventSpace($event,'testDetailsForm','testName')" (blur)="trimTextBoxSpaces('testDetailsForm','testName')"
+                  formControlName="testName" matInput required autocomplete="off">
+                <mat-error>
+                  <app-validation [labelName]='testName.innerText'
+                    [validationControl]="testDetailsForm.controls.testName" [doValidate]="validate">
+                  </app-validation>
+                </mat-error>
+              </mat-form-field>
+            </div>
+            <div fxLayout="column" fxLayout.gt-sm="row" class="pt-12" fxFlex="100">
+              <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50"
+                class="icon-center">
+                <mat-label #startDate translate>Start Date</mat-label>
+                <input matInput (keyup)="forceValidation('fromDate',testDetailsForm)" [matDatepicker]="fromDate"
+                  formControlName="fromDate" [min]="academicSessionMinDate" [max]="academicSessionMaxDate"
+                  autocomplete="off" (dateChange)="onStartDateSelect()">
+                <mat-datepicker-toggle matSuffix [for]="fromDate"></mat-datepicker-toggle>
+                <mat-datepicker #fromDate></mat-datepicker>
+                <mat-error>
+                  <app-validation [labelName]='startDate.innerText'
+                    [validationControl]="testDetailsForm.controls.fromDate" [doValidate]="validate">
+                  </app-validation>
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50"
+                class="pl-sm-20 icon-center">
+                <mat-label #endDate translate>End Date</mat-label>
+                <input matInput (keyup)="forceValidation('toDate',testDetailsForm)" [matDatepicker]="toDate"
+                  formControlName="toDate" [min]="testDetailsForm.controls.fromDate.value || academicSessionMinDate"
+                  [max]="academicSessionMaxDate" autocomplete="off">
+                <mat-datepicker-toggle matSuffix [for]="toDate"></mat-datepicker-toggle>
+                <mat-datepicker #toDate [startAt]="testDetailsForm.controls.fromDate.value"></mat-datepicker>
+                <mat-error>
+                  <app-validation [labelName]='endDate.innerText' [validationControl]="testDetailsForm.controls.toDate"
+                    [doValidate]="validate">
+                  </app-validation>
+                </mat-error>
+              </mat-form-field>
+            </div>
+            <div fxLayout="column" class="pt-sm-12" fxFlex="100">
+
+              <label class="mb-12 fuse-black-500-fg" #IsPostCalender translate>Do you Want to post this Test Schedule
+                Information To Student Calender ?</label>
+              <mat-radio-group fxLayout="row" fxFlex="100" required formControlName="isPostCalender">
+                <mat-radio-button class="ml-24" value="Yes"><span translate>Yes</span></mat-radio-button>
+                <mat-radio-button class="ml-24" value="No"><span translate>No</span></mat-radio-button>
+              </mat-radio-group>
+              <mat-error>
+                <app-validation [labelName]='IsPostCalender.innerText'
+                  [validationControl]="testDetailsForm.controls.isPostCalender" [doValidate]="validate">
+                </app-validation>
+              </mat-error>
+            </div>
+
+            <div fxLayout="row" fxLayoutAlign="center center" class="mt-28">
+              <button mat-raised-button matStepperPrevious type="button" class="text-uppercase mr-12"
+                translate>{{'Previous' | translate}}
+              </button>
+              <button mat-raised-button matStepperNext type="button" color="accent" class="text-uppercase"
+                translate>{{'Next' | translate}}
+              </button>
+            </div>
+          </form>
+          <ng-template *ngTemplateOutlet="sideBarData;context:{stepperIndex: 1}"></ng-template>
+        </div>
+      </mat-step>
+
+      <mat-step [stepControl]="classSectionForm" [completed]="getOptionalClassStep()" [optional]=getOptionalClassStep()>
+        <div fxLayout="column" fxLayout.gt-sm="row" fxFlexFill>
+          <form fxLayout="column" [formGroup]="classSectionForm" fxFlex="65" class="pr-16"
+            #classSectionFormData="ngForm">
+            <ng-template matStepLabel><span translate>Class & Section</span></ng-template>
+            <label class="pt-24 font-size-18"><span translate>Please Select Class And Section Participants in this
+                Test</span></label>
+            <div fxLayout="column" fxLayout.gt-sm="row" class="pt-24" fxFlex="100">
+              <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="40"
+                class="pr-sm-20">
+                <mat-label #classId translate>Class</mat-label>
+                <mat-select required="true" formControlName="classId" (selectionChange)="onSelectClass($event.value)"
+                  required>
+                  <mat-option *ngFor="let classId of classesList" [value]="classId.value">
+                    {{classId.label}}</mat-option>
+                </mat-select>
+                <mat-error>
+                  <app-validation [labelName]='classId.innerText'
+                    [validationControl]="classSectionForm.controls.classId" [doValidate]="classValidate">
+                  </app-validation>
+                </mat-error>
+              </mat-form-field>
+              <af-select appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="40"
+                [optionGroupRequired]="false" [options]="sectionsList?.length ? sectionsList : []" [showChips]="1"
+                placeholder="Section" [multiple]="true" formControlName="sectionId"></af-select>
+              <div>
+                <button mat-raised-button type="submit" color="primary" class="text-uppercase ml-12 mt-16"
+                  (click)="onClassSectionSelectBtn()" classSectionForm>{{'Select' | translate}}
+                </button>
+              </div>
+            </div>
+            <div class="simple-table-container mat-elevation-z3 my-20 radius-t-20 responsive-normal-table"
+              *ngIf="allClassSectionDetails.length">
+              <table class="simple clickable">
+                <thead>
+                  <tr>
+                    <th class="text-left" translate>Class</th>
+                    <th class="text-left" translate>Section</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <ng-container *ngFor="let class of allClassSectionDetails">
+                    <tr *ngFor="let section of class.sections">
+                      <td>{{class.label}}</td>
+                      <td>{{section.label}}</td>
+                      <td class="text-right py-4"><button mat-icon-button (click)="onClassSectionDelete(class,section)">
+                          <mat-icon class="red-300-fg">delete</mat-icon>
+                        </button></td>
+                    </tr>
+                  </ng-container>
+                </tbody>
+              </table>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="center center" class="mt-28">
+              <button mat-raised-button matStepperPrevious type="button"
+                class="text-uppercase mr-12">{{'Previous' | translate}}
+              </button>
+              <button mat-raised-button matStepperNext type="button" (click)="onClassSectionNext()"
+                color="accent" class="text-uppercase">{{'Next' | translate}}
+              </button>
+            </div>
+          </form>
+          <ng-template *ngTemplateOutlet="sideBarData;context:{stepperIndex: 2}"></ng-template>
+        </div>
+
+      </mat-step>
+      <mat-step [stepControl]="testScheduleForm" [completed]="getOptionalScheduleStep()" [optional]=getOptionalScheduleStep()>
+        <div fxLayout="column" fxLayout.gt-sm="row" fxFlexFill>
+          <form fxLayout="column" fxFlex="70" [formGroup]="testScheduleForm" class="pr-16"
+            #testScheduleFormData="ngForm">
+            <ng-template matStepLabel><span translate>Test Schedule</span></ng-template>
+            <div class="pt-24 font-size-18"><span translate>Please Enter The Schedules for Various Courses in the
+                Test</span>
+            </div>
+
+            <div fxLayout="column" fxLayout.gt-sm="row" class="pt-24" fxFlex="100">
+              <af-select appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50"
+              [required]="true" (selectionChange)="onSelectTestScheduleClass($event)"
+                [optionGroupRequired]="false" [options]="allClassSectionDetailsData | async" [showChips]="1"
+                placeholder="Class" [multiple]="true" formControlName="classId" [doValidate]="true"></af-select>
+
+              <af-select appearance="outline" class="pl-sm-20" fxFlexFill fxLayout="column" fxFlex="100"
+                fxFlex.gt-sm="50" [optionGroupRequired]="false"
+                [options]="selectedClasses?.length == 1  ? (selectedSection | async)  : []" [showChips]="1"
+                placeholder="Section" [multiple]="true" formControlName="sectionId"></af-select>
+            </div>
+
+            <div fxLayout="column" fxLayout.gt-sm="row" fxFlex="100">
+              <af-select appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="33"
+                [optionGroupRequired]="false" [showChips]="1" [options]="coursesList?.length ? coursesList : []" [required]="true" 
+                placeholder="Courses" [multiple]="true" formControlName="courseId"
+                required [doValidate]="true">
+              </af-select>
+              <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="33"
+                class="pl-sm-20 icon-center">
+                <mat-label #testDates translate>Test Date</mat-label>
+                <input matInput (keyup)="forceValidation('testDate',testScheduleForm)" [matDatepicker]="testDate"
+                  formControlName="testDate" [min]="academicSessionMinDate" [max]="academicSessionMaxDate"
+                  autocomplete="off" [required]="true">
+                <mat-datepicker-toggle matSuffix [for]="testDate"></mat-datepicker-toggle>
+                <mat-datepicker #testDate [startAt]="startAtTestDate"></mat-datepicker>
+                <mat-error>
+                  <app-validation [labelName]='testDates.innerText'
+                    [validationControl]="testScheduleForm.controls.testDate" [doValidate]="testSchedulValidate">
+                  </app-validation>
+                </mat-error>
+              </mat-form-field>
+              <div fxLayout="column" class="w-200">
+                <div fxLayoutAlign="center start">
+                  <button mat-raised-button type="button" class="text-uppercase ml-12 mt-16" color="primary" type="reset"
+                  (click)="testScheduleClear()">{{'Clear' | translate}}
+                </button>
+                <button mat-raised-button type="button" color="accent" class="text-uppercase ml-12 mt-16" type="submit"
+                  (click)="testScheduleSelectClick()">{{'Select' | translate}}
+                </button>
+                </div>              
+              </div>
+            </div>
+
+            <table class="mat-elevation-z3 simple clickable radius-10 my-20" fxFlex="100"
+              *ngIf="testScheduleDetails.length !=0">
+              <thead>
+                <tr>
+                  <th class="text-left" translate>Class</th>
+                  <th class="text-left" translate>Section</th>
+                  <th class="text-left" translate>Course</th>
+                  <th class="text-left" translate>Test Date</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let testSchedule of testScheduleDetails">
+                  <td>{{testSchedule.class}}</td>
+                  <td>{{testSchedule.section}}</td>
+                  <td>{{testSchedule.course}}</td>
+                  <td>{{getFormattedDateBySchoolDateFormat(testSchedule.testDate)}}</td>
+                  <td class="text-right py-4"><button mat-icon-button (click)="ontestScheduleDelete(testSchedule)">
+                      <mat-icon class="red-300-fg">delete</mat-icon>
+                    </button></td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div fxLayout="row" fxLayoutAlign="center center" class="mt-28">
+              <button mat-raised-button matStepperPrevious type="button"
+                class="text-uppercase mr-12">{{'Previous' | translate}}
+              </button>
+              <button mat-raised-button matStepperNext type="button" color="accent" class="text-uppercase"
+                (click)="testScheduleNextBtn()">
+                {{'Next' | translate}}
+              </button>
+            </div>
+          </form>
+          <ng-template *ngTemplateOutlet="sideBarData;context:{stepperIndex: 3}"></ng-template>
+        </div>
+      </mat-step>
+
+      <mat-step>
+        <ng-template matStepLabel><span translate>Complete</span></ng-template>
+        <div fxFlex="100" class="font-size-20 py-16" translate>confirmInformation</div>
+
+        <mat-list fxLayout="row wrap" class="pt-0 confirm-table border">
+          <mat-list-item fxLayout="column" fxFlex.gt-xs="50">
+            <div fxLayout="row" fxFlex="45"><strong><span translate>boardname</span></strong></div>
+            <div fxLayout="row" fxFlex="55"><span class="pr-4">:</span>
+              {{getNameBasedOnValue('board',testTypeAndGradingForm.value.boardId)}}</div>
+          </mat-list-item>
+          <mat-list-item fxLayout="column" fxFlex.gt-xs="50">
+            <div fxLayout="row" fxFlex="45"><strong><span translate>Grading Term</span></strong></div>
+            <div fxLayout="row" fxFlex="55"><span
+                class="pr-4">:</span>{{getNameBasedOnValue('gradingTerm',testTypeAndGradingForm.value.gradeTermId)}}
+            </div>
+          </mat-list-item>
+          <mat-list-item fxLayout="column" fxFlex.gt-xs="50">
+            <div fxLayout="row" fxFlex="45"><strong><span translate>Test Type</span></strong></div>
+            <div fxLayout="row" fxFlex="55"><span
+                class="pr-4">:</span>{{getNameBasedOnValue('testType',testTypeAndGradingForm.value.testTypeId)}}</div>
+          </mat-list-item>
+          <mat-list-item fxLayout="column" fxFlex.gt-xs="50">
+            <div fxLayout="row" fxFlex="45"><strong><span translate>Name</span></strong></div>
+            <div fxLayout="row" fxFlex="55"><span class="pr-4">:</span>{{testDetailsForm.value.testName}}</div>
+          </mat-list-item>
+          <mat-list-item fxLayout="column" fxFlex.gt-xs="50">
+            <div fxLayout="row" fxFlex="45"><strong><span translate>Start Date</span></strong></div>
+            <div fxLayout="row" fxFlex="55"><span
+                class="pr-4">:</span>{{testDetailsForm.value.fromDate!=null ? getFormattedDateBySchoolDateFormat(testDetailsForm.value.fromDate):'--'}}</div>
+          </mat-list-item>
+          <mat-list-item fxLayout="column" fxFlex.gt-xs="50">
+            <div fxLayout="row" fxFlex="45"><strong><span translate>End Date</span></strong></div>
+            <div fxLayout="row" fxFlex="55"><span
+                class="pr-4">:</span>{{testDetailsForm.value.toDate!=null ?getFormattedDateBySchoolDateFormat(testDetailsForm.value.toDate):'--'}}</div>
+          </mat-list-item>
+          <mat-list-item fxLayout="column" fxFlex.gt-xs="50">
+            <div fxLayout="row" fxFlex="45"><strong><span translate>Post to Student Calender</span></strong></div>
+            <div fxLayout="row" fxFlex="55"><span class="pr-4">:</span>{{testDetailsForm.value.isPostCalender}}</div>
+          </mat-list-item>
+        </mat-list>
+        <div class="ovrflowy-auto mat-elevation-z3 radius-10 m-20">
+          <table class="simple" fxFlex="100" id="comform">
+            <thead>
+              <tr>
+                <th class="text-left stickyx" translate>Class</th>
+                <th class="text-left stickyx" translate>Section</th>
+                <th class="text-left stickyx" translate>Course</th>
+                <th class="text-left stickyx" translate>Test Date</th>
+
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let testSchedule of testScheduleDetails">
+                <td>{{testSchedule.class}}</td>
+                <td>{{testSchedule.section}}</td>
+                <td>{{testSchedule.course}}</td>
+                <td>{{getFormattedDateBySchoolDateFormat(testSchedule.testDate)}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="center center" class="mt-32 pt-24">
+          <button mat-raised-button matStepperPrevious type="button" class="text-uppercase mr-12">
+            {{'Previous' | translate}}</button>
+          <button mat-raised-button type="submit" class="text-uppercase" color="accent"
+            (click)="onSubmit()">{{(isTestEdit ? 'Update':'Create') | translate}}
+          </button>
+        </div>
+      </mat-step>
+    </mat-vertical-stepper>
+  </ng-template>
+
+  <ng-template #sideBarData let-stepperIndex="stepperIndex">
+    <div fxLayout="column" class="border-left my-28 mh-424 w-320">
+      <div fxLayout="row" class="py-4 px-20">
+        <div class="w-144" translate>Board</div> :<div class="pl-12 break-word">
+          {{getNameBasedOnValue('board',testTypeAndGradingForm.value.boardId)}}</div>
+      </div>
+      <div fxLayout="row" class="py-4 px-20">
+        <div class="w-144" translate>Grade Term</div> :<div class="pl-12 break-word">
+          {{getNameBasedOnValue('gradingTerm',testTypeAndGradingForm.value.gradeTermId)}} </div>
+      </div>
+      <div fxLayout="row" class="py-4 px-20">
+        <div class="w-144" translate>Test Type</div> :<div class="pl-12 break-word">
+          {{getNameBasedOnValue('testType',testTypeAndGradingForm.value.testTypeId)}} </div>
+      </div>
+      <ng-container *ngIf="stepperIndex > 1">
+        <div fxLayout="row" class="py-4 px-20">
+          <div class="w-144" translate>Name</div> :<div class="pl-12 break-word">{{testDetailsForm.value.testName}}
+          </div>
+        </div>
+        <div fxLayout="row" class="py-4 px-20">
+          <div class="w-144" translate>Start Date</div> :<div class="pl-12 break-word">
+            {{testDetailsForm.value.fromDate!=null?getFormattedDateBySchoolDateFormat(testDetailsForm.value.fromDate):'--'}}</div>
+        </div>
+        <div fxLayout="row" class="py-4 px-20">
+          <div class="w-144" translate>End Date</div> :<div class="pl-12 break-word">
+            {{testDetailsForm.value.toDate!=null?getFormattedDateBySchoolDateFormat(testDetailsForm.value.toDate):'--'}}</div>
+        </div>
+        <div fxLayout="row" class="pt-4 pb-12 px-20">
+          <div class="w-144" translate>Post to Student calendar</div> :<div class="pl-12 break-word">
+            {{testDetailsForm.value.isPostCalender}}</div>
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="stepperIndex > 2">
+        <div fxLayout="row" class="pt-12 px-20 border-top">
+          <div class="w-144 font-weight-600 accent-fg" translate>Class</div> <div>
+            <span class="pl-12 break-word font-weight-600 accent-fg" translate>
+              Section
+            </span>
+          </div>
+        </div>
+        <div fxLayout="row" class="py-4 px-20" *ngFor="let classSection of allClassSectionDetails">
+          <div class="w-144" translate>{{classSection.label}}</div> :
+          <div>
+            <span class="pl-12 break-word" *ngFor="let section of classSection.sections ; let isLast=last">
+              {{section.label}} {{isLast ? '' : ' , '}}
+            </span>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </ng-template>

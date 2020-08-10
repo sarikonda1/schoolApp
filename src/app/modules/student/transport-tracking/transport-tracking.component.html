@@ -1,0 +1,36 @@
+<div id="accordion-map" [style.visibility]="openMap ? 'visible' : 'hidden'">
+  <!-- {{apiData?.trackingRouteDetailsView | json}} -->
+  <div class="px-36">
+    <div class="font-size-20 pt-12" translate>Track Journey</div>
+    <div class="mat-elevation-z3 simple-table-container radius-t-20">
+     <table class="simple clickable">
+       <thead>
+         <tr>
+           <th translate>Vehical No</th>
+           <th translate>Route Number</th>
+           <th translate>Route Type</th>
+           <th translate>Route Name</th>
+           <th translate>Start Time</th>
+           <th translate>Driver</th>
+           <th translate>Assistant</th>
+         </tr>
+       </thead>
+       <tbody>
+         <tr>
+           <td>{{apiData?.trackingRouteDetailsView.vehicleId}}</td>
+           <td>{{apiData?.trackingRouteDetailsView.routeNumber}}</td>
+           <td>{{apiData?.trackingRouteDetailsView.routeType}}</td>
+           <td>{{apiData?.trackingRouteDetailsView.routeName}}</td>
+           <td>{{apiData?.trackingRouteDetailsView.startTime}}</td>
+           <td>{{apiData?.trackingRouteDetailsView.driverName}}</td>
+           <td>{{apiData?.trackingRouteDetailsView.driverAssistantName}}</td>
+         </tr>
+       </tbody>
+     </table>
+    </div>
+  </div>
+
+  <app-view-route [fromStudentTransport]="true" [routeName]=routeName [trackingPoint]="trackingPoint"
+    [routePoints]="openMap ? routePoints : []">
+  </app-view-route>
+</div>

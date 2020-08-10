@@ -1,0 +1,50 @@
+<app-table [settings]="tabSettings" (getTableData)='getAllSchoolFacilities($event)' (rowBasedAction)='rowWiseActions($event)'
+     [templateRef]="addSchoolFacilities" (openAddForm)="addForm()"
+    [closeRowForm]="closeAddPanel" (deleteAllRows)="deleteAll()" (selectedRows)='selectedRows($event)'></app-table>
+
+<ng-template #addSchoolFacilities>
+    <form [formGroup]="facilityForm" (ngSubmit)="addUpdateSchoolFacility(facilityForm)" #appForm="ngForm">
+        <div fxFlexFill fxLayout="column" fxLayout.gt-xs="row" class="pt-24" fxLayoutAlign="center center">
+            <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-xs="50">
+                <mat-label #typeid translate>FacilityType</mat-label>
+                <mat-select formControlName="typeId" required>
+                    <mat-option *ngFor="let facilityType of facilityTypeDropDown" [value]="facilityType.value">
+                        {{facilityType.label}}
+                    </mat-option>
+                </mat-select>
+                <mat-error>
+                    <app-validation [labelName]='typeid.innerText' [validationControl]="facilityForm.controls.typeId"
+                        [doValidate]="facilityFormSubmitted">
+                    </app-validation>
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field fxFlexFill appearance="outline" class="pl-sm-20" fxLayout="column" fxFlex="100"
+                fxFlex.gt-xs="50">
+                <mat-label #FacilityName translate>FacilityName</mat-label>
+                <input matInput formControlName="facilityName" (keyup)="preventSpace($event,'facilityForm', 'facilityName')" autocomplete="off"
+                    required (blur)="trimTextBoxSpaces('facilityForm', 'facilityName')">
+                <mat-error>
+                    <app-validation [labelName]='FacilityName.innerText' [validationControl]="facilityForm.controls.facilityName"
+                        [doValidate]="facilityFormSubmitted">
+                    </app-validation>
+                </mat-error>
+            </mat-form-field>
+        </div>
+        <div fxFlexFill fxLayout="row">
+            <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-xs="30">
+                <mat-label #FacilityCode translate>FacilityCode</mat-label>
+                <input matInput formControlName="facilityCode" (keyup)="preventSpace($event,'facilityForm', 'facilityCode')" autocomplete="off" (blur)="trimTextBoxSpaces('facilityForm', 'facilityCode')">
+                <mat-error>
+                    <app-validation [labelName]='FacilityCode.innerText' [validationControl]="facilityForm.controls.facilityCode"
+                        [doValidate]="facilityFormSubmitted">
+                    </app-validation>
+                </mat-error>
+            </mat-form-field>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="end center" class="pb-8">
+            <button class="mr-12 text-uppercase" mat-raised-button type="button" (click)="onCancelClick()">{{'Cancel' | translate}}</button>
+            <button [disabled]="disbleSubmitBtn" mat-raised-button type="submit" color="accent" class="text-uppercase mr-12"
+                mat-button>{{this.buttonName | translate}}</button>
+        </div>
+    </form>
+</ng-template>

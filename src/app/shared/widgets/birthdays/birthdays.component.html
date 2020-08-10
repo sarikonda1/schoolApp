@@ -1,0 +1,50 @@
+<!-- <div fxLayout="row" fxLayout.gt-sm="row" fxLayoutAlign="start center" *ngIf="birthdaysInfo?.length">
+  <div fxLayout="row wrap" fxFlexFill fxFlex="100" class="border-left section-assignament px-8">
+    <div >
+      <p *ngIf="item.staffName != null" class="text-center text-uppercase font-size-16" translate>Staff :
+        {{item.staffName}}</p>
+      <p *ngIf="item.staffCode" class="text-center text-uppercase font-size-16" translate> Code : {{item.staffCode}}</p>
+      <p *ngIf="item.studentName" class="text-center text-uppercase font-size-16" translate>Student :
+        {{item.studentName}}</p>
+      <p *ngIf="item.className" class="text-center text-uppercase font-size-16" translate> {{item.className }}
+        {{item.sectionName ? '-'+item.sectionName : ''}}</p>
+      <mat-divider></mat-divider>
+    </div>
+  </div>
+</div> -->
+<div fxLayout="row wrap" fxFlex="100" *ngIf="birthdaysInfo && birthdaysInfo.length > 0 && !isLoading">
+  <div fxLayout="column" fxFlex="100" *ngFor="let item of birthdaysInfo" class="border-bottom py-8">
+      <div *ngIf="item.staffName != null" class="py-4 px-12 break-word" ><strong class="pr-4">{{'Staff' | translate}} :</strong>
+          {{item.staffName}}</div>
+        <div *ngIf="item.staffCode" class="py-4 px-12 break-word" > <strong class="pr-4">{{'StaffCode' | translate}} :</strong> {{item.staffCode}}</div>
+        <div *ngIf="item.studentName" class="py-4 px-12 break-word" translate> <strong class="pr-4">Student :</strong>
+          {{item.studentName}}</div>
+        <div *ngIf="item.className" class="py-4 px-12 break-word" translate> {{item.className }}
+          {{item.sectionName ? '-'+item.sectionName : ''}}</div>
+  </div>
+
+</div>
+<!-- <table class="simple clickable" *ngIf="birthdaysInfo?.length">
+  <thead>
+    <tr>
+      <th class="pink">Name</th>
+      <th class="pink">Class</th>
+      <th class="pink">Section</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let item of birthdaysInfo">
+      <td>{{item.studentName}} <mat-icon class="pink-fg">cake</mat-icon></td>
+      <td>{{item.className}}</td>
+      <td>{{item.sectionName }}</td>
+    </tr>
+  </tbody>
+</table> -->
+
+<div *ngIf="birthdaysInfo && birthdaysInfo.length === 0 && !isLoading" fxLayoutAlign="center center" fxFlexFill>
+  <p class="text-center text-uppercase font-size-16 secondary-text" translate>No Data To Display</p>
+</div>
+
+<div *ngIf="isLoading" fxFlexFill fxLayoutAlign="center center">
+  <app-af-loader></app-af-loader>
+</div>

@@ -1,0 +1,38 @@
+agm-map {
+  ::ng-deep {
+    .agm-map-container-inner {
+      border-radius: 10px;
+    }
+
+    .agm-info-window-content {
+      padding-right: 20px;
+      display: table;
+    }
+
+    .gm-ui-hover-effect {
+      top: 0 !important;
+      right: 0 !important;
+    }
+
+    .gm-style-cc {
+      display: none;
+    }
+.min-width-400{
+  min-width: 400px;
+}
+    .p-absolute {
+      span {
+        position: absolute;
+        bottom: 18px;
+        right: 64px;
+        left: 50px;
+        text-align: center;
+        min-width: 300px;
+      }
+    }
+  }
+}
+.grey-header .mat-header-cell{
+  background-color: #f5f5f5 ;
+  color: rgba(0, 0, 0, 0.87) ;
+}

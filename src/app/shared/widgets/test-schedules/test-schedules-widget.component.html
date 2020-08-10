@@ -1,0 +1,9 @@
+<app-table *ngIf="testScheduleItems.length > 0 && !isLoading" [settings]="tableSettings" [sticky]="false">
+</app-table>
+<div *ngIf="testScheduleItems.length <= 0 && !isLoading">
+    <p class="text-center text-uppercase font-size-16 secondary-text" translate>No Data To Display</p>
+</div>
+
+<div *ngIf="isLoading" fxFlexFill fxLayoutAlign="center center">
+    <app-af-loader></app-af-loader>
+</div>

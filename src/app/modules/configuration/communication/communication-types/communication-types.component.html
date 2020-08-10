@@ -1,0 +1,30 @@
+<app-table [settings]="tableSettings" (getTableData)='tableData($event)' (rowBasedAction)="rowWiseActions($event)" (openAddForm)="onAddFormClick()" [closeRowForm]='closeAddPanel' [closeAddForm]="closeAddPanel" [templateRef]="addCommunicationTypeRef"></app-table>
+
+     <ng-template #addCommunicationTypeRef>
+      <form [formGroup]="communicationTypeForm" (ngSubmit)="submitCommunicationForm()"
+      #communicationForm="ngForm" fxLayout="column">
+        
+              <div fxLayout="column" fxLayout.gt-sm="row" class="pt-24" fxFlex="100">
+                <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="50"
+                class="pr-sm-20">
+                <mat-label #name translate>name</mat-label>
+                <input (keyup)="preventSpace($event,'communicationTypeForm','name')" formControlName="name" matInput required>
+                <mat-error>
+                  <app-validation [labelName]='name.innerText'
+                    [validationControl]="communicationTypeForm.controls.name" [doValidate]="validate">
+                  </app-validation>
+                </mat-error>
+                </mat-form-field>
+                <af-select [required]=true (selectionChange)="onSelectChange($event)" appearance="outline" fxFlex="100"  fxFlex.gt-sm="50" [optionGroupRequired]="false" [options]="items"
+                [showChips]="1" placeholder="Delivery Options" [multiple]="true"
+                formControlName="communicationTypeDeliveryOptions" [value]="selectedItems">
+                </af-select>                           
+              </div>
+
+          <div fxLayout="row" fxLayoutAlign="end center" class="mt-sm-12">
+              <button class="mr-12 text-uppercase" mat-raised-button type="button" (click)="cancel()">
+                  {{'Cancel' | translate}}</button>
+              <button mat-raised-button type="submit" class="text-uppercase" color="accent">{{(isEdit ? 'Update':'Create') | translate}}</button>             
+          </div>
+      </form>
+  </ng-template>

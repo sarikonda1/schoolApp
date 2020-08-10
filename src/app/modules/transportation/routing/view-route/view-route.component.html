@@ -1,0 +1,73 @@
+<div class="content p-sm-40" *ngIf="markers?.length > 0">
+  <div class="w-100-p mat-elevation-z3 simple-table-container radius-t-20" fxLayout="column">
+    <div fxLayout.gt-sm="row" fxLayout="column" fxFlex="100" fxLayoutAlign.gt-sm="space-between center" class="p-12">
+      <h2>{{!trackingPoint ? 'Route Point Details' : 'Total Route Time and Distance' | translate}}{{routeName ? '('+routeName+')' : ''}}</h2>
+      <div fxLayout="row">
+        <div fxLayout="row" fxLayoutAlign="center center" *ngIf="duration">
+          <mat-icon class="mr-4 grey-600-fg">access_time</mat-icon>
+          <div fxLayout="column">
+            <span class="grey-500-fg" translate>Travel Time</span>
+            <span>{{ duration }}</span>
+          </div>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="center center" class="px-24" *ngIf="distance">
+          <mat-icon class="mr-4 grey-600-fg">place</mat-icon>
+          <div fxLayout="column">
+            <span class="grey-500-fg" translate>Total Distance</span>
+            <span>{{ distance }} km</span>
+          </div>
+        </div>
+      </div>
+      <div fxLayout="row" fxLayoutAlign="end center" *ngIf="!trackingPoint || !fromStudentTransport">
+        <button *ngIf="!trackingPoint"  mat-raised-button translate type="button" color="primary" class="mr-4 text-uppercase"
+          (click)="onBackButtonClick()">{{(fromStudentTransport ? 'Close' : 'Back') | translate}}</button>
+        <button mat-button *ngIf="!fromStudentTransport" (click)="getHelpText('Routes')">
+          <mat-icon class="grey-600-fg">info</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <agm-map appDirectionsMap (getDirections)="getDirections($event)" [markers]="markers" [zoom]="zoom" [fitBounds]="true" class="h-600" [streetViewControl]="false" >
+      <!-- <agm-direction *ngIf="markers?.length > 1" [origin]="markers[0]?.latlng"
+        [destination]="markers[markers.length - 1].latlng" travelMode="DRIVING" [optimizeWaypoints]="false"
+        [renderOptions]="renderOptions" [markerOptions]="markerOptions" [waypoints]="wayPoints">
+      </agm-direction> -->
+
+      <agm-marker *ngIf="trackingPoint"  [iconHeight]="20" [iconWidth]="20"
+      [agmFitBounds]="true"
+      [label]="test" [iconUrl]="icon"  [latitude]="trackingPoint.lat" [longitude]="trackingPoint.lng"></agm-marker>
+
+      <span *ngFor="let m of markers; let i = index; let l = last; let f = first">
+        <agm-marker [latitude]="m.latitude"
+          [longitude]="m.longitude" [agmFitBounds]="true"
+          [label]="m.studentIcon ? {color: 'blue', text: (m?.position)?.toString()} : (m.position)?.toString()">
+          <agm-info-window [isOpen]="m.studentIcon">
+            {{ m.pointAddress }}
+          </agm-info-window>
+        </agm-marker>
+      </span>
+    </agm-map>
+    <div class="simple-table-container" *ngIf="markers.length > 0">
+      <table class="simple">
+        <thead>
+          <tr>
+            <th>{{'Sr No.' | translate}}</th>
+            <th>{{'Name' | translate}}</th>
+            <th>{{'Latitute' | translate}}</th>
+            <th>{{'Longitude' | translate}}</th>
+            <th>{{'Position Address' | translate}}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let column of markers" [ngClass]="{'student-location': column.studentIcon}">
+            <td>{{ column.position }}</td>
+            <td>{{ column.name }}</td>
+            <td>{{ column.latitude }}</td>
+            <td>{{ column.longitude }}</td>
+            <td>{{ column.pointAddress }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

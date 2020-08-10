@@ -1,0 +1,76 @@
+<mat-form-field [appearance]="appearance" fxFlex="100">
+    <mat-label>{{ (label ? label : placeholder) | translate}}</mat-label>
+    <mat-select #afSelect [placeholder]="placeholder | translate" [(ngModel)]="value" [multiple]="multiple"
+        #itemSelect="ngModel" (selectionChange)="onChangeSelect($event)" [compareWith]="compareObjects"
+        (openedChange)="openedChange($event)" [required]="required" appearance="outline" fxFlex="auto"
+        [disabled]="disabled">
+        <mat-select-trigger *ngIf="multiple && !showChips">
+            {{ (value != undefined && value[0] !== undefined) ? getNameForGroup(value[0]) : ''}}
+            <span *ngIf="value?.length > 1" class="mr-4">
+                (+{{value.length - 1}} others)
+            </span>
+        </mat-select-trigger>
+        <mat-select-trigger *ngIf="multiple && showChips">
+            <mat-chip-list #chipList aria-label="selection" class="mat-custom-chip">
+                <ng-container *ngFor="let option of value; let i=index">
+                    <mat-chip *ngIf="i < showChips" [selectable]="true" [removable]="true"
+                        (removed)="removeChip(option)">
+                        {{option.label}}
+                        <mat-icon matChipRemove>cancel</mat-icon>
+                    </mat-chip>
+                </ng-container>
+                <span *ngIf="value !== undefined && value?.length > showChips" class="mr-4">( +
+                    {{ value.length - showChips}} Options)</span>
+            </mat-chip-list>
+        </mat-select-trigger>
+
+        <div class="mat-select-search-inner px-12 custom-white">
+            <mat-form-field class="w-100-p">
+                <input matInput autocomplete="off" #matSelectSearch type="text" [formControl]="inputSearchFormControl"
+                    placeholder="{{'Search' | translate}}" (keyup)="onSearch($event)"
+                    (keydown)="$event.stopPropagation()">
+                <button *ngIf="matSelectSearch.value != ''" type="button" mat-button matSuffix mat-icon-button
+                    aria-label="Clear" (click)=" matSelectSearch.value = ''; clearSearch(); ">
+                    <mat-icon>close</mat-icon>
+                </button>
+            </mat-form-field>
+            <div fxLayoutAlign="space-between center" *ngIf="showSelectAll && multiple"
+                class="select-btn border-bottom pb-12">
+                <button mat-raised-button type="button" (click)="selectAll(itemSelect)">Select All</button>
+                <button mat-raised-button type="button" (click)="deselectAll(itemSelect)">UnSelect All</button>
+            </div>
+        </div>
+        <div *ngIf="!optionGroupRequired">
+            <mat-option *ngFor="let item of filteredOptions  | async" [value]="(multiple) ? item : item.value">
+                {{item.label}}
+            </mat-option>
+        </div>
+
+        <!-- Loop through each group via the groups array -->
+        <div *ngIf="optionGroupRequired">
+            <mat-optgroup *ngFor="let group of filteredOptionGroups | async">
+                <label (click)="toggleOptionGroupSelection(group)">{{group.name}}</label>
+                <mat-option *ngFor="let item of group.items" [value]="item">
+                    {{item.label}}
+                </mat-option>
+            </mat-optgroup>
+        </div>
+        <div *ngIf="!showSelectAll">
+            <mat-optgroup disabled translate>No Options Found</mat-optgroup>
+        </div>
+    </mat-select>
+    <button mat-button type="button" *ngIf="showClear()" matSuffix mat-icon-button title="Clear" aria-label="Clear"
+        (click)="clearAllOptions($event)">
+        <mat-icon>close</mat-icon>
+    </button>
+    <mat-error *ngIf="(showMessage && required)">
+        <span translate>{{message | translate}}
+        </span>
+    </mat-error>
+    <!-- {{ (label ? label : placeholder) | translate}} -->
+</mat-form-field>
+
+<!-- <div *ngIf="showMessage && required">
+    <span md-colors-watch="false" translate>{{message}}
+    </span>
+</div> -->

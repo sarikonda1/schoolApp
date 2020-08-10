@@ -1,0 +1,11 @@
+::ng-deep {
+    .mat-step-header .mat-step-icon-state-done {
+        background-color: green !important;
+
+    }
+    .list-item-start{
+        .mat-list-item-content{
+            align-items: flex-start !important;
+        }
+    }
+}

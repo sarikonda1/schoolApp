@@ -1,0 +1,94 @@
+<div class="p-32">
+  <div class="p-12 font-size-18 text-uppercase" translate="">SECTION ASSIGNMENT</div>
+  <div class="mat-elevation-z8 simple-table-container radius-t-20">
+    <form [formGroup]="sectionForm" (ngSubmit)="onSelectClassBoard(sectionForm)" #SectionForm="ngForm">
+      <div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign="start center">
+        <div fxLayout="column" fxFlexFill fxFlex="100" fxFlex.gt-sm="30" class="p-20">
+          <mat-form-field *ngIf="isSchoolBoard" appearance="outline">
+            <mat-label #classId translate>Board</mat-label>
+            <mat-select formControlName="boardId" (selectionChange)="onBoardSelect($event)" required>
+              <mat-option *ngFor="let board of schoolBoardsList" [value]="board.value">
+                {{board.label}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="pt-12">
+            <mat-label #classId translate>Class</mat-label>
+            <mat-select formControlName="classId" (selectionChange)="onClassSelect($event)" required>
+              <mat-option *ngFor="let class of classNames" [value]="class.value">
+                {{class.label}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <div fxLayoutAlign="end">
+            <button mat-raised-button color="primary" type="button" class="text-uppercase" (click)="reset()">{{'Reset' | translate}}</button>
+          </div>
+        </div>
+        <div fxLayout="column" fxFlexFill fxFlex="100" fxFlex.gt-sm="70" class="border-left section-assignament px-8">
+          <div fxLayout="row" fxLayoutAlign="end center" class="p-16 border-bottom">
+            <div *ngIf="sectionsInfo && loadData | async" class="pr-8">{{'Total Assigned' | translate}} {{assignedStudents}} of {{totalstudentsCount}}</div>
+            <button mat-button type='button' (click)="getHelpText('Section Assigmnent')">
+              <mat-icon class="grey-600-fg">info</mat-icon>
+            </button>
+          </div>
+          <div fxLayout="row wrap" fxLayoutAlign="start start" *ngIf="sectionsInfo && loadData | async" class="py-12">
+            <div fxLayout="column" fxFlex="30" class="mat-elevation-z3 m-w m-12 radius-10"
+              [@animate]="{value:'*',params:{y:'100%'}}">
+              <p class="text-center text-uppercase font-size-16" translate>Not Assigned</p>
+              <mat-divider></mat-divider>
+              <span class="text-center font-size-24 py-8 red-fg">{{notAssignedStudents}}</span>
+            </div>
+
+            <div *ngFor="let i of sectionsDetails" [@animate]="{value:'*',params:{delay:'100ms', y:'25px'}}">
+              <div fxLayout="column" fxFlex="30" class="mat-elevation-z3 m-w m-12 radius-10">
+                <p class="text-center text-uppercase font-size-16">{{i.sectionName}}</p>
+                <mat-divider></mat-divider>
+                <span class="text-center font-size-24 py-8">{{i.sectionCount}}</span>
+                <small class="text-center font-size-13 pb-4" *ngIf="i.maximumCapacity!=0&&i.maximumCapacity!=null">Max-Capacity({{i.maximumCapacity}})</small>
+              </div>
+            </div>
+          </div>
+          <div fxLayout="row wrap" fxLayoutAlign="start start" *ngIf="!sectionsInfo && sectionForm.controls.classId.value && loadData | async" class="py-12">
+              <p class="text-center text-uppercase font-size-16" translate>There are no students currently admitted in the selected class.</p>
+          </div>
+          <div *ngIf="sectionForm.invalid" class="py-16 text-center font-size-16">
+            {{'PLEASE SELECT REQUIRED FIELDS.' | translate}}
+          
+        </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+
+<app-table *ngIf="tableData" [settings]="tabSettings" (getTableData)='studentsData($event, true)'
+  [massActionTemplateRef]="massActions" (selectedRows)='selectedRows($event)' (rowBasedAction)="rowWiseActions($event)"
+  [disabled]="disbleSubmitBtn" [templateRef]="addCourseTemplate" [closeAddForm]="closeAddPanel"
+  (openAddForm)="onAddFormClick()" [closeRowForm]='closeAddPanel'>
+</app-table>
+
+
+<ng-template #massActions>
+  <form [formGroup]="sectionDropForm" (ngSubmit)="sectionAssign(sectionDropForm.value)">
+    <div fxLayout="row" fxFlex="100" fxLayoutAlign="center center">
+      <mat-form-field class="px-20 w-200">
+        <mat-label #sectionId translate>Section</mat-label>
+        <mat-select (selectionChange)="onSectionSelect($event)" formControlName="sectionId" required>
+          <mat-option *ngFor="let section of sectionNames" [value]="section.value">
+            {{section.label}}
+          </mat-option>
+        </mat-select>
+        <mat-error>
+          <app-validation [labelName]='sectionId.innerText' [validationControl]="sectionDropForm.controls.sectionId"
+            [doValidate]="sectiionValidate">
+          </app-validation>
+        </mat-error>
+      </mat-form-field>
+      <div fxLayout="column">
+        <button mat-raised-button class="text-uppercase mr-8" type="submit" color="accent">{{'Assign' | translate}}</button>
+      </div>
+    </div>
+  </form>
+</ng-template>

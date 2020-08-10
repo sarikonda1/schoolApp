@@ -1,0 +1,88 @@
+<div fxLayout="column" fxLayout.gt-sm="row" fxFlex="100" *ngIf="academicInfo !== null && academicInfo !== undefined  && !isLoading">
+  <div fxLayout="column" fxFlex="100">
+    <mat-grid-list cols="3" rowHeight="90" [gutterSize]="'6px'" class="m-8">
+      <mat-grid-tile class="mat-elevation-z2 radius-5 mr-4" [@animate]="{value:'*',params:{y:'100%'}}">
+        <div fxLayout="column" fxLayoutAlign="center center">
+          <div class="indigo-400-fg font-size-46">{{academicInfo.classes}}</div>
+          <div class="secondary-text text-uppercase font-size-12" translate>classes</div>
+        </div>
+      </mat-grid-tile>
+      <mat-grid-tile class="mat-elevation-z2 radius-5 mr-4" [@animate]="{value:'*',params:{y:'100%'}}">
+        <div fxLayout="column" fxLayoutAlign="center center">
+          <div class="accent-fg font-size-46">{{academicInfo.sections}}</div>
+          <div class="secondary-text text-uppercase font-size-12" translate>sections</div>
+        </div>
+      </mat-grid-tile>
+
+      <mat-grid-tile class="mat-elevation-z2 radius-5 mr-4" [@animate]="{value:'*',params:{y:'100%'}}">
+        <div fxLayout="column" fxLayoutAlign="center center">
+          <div class="deep-purple-400-fg font-size-46">{{academicInfo.students}}</div>
+          <div class="secondary-text text-uppercase font-size-12" translate>students</div>
+        </div>
+      </mat-grid-tile>
+
+      <mat-grid-tile class="mat-elevation-z2 radius-5 mr-4" [@animate]="{value:'*',params:{y:'100%'}}">
+        <div fxLayout="column" fxLayoutAlign="center center">
+          <div class="green-600-fg font-size-46">{{academicInfo.capacity}}</div>
+          <div class="secondary-text text-uppercase font-size-12" translate>capacity</div>
+        </div>
+      </mat-grid-tile>
+
+      <mat-grid-tile class="mat-elevation-z2 radius-5 mr-4" [@animate]="{value:'*',params:{y:'100%'}}">
+        <div fxLayout="column" fxLayoutAlign="center center">
+          <div class="pink-fg font-size-46">{{academicInfo.dropOutTcStudents}}</div>
+          <div class="secondary-text text-center text-uppercase font-size-12 px-4 break-word" translate>dropOutTcStudents</div>
+        </div>
+      </mat-grid-tile>
+      <mat-grid-tile class="mat-elevation-z2 radius-5 mr-4" [@animate]="{value:'*',params:{y:'100%'}}">
+        <div fxLayout="column" fxLayoutAlign="center center">
+          <div class="orange-800-fg font-size-46">{{academicInfo.admissions}}</div>
+          <div class="secondary-text text-uppercase font-size-12 break-word" translate>admissions</div>
+        </div>
+      </mat-grid-tile>
+      <mat-grid-tile class="mat-elevation-z2 radius-5 mr-4" [@animate]="{value:'*',params:{y:'100%'}}">
+        <div fxLayout="column" fxLayoutAlign="center center">
+          <div class="accent-fg font-size-46">{{academicInfo.onlineApplications}}</div>
+          <div class="secondary-text text-uppercase font-size-12 px-8 text-center break-word" translate>onlineApplications</div>
+        </div>
+      </mat-grid-tile>
+      <mat-grid-tile class="mat-elevation-z2 radius-5 mr-4" [@animate]="{value:'*',params:{y:'100%'}}">
+        <div fxLayout="column" fxLayoutAlign="center center">
+          <div class="orange-fg font-size-46">{{academicInfo.students}}</div>
+          <div class="secondary-text text-uppercase font-size-12 px-8 text-center break-word" translate>Current Students</div>
+        </div>
+      </mat-grid-tile>
+      <mat-grid-tile class="mat-elevation-z2 radius-5 mr-4" [@animate]="{value:'*',params:{y:'100%'}}">
+        <div fxLayout="column" fxLayoutAlign="center center">
+          <div class="pink-fg font-size-46">{{this.academicInfo.capacity !== 0 ? this.academicInfo.capacity - this.academicInfo.students : 0}}</div>
+          <div class="secondary-text text-uppercase font-size-12 px-8 text-center break-word" translate>Available Seats</div>
+        </div>
+      </mat-grid-tile>
+    </mat-grid-list>
+    <!-- <mat-grid-list cols="2" rowHeight="85" [gutterSize]="'6px'" class="mx-8">
+    
+
+     
+    </mat-grid-list>
+    <mat-grid-list cols="2" rowHeight="85" [gutterSize]="'6px'" class="m-8">
+    
+
+    </mat-grid-list> -->
+  </div>
+
+  <!-- <div fxLayout="column" fxFlex.gt-sm="30" fxFlex="100" fxLayoutAlign="start center" class="border-left max-width-270"
+    [@animate]="{value:'*',params:{y:'100%'}}">
+      <ngx-charts-pie-chart [view]="[200, 250]" [scheme]="occupancyWidget.scheme" [results]="occupancyWidget.list" [doughnut]="false">
+      </ngx-charts-pie-chart>
+    <div class="text-uppercase font-size-12" translate>Occupancy</div>
+  </div> -->
+
+</div>
+
+<div *ngIf="(academicInfo === null || academicInfo === undefined) && !isLoading">
+  <p class="text-center text-uppercase font-size-16 secondary-text" translate>No Data To Display</p>
+</div>
+
+<div *ngIf="isLoading" fxFlexFill fxLayoutAlign="center center">
+    <app-af-loader></app-af-loader>
+</div>

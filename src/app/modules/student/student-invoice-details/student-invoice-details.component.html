@@ -1,0 +1,133 @@
+<app-af-details [keyValues]="studentDetails" [title]="'Student Information'" [header]=" 'INVOICE DETAILS' "
+  [isBackButtonRequired]=true>
+</app-af-details>
+
+<div *ngIf="showPayment">
+  <app-af-payments [inputData]="feeAccount" (outPutValue)='savePayment($event)' [isRefNumberRequired]="true"></app-af-payments>
+</div>
+
+<app-af-details [payOnline]="currentInvoiceDetails?.balanceAmount > 0 && isSchoolhasActiveServices" [keyValues]="invoiceInformation" [title]="'Invoice Information'" [expand]="closeInvoiceForm" [templateRef]="onCancelInvoice ? isCancel : adjustmentTemplate" [actions]="[]" (onClickPayOnline)="onClickPayOnline($event)"
+  (action)=operations($event)></app-af-details>
+
+<div class="px-sm-40 py-12">
+  <div class="mat-elevation-z2 simple-table-container radius-t-20 pt-12" fxLayout="column">
+    <div class="text-uppercase font-size-18 border-bottom p-20"><span translate>INVOICE PARTICULARS</span></div>
+    <app-table [settings]="particurlarsSettings" [dynamicClass]="'row-class'"></app-table>
+  </div>
+</div>
+
+<div class="px-sm-40 py-12" *ngIf="adjustmentSettings?.rows?.length">
+  <div class="mat-elevation-z2 simple-table-container radius-t-20 pt-12" fxLayout="column">
+    <app-table [settings]="adjustmentSettings" [templateRef]="adjustmentTemplate" [closeRowForm]='closeAddPanel'
+      (openAddForm)="openForm()">
+    </app-table>
+  </div>
+</div>
+
+<div *ngIf="isValid && adjustmentSettings?.rows?.length" class="px-sm-40 py-12">
+  <div class="mat-elevation-z2 simple-table-container radius-t-20 pt-12" fxLayout="column">
+    <app-table [settings]="adjustmentSettings" [templateRef]="isCancel" [closeRowForm]='closeAddPanel'
+      (openAddForm)="openForm()">
+    </app-table>
+  </div>
+</div>
+
+<ng-template #adjustmentTemplate>
+  <form [formGroup]="adjustmentList" (ngSubmit)="onSumbit(adjustmentList)" #form="ngForm" class="pt-20">
+    <ng-container formArrayName="adjustmentLists"
+      *ngFor="let itemrow of addnewInvoiceadjustmentForm.controls; let i=index, let l = last;">
+      <div [formGroupName]="i" fxFlexFill fxLayout="column" fxLayoutAlign="start center" fxLayout.gt-sm="row"
+        class="pt-12">
+        <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex.gt-sm="25" fxFlex="100">
+          <mat-label #invoiceAdjustmentTypeId translate>Adjustment Type</mat-label>
+          <mat-select formControlName="invoiceAdjustmentTypeId" required
+            (selectionChange)="dropdownDisable($event,itemrow.controls.invoiceAdjustmentTypeId)">
+            <mat-option [disabled]="item.disable" value="option1" *ngFor="let item of invoiceAdjustmentTypes"
+              [value]="item.id" ngDefaultControl>
+              {{item.name}}
+            </mat-option>
+          </mat-select>
+          <mat-error>
+            <app-validation [labelName]='invoiceAdjustmentTypeId.innerText'
+              [validationControl]="itemrow.controls.invoiceAdjustmentTypeId" [doValidate]="validate">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field fxFlexFill appearance="outline" class="pl-sm-20" fxLayout="column" fxFlex.gt-sm="25"
+          fxFlex="100">
+          <mat-label #adjustmentAmount translate>Adjustment Amount</mat-label>
+          <input required matInput formControlName="adjustmentAmount" autocomplete="off">
+          <mat-error>
+            <app-validation [labelName]="adjustmentAmount.innerText"
+              [validationControl]="itemrow.controls.adjustmentAmount" [doValidate]="validate">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field fxFlexFill appearance="outline" class="pl-sm-20 icon-center" fxLayout="column" fxFlex.gt-sm="25"
+          fxFlex="100">
+          <mat-label #adjustmentDate translate>Adjustment Date</mat-label>
+          <input matInput [matDatepicker]="adjustmentDatePicker" [max]="currentDate" formControlName="adjustmentDate"
+            required (dateChange)="checkInValid()">
+          <mat-datepicker-toggle matSuffix [for]="adjustmentDatePicker"></mat-datepicker-toggle>
+          <mat-datepicker #adjustmentDatePicker></mat-datepicker>
+          <mat-error>
+            <app-validation [labelName]='adjustmentDate.innerText' [validationControl]="itemrow.controls.adjustmentDate"
+              [doValidate]="validate">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field fxFlexFill appearance="outline" class="pl-sm-20" fxLayout="column" fxFlex.gt-sm="25"
+          fxFlex="100">
+          <mat-label #reason translate>reason</mat-label>
+          <input matInput formControlName="reason" autocomplete="off" (keypress)="preventSpaces($event)">
+        </mat-form-field>
+
+        <button *ngIf="itemrow.value.isRemoveVisible" mat-icon-button type="button" class="mb-16 red-fg"
+          (click)="deleteRow(itemrow,i)">
+          <mat-icon>remove_circle</mat-icon>
+        </button>
+        <button *ngIf="itemrow.value.isAddVisible" mat-icon-button class="mb-16 accent-fg" type="button"
+          [disabled]="isDisabled" (click)="addNewRow(itemrow)">
+          <mat-icon>add_circle</mat-icon>
+        </button>
+      </div>
+    </ng-container>
+    <div *ngIf="isDisabled" class="red-fg">{{errorMsg}}</div>
+    <div fxLayout="row" fxLayoutAlign="end center" class="py-16">
+      <button class="mr-12 text-uppercase" mat-raised-button type="button" (click)="cancel()">{{'Cancel' | translate}}</button>
+      <button mat-raised-button type="submit" class="text-uppercase" color="accent" [disabled]="isDisabled">{{'Submit' | translate}}</button>
+    </div>
+  </form>
+</ng-template>
+
+<app-table *ngIf="paymentSettings?.rows?.length" [settings]="paymentSettings" [closeRowForm]=closeAddPanels (openAddForm)="openPaymentForm()"  (rowBasedAction)='rowActions($event)'>
+</app-table>
+
+<ng-template #isCancel>
+  <form [formGroup]="cancellationForm" (ngSubmit)="InvoiceCancel(cancellationForm)" #appForm="ngForm">
+    <div fxLayout="column">
+      <div class="py-16" translate>
+        Please Confirm the Cancellation of this invoice by including the Reason for Cancellation.
+      </div>
+      <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100">
+
+        <mat-label #cancelledReason translate>Reason For Cancellation</mat-label>
+        <input autocomplete="off" matInput formControlName="cancelledReason" required
+          (keypress)="preventSpaces($event)" (blur)="trimTextBoxSpaces('cancellationForm','cancelledReason')">
+
+        <mat-error>
+          <app-validation [labelName]="cancelledReason.innerText"
+            [validationControl]="cancellationForm.controls.cancelledReason"
+            class="error-msg messages text-left text-danger" [doValidate]="validateForm">
+          </app-validation>
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div fxLayout="row" fxLayoutAlign="center center">
+      <button class="mr-12 text-uppercase" mat-raised-button type="button" (click)="closeForm()">{{'Cancel' | translate}}</button>
+      <button class="mr-12 text-uppercase" mat-raised-button color="accent" [disabled]="disbleSubmitBtn">{{'Submit' | translate}}</button>
+    </div>
+  </form>
+</ng-template>

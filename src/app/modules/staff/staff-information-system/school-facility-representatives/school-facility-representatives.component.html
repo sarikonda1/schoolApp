@@ -1,0 +1,100 @@
+<app-table [settings]="tabSettings" [templateRef]="facilityTemplate" (getTableData)='representativesData($event)'
+  (rowBasedAction)='rowActions($event)' [closeRowForm]='closeAddPanel' (openAddForm)="openForm()">
+</app-table>
+<ng-template #facilityTemplate>
+  <!-- <div *ngIf="show"> -->
+    <form fxLayout="column" (ngSubmit)="saveRepresentative(addRepresentativeFormGroup)"
+      [formGroup]="addRepresentativeFormGroup" #representativeForm="ngForm">
+      <ng-template translate><span>SchoolFacilityRepresentatives</span></ng-template>
+      <div fxFlexFill fxLayout.lt-sm="column" class="pt-24" fxLayout.gt-xs="row" fxFlex="100">
+        <mat-form-field appearance="outline" fxFlexFill fxLayout="column"
+          fxFlex="100" fxFlex.gt-sm="32">
+          <mat-label translate #facilityType>FacilityType</mat-label>
+          <mat-select required name="facilityType" formControlName="facilityTypeId"
+            (selectionChange)="onFacilityTypeSelect($event.value)">
+            <mat-option *ngFor="let facilityType of facilityTypeDropDown" [value]="facilityType.value">
+              {{facilityType.label}}
+            </mat-option>
+          </mat-select>
+          <mat-error>
+            <app-validation [labelName]="facilityType.innerText"
+              [validationControl]="addRepresentativeFormGroup.controls.facilityTypeId" [doValidate]="doValidate">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="px-sm-20" fxFlexFill fxLayout="column"
+          fxFlex="100" fxFlex.gt-sm="36">
+          <mat-label translate #facilityId>Facility</mat-label>
+          <mat-select required name="facility" formControlName="schoolFacilityId">
+            <mat-option *ngFor="let facility of facilityDropDown" [value]="facility.value">
+              {{facility.label}}
+            </mat-option>
+          </mat-select>
+          <mat-error>
+            <app-validation [labelName]="facilityId.innerText"
+              [validationControl]="addRepresentativeFormGroup.controls.schoolFacilityId" [doValidate]="doValidate">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div fxFlexFill fxLayout.lt-sm="column" class="pt-sm-12" fxLayout.gt-xs="row" fxFlex="100">
+
+        <mat-form-field appearance="outline" fxFlexFill
+          fxLayout="column" fxFlex="100" fxFlex.gt-sm="32">
+          <mat-label translate #representativeRole>RepresentativeRole</mat-label>
+          <mat-select required name="schoolRepRole" formControlName="schoolRepRoleId">
+            <mat-option *ngFor="let representativeRoles of representativeRolesDropDown"
+              [value]="representativeRoles.value">
+              {{representativeRoles.label}}
+            </mat-option>
+          </mat-select>
+          <mat-error>
+            <app-validation [labelName]="representativeRole.innerText"
+              [validationControl]="addRepresentativeFormGroup.controls.schoolRepRoleId" [doValidate]="doValidate">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" *ngIf="staffTypeDropDown" class="px-sm-20" fxFlexFill fxLayout="column"
+          fxFlex="100" fxFlex.gt-sm="36">
+          <mat-label translate #staffType>Staff Type</mat-label>
+          <mat-select name="staffType" formControlName="staffTypeCode" (selectionChange)="onStaffTypeSelect($event)">
+            <mat-option *ngIf="staffTypeDropDown?.length"></mat-option>
+            <mat-option *ngFor="let staffType of staffTypeDropDown" [value]="staffType.value">
+              {{staffType.label}}
+            </mat-option>
+          </mat-select>
+          <mat-error>
+            <app-validation [labelName]="staffType.innerText"
+              [validationControl]="addRepresentativeFormGroup.controls.staffTypeCode" [doValidate]="doValidate">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="32">
+          <mat-label translate #staff>Staff</mat-label>
+          <mat-select required name="staff" formControlName="staffId">
+            <mat-option *ngFor="let staff of staffDropDown" [value]="staff.value">
+              {{staff.label}}
+            </mat-option>
+          </mat-select>
+          <mat-error>
+            <app-validation [labelName]="staff.innerText"
+              [validationControl]="addRepresentativeFormGroup.controls.staffId" [doValidate]="doValidate">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div fxLayout="row" fxLayoutAlign="end center" class="my-20">
+        <button mat-raised-button translate class="mr-12 text-uppercase" type="reset" #formCancel id="formCancel"
+          (click)="onCancel()"> {{'Cancel' | translate}}</button>
+        <button mat-raised-button translate type="submit" color="accent" class="text-uppercase">{{(isUpdateData ? 'Update':'Assign') | translate}}
+        </button>
+      </div>
+
+    </form>
+  <!-- </div> -->
+</ng-template>

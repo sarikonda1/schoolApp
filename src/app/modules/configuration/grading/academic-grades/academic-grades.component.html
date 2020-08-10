@@ -1,0 +1,88 @@
+<app-table [settings]="tabSettings" (rowBasedAction)='rowActions($event)' (openAddForm)="addForm()" [closeRowForm]='closeAddPanel'
+  [templateRef]="addAcademicGradeTemplate" (getTableData)='getAcdademicGrades($event)'></app-table>
+
+<ng-template #addAcademicGradeTemplate>
+  <form [formGroup]="academicgradeForm" (ngSubmit)="addUpdateAcademicGrade(academicgradeForm)" #academicGrade="ngForm">
+    <div fxFlexFill fxLayout="column" fxLayout.gt-xs="row" class="pt-24" fxLayoutAlign="center center">
+
+      <mat-form-field appearance="outline" fxLayout="column" fxFlexFill fxFlex="100" fxFlex.gt-xs="20" class="pr-sm-24">
+        <mat-label #gradeIndicator translate>Grade</mat-label>
+        <input (keyup)="preventSpace($event,'academicgradeForm','gradeIndicator')" matInput autocomplete="off" formControlName="gradeIndicator" (blur)="trimTextBoxSpaces('academicgradeForm','gradeIndicator')"
+          required>
+        <mat-error>
+          <app-validation [labelName]="gradeIndicator.innerText" [validationControl]="academicgradeForm.controls.gradeIndicator"
+            [doValidate]="academicGradeFormSubmitted">
+          </app-validation>
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="pr-sm-24" fxLayout="column" fxFlexFill fxFlex="100" fxFlex.gt-xs="20">
+        <mat-label #lowMark translate>LowMark</mat-label>
+        <input matInput autocomplete="off" formControlName="lowMark" (blur)="trimTextBoxSpaces('academicgradeForm','lowMark')" required>
+        <mat-error>
+          <app-validation [labelName]="lowMark.innerText" [validationControl]="academicgradeForm.controls.lowMark"
+            [doValidate]="academicGradeFormSubmitted">
+          </app-validation>
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="pr-sm-24" fxLayout="column" fxFlexFill fxFlex="100" fxFlex.gt-xs="20">
+        <mat-label #highMark translate>HighMark</mat-label>
+        <input matInput autocomplete="off" formControlName="highMark" (blur)="trimTextBoxSpaces('academicgradeForm','highMark')" required>
+        <mat-error>
+          <app-validation [labelName]="highMark.innerText" [validationControl]="academicgradeForm.controls.highMark"
+            [doValidate]="academicGradeFormSubmitted">
+          </app-validation>
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline" fxLayout="column" fxFlexFill fxFlex="100" fxFlex.gt-xs="40">
+        <mat-label #evaluation translate>Evaluation</mat-label>
+        <input (keyup)="preventSpace($event,'academicgradeForm','evaluation')" matInput autocomplete="off" formControlName="evaluation" (blur)="trimTextBoxSpaces('academicgradeForm','evaluation')">
+        <mat-error>
+          <app-validation [labelName]="evaluation.innerText" [validationControl]="academicgradeForm.controls.evaluation"
+            [doValidate]="academicGradeFormSubmitted">
+          </app-validation>
+        </mat-error>
+      </mat-form-field>
+    </div>
+    <div fxFlexFill fxLayout="column" fxLayout.gt-xs="row" fxLayoutAlign="center center" class="pt-12">
+      <mat-form-field *ngIf="isSchoolBoards" appearance="outline" fxLayout="column" fxFlex="100" fxFlexFill>
+        <mat-label #schoolBoardId translate>School Board</mat-label>
+        <mat-select formControlName="schoolBoardId" (selectionChange)="onSelectSchoolBoard($event.value)" required>
+          <mat-option *ngFor="let schoolBoard of schoolBoardsList" [value]="schoolBoard.value">
+            {{schoolBoard.label}}
+          </mat-option>
+        </mat-select>
+        <mat-error>
+          <app-validation [labelName]='schoolBoardId.innerText' [validationControl]="academicgradeForm.controls.schoolBoardId"
+            [doValidate]="academicGradeFormSubmitted">
+          </app-validation>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="px-sm-24" fxLayout="column" fxFlex="100" fxFlexFill>
+        <mat-label #classId translate>Class</mat-label>
+        <mat-select formControlName="classId" (selectionChange)="onSelectClass($event)">
+          <mat-option *ngIf="classNames?.length"></mat-option>
+          <mat-option *ngFor="let class of classNames" [value]="class.value">
+            {{class.label}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlexFill>
+        <mat-label #sectionId translate>Section</mat-label>
+        <mat-select formControlName="sectionId">
+          <mat-option *ngIf="sectionNames?.length"></mat-option>
+          <mat-option *ngFor="let section of sectionNames" [value]="section.value">
+            {{section.label}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div fxLayout="row" fxLayoutAlign="end center" class="pt-16 pb-8">
+      <button mat-raised-button type="button" class="text-uppercase mr-12" (click)="onCancelClick()">{{'Cancel' | translate}}</button>
+      <button [disabled]="disbleSubmitBtn" mat-raised-button type="submit" color="accent" class="text-uppercase"
+        mat-button>{{this.buttonName | translate}}</button>
+    </div>
+  </form>
+</ng-template>

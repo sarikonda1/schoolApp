@@ -1,0 +1,57 @@
+<!--<div fxLayout="row" fxLayout.gt-sm="row" fxLayoutAlign="start center" *ngIf="transportInfo && transportInfo.length">
+  <div fxLayout="row wrap" fxFlexFill fxFlex="100" class="border-left section-assignament px-8">
+    <div fxLayout="column wrap" fxFlex="100" fxFlex.gt-sm="25" class="mat-elevation-z8 m-w m-12 radius-10"
+      [@animate]="{value:'*',params:{y:'100%'}}" *ngFor="let item of transportInfo">
+      <p class="text-center text-uppercase font-size-16" translate>{{item.Label}}</p>
+      <mat-divider></mat-divider>
+      <span class="text-center font-size-24 py-8 red-fg">{{item.Value}}</span>
+    </div>
+  </div>
+</div>-->
+
+<!-- <ngx-charts-number-card *ngIf="transportInfo && transportInfo.length"
+        [view]="view"
+        [cardColor]="cardColor"
+        [results]="transportNumberCards"
+>
+</ngx-charts-number-card> -->
+<mat-grid-list cols="3" rowHeight="100" *ngIf="transportData && !isLoading" [gutterSize]="'8px'" class="m-12">
+  <mat-grid-tile [@animate]="{value:'*',params:{y:'100%'}}" class="mat-elevation-z2 radius-5 assistants">
+    <div fxLayout="column" fxLayoutAlign="center center">
+      <div class="indigo-400-fg font-size-46"> {{transportData.assistants}}</div>
+      <div class="secondary-text text-uppercase font-size-12" translate>Assistants</div>
+    </div>
+  </mat-grid-tile>
+  <mat-grid-tile [@animate]="{value:'*',params:{y:'100%'}}" class="mat-elevation-z2 radius-5 drivers">
+    <div fxLayout="column" fxLayoutAlign="center center">
+      <div class="accent-fg font-size-46"> {{transportData.drivers}}</div>
+      <div class="secondary-text text-uppercase font-size-12" translate>Drivers</div>
+    </div>
+  </mat-grid-tile>
+  <mat-grid-tile [@animate]="{value:'*',params:{y:'100%'}}" class="mat-elevation-z2 radius-5 routes">  
+    <div fxLayout="column" fxLayoutAlign="center center">
+      <div class="deep-purple-400-fg font-size-46"> {{transportData.routes}}</div>
+      <div class=" secondary-text text-uppercase font-size-12" translate>Routes</div>
+    </div>
+  </mat-grid-tile>
+  <mat-grid-tile [@animate]="{value:'*',params:{y:'100%'}}" class="mat-elevation-z2 radius-5 students">
+    <div fxLayout="column" fxLayoutAlign="center center">
+      <div class="green-600-fg font-size-46"> {{transportData.students}}</div>
+      <div class="secondary-text text-uppercase font-size-12" translate>Students</div>
+    </div>
+  </mat-grid-tile>
+  <mat-grid-tile [@animate]="{value:'*',params:{y:'100%'}}" class="mat-elevation-z2 radius-5 vehicles">
+    <div fxLayout="column" fxLayoutAlign="center center">
+      <div class="pink-fg font-size-46"> {{transportData.vehicles}}</div>
+      <div class="secondary-text text-uppercase font-size-12" translate>Vehicles</div>
+    </div>
+  </mat-grid-tile>
+</mat-grid-list>
+
+<div *ngIf="transportData === null && !isLoading">
+  <p class="text-center text-uppercase font-size-16 secondary-text" translate>No Data To Display</p>
+</div>
+
+<div *ngIf="isLoading" fxFlexFill fxLayoutAlign="center center">
+  <app-af-loader></app-af-loader>
+</div>

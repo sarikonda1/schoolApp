@@ -1,0 +1,69 @@
+<div class="content p-sm-40">
+  <div class="ml-20 p-8 text-uppercase font-size-18" translate>staff Member Details</div>
+  <div class="w-100-p mat-elevation-z2 simple-table-container radius-20 mb-20">
+    <div fxLayout="row" fxLayoutAlign="end center" class="p-20">
+      <button mat-raised-button color="primary" translate (click)="back()" class="text-uppercase">{{'Back' | translate}}</button>
+      <button mat-button (click)="getHelpText('Staff Database')">
+        <mat-icon class="grey-600-fg">info</mat-icon>
+      </button>
+    </div>
+    <mat-divider></mat-divider>
+
+    <div fxLayout.gt-sm="row" fxLayout="column" fxLayoutAlign="space-between center" class="p-24">
+
+      <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="65" fxFlexFill>
+        <div fxLayout="row" fxLayoutAlign="center start">
+          <div class="profile-image border m-12 radius-10" fxLayout="column">
+            <img *ngIf="profileImage" [src]="profileImage ? profileImage : ''" class="w-200 h-200 radius-10"
+              alt="No Image" />
+            <div *ngIf="!profileImage" fxLayoutAlign="center center" class="w-200 h-200">No Image</div>
+          </div>
+          <div fxLayout="column" fxFlex="100">
+            <div class="h2 primary-900-fg-custom mb-16 break-word">{{(staffData?.staffName)}}</div>
+            <div fxLayout="row" fxLayoutAlign="start center">
+              <div class="w-100 py-4 primary-300-fg" translate>mobilenumber</div> : <div class="ml-24 break-word">
+                {{staffData?.contactInfo?.mobileNumber ? staffData?.contactInfo?.mobileNumber  : "-"}}</div>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="start center">
+              <div class="w-100 py-4 primary-300-fg" translate>email</div> : <div class="ml-24 break-word">
+                {{staffData?.contactInfo?.primaryEmail ? staffData?.contactInfo?.primaryEmail : "-"}}</div>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="start center">
+              <div class="w-100 py-4 primary-300-fg" translate>status</div> : <div class="ml-24 break-word">
+                {{ staffData?.statusName ? staffData?.statusName  : "-"}}</div>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="start center">
+              <div class="w-100 py-4 primary-300-fg" translate>Date of Join</div> : <div class="ml-24 break-word">
+                {{ staffData?.dateOfJoin ? staffData?.dateOfJoin  : "-"}}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div fxLayout="column" class="mx-sm-12" fxFlex="100" fxFlex.gt-sm="35">
+        <div fxLayout="row">
+          <div class="w-160 py-4 primary-300-fg" translate>Staff Code</div> : <div class="pl-8 break-word">
+            {{ staffData?.staffCode ? staffData?.staffCode  : "-"}}</div>
+        </div>
+        <div fxLayout="row">
+          <div class="w-160 py-4 primary-300-fg" translate>Staff Type</div> : <div class="pl-8 break-word">
+            {{ staffData?.staffType ? staffData?.staffType  : "-"}}</div>
+        </div>
+        <div fxLayout="row" >
+          <div class="w-160 py-4 primary-300-fg" translate>Department</div> : <div class="pl-8 break-word">
+            {{ staffData?.department ? staffData?.department  : "-"}}</div>
+        </div>
+        <div fxLayout="row">
+          <div class="w-160 py-4 primary-300-fg" translate>Position</div> : <div class="pl-8 break-word">
+            {{ staffData?.position ? staffData?.position  : "-"}}</div>
+        </div>
+        <div fxLayout="row">
+          <div class="w-160 py-4 primary-300-fg" translate>processedComments</div> : <div class="pl-8 break-word">
+            {{ staffData?.processedComments ? staffData?.processedComments  : "-"}}</div>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+  <app-job-application-details-view [staffJobApplicantDetailsView]="applicantInfo"></app-job-application-details-view>
+</div>

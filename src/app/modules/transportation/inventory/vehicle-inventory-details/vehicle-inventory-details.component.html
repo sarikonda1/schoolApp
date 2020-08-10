@@ -1,0 +1,43 @@
+
+<div fxLayout="column" class="info-relative mt-28">
+    <div fxLayout="row" fxLayoutAlign="end center" class="edit-info">
+        <button mat-raised-button (click)="back()" color="primary" class="text-uppercase mx-4"> 
+          {{'Back' | translate}}
+        </button>
+    </div>
+  </div>
+
+<mat-tab-group [selectedIndex]="index" (selectedIndexChange)="selected($event)" class="manage-institue">
+
+  <mat-tab label="{{'VEHICLE DETAILS' | translate}}">
+    <div *ngIf="showVehicleDetails">
+      <app-vehicle-details [data]="selectedChanged"></app-vehicle-details>
+    </div>
+  </mat-tab>
+
+  <mat-tab label="{{'SERVICE HISTORY' | translate}}">
+    <div *ngIf="showShowServiceHistory">
+      <app-vehicle-service-history [data]="selectedChanged"></app-vehicle-service-history>
+    </div>
+  </mat-tab>
+
+  <mat-tab label="{{'INSURANCE' | translate}}">
+    <div *ngIf="vehicleInsurance">
+      <app-vehicle-insurance  [data]="selectedChanged"></app-vehicle-insurance>
+    </div>
+  </mat-tab>
+
+  <mat-tab label="{{'POLLUTION CHECK' | translate}}">
+    <div *ngIf="showPollutionCheck">
+      <app-vehicle-pollution-check-history [data]="selectedChanged"></app-vehicle-pollution-check-history>
+    </div>
+  </mat-tab>
+
+  <mat-tab label="{{'INSPECTION' | translate}}">
+    <div *ngIf="showInspection">
+      <app-vehicle-inspection-history [data]="selectedChanged"></app-vehicle-inspection-history>
+    </div>
+  </mat-tab>
+
+
+</mat-tab-group>

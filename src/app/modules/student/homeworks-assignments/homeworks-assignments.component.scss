@@ -1,0 +1,11 @@
+
+.confirm-table{
+  ::ng-deep{
+    .mat-list-item-content{
+      display: block;
+    }
+  }
+}
+::ng-deep .mat-tooltip  {
+  white-space: pre-line    !important;
+}

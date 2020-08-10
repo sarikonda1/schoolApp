@@ -1,0 +1,22 @@
+.confirm-table.edit-settings{
+    ::ng-deep .mat-list-item-content{
+        width:80%
+    }
+    // ::ng-deep .mat-form-field-wrapper{
+    //     margin:0;
+    //     padding-bottom: 12px;
+    //  }
+     .mat-list-item:nth-of-type(odd) {
+        border-right: none;
+    }
+    .mat-list-item:first-child{
+        border-top:none;
+    }
+}
+.name-logo{
+    border-radius: 5px;
+    width: 220px;
+    -o-object-fit: cover;
+    object-fit: cover;
+    max-height: 60px;
+}

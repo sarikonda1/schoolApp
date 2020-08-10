@@ -1,0 +1,632 @@
+
+  <mat-expansion-panel [expanded]=true class="px-12">
+    <mat-expansion-panel-header>
+      <mat-panel-title class="font-size-18 font-weight-600" translate>studentDetails</mat-panel-title>
+    </mat-expansion-panel-header>
+    <div fxLayout="column" fxFlex.gt-sm="80" fxFlex="100" class="mx-auto mb-20">
+      <mat-list fxLayout="row wrap" fxFlex="100" class="institution-details pt-0 border confirm-table">
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>firstname</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.studentDetails?.firstName ? applicantInfo?.studentDetails?.firstName : "-"}}
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>middlename</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.studentDetails?.middleName ? applicantInfo?.studentDetails?.middleName : "-"}}
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>lastname</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.studentDetails?.lastName ? applicantInfo?.studentDetails?.lastName : "-"}}
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>gender</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.gender?applicantInfo?.gender:"-"}}
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex="50" *ngIf="applicantInfo?.sourceOfRegistrationInfo">
+          <span translate>sourceOfRegistationInformation</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50" *ngIf="applicantInfo?.sourceOfRegistrationInfo">
+          {{applicantInfo?.sourceOfRegistrationInfo ? applicantInfo?.sourceOfRegistrationInfo: "-"}}
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>dateofbirth</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.studentDetails?.dateOfBirth ? getFormattedDateBySchoolDateFormat(applicantInfo.studentDetails.dateOfBirth): "-"}}
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>adhaarNumber</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.studentDetails?.aadhaarNumber ? applicantInfo?.studentDetails?.aadhaarNumber: "-"}}
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>caste</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.caste ? applicantInfo?.caste: "-"}}
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>religion</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.religion? applicantInfo?.religion:"-"}}
+        </mat-list-item>
+
+        <mat-list-item *ngIf="applicantInfo?.additionalInformation" fxLayout="column" fxFlex="50">
+          <span translate>additionalInformation</span>
+        </mat-list-item>
+        <mat-list-item *ngIf="applicantInfo?.additionalInformation" fxLayout="column" fxFlex="50">
+          {{applicantInfo?.additionalInformation?applicantInfo?.additionalInformation:"-"}}
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>motherToungeLanguage</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.motherToungeLanguage?applicantInfo?.motherToungeLanguage:"-"}}
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>primaryEmail</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.studentDetails?.email1?applicantInfo?.studentDetails?.email1:"-"}}
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>secondaryEmail</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.studentDetails?.email2?applicantInfo?.studentDetails?.email2:"-"}}
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>mobilenumber</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.studentDetails?.mobileTel?applicantInfo?.studentDetails?.mobileTel:"-"}}
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>alternatenumber</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.studentDetails?.otherTel?applicantInfo?.studentDetails?.otherTel:"-"}}
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>landlinenumber</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.studentDetails?.landTel?applicantInfo?.studentDetails?.landTel:"-"}}
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>addressline1</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.studentDetails?.addressLine1?applicantInfo?.studentDetails?.addressLine1:"-"}}
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>addressline2</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.studentDetails?.addressLine2?applicantInfo?.studentDetails?.addressLine2:"-"}}
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>addressline3</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.studentDetails?.addressLine3?applicantInfo?.studentDetails?.addressLine3:"-"}}
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>city</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.studentDetails?.addressCity?applicantInfo?.studentDetails?.addressCity:"-"}}
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>state</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.stateName?applicantInfo?.stateName:"-"}}
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>country</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.country?applicantInfo?.country:"-"}}
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>pincode</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.studentDetails?.addressPincode?applicantInfo?.studentDetails?.addressPincode:"-"}}
+        </mat-list-item>
+      </mat-list>
+    </div>
+  </mat-expansion-panel>
+
+  <mat-expansion-panel class="px-12">
+    <mat-expansion-panel-header>
+      <mat-panel-title class="font-size-18 font-weight-600" translate>classAndSection</mat-panel-title>
+    </mat-expansion-panel-header>
+
+    <div fxLayout="column" fxFlex.gt-sm="80" fxFlex="100" class="mx-auto mb-20">
+      <mat-list fxLayout="row wrap" fxFlex="100" class="institution-details pt-0 border confirm-table">
+        <mat-list-item  *ngIf="applicantInfo?.currentSchoolName" fxLayout="column" fxFlex="50">
+          <span translate>currentSchoolName</span>
+        </mat-list-item>
+        <mat-list-item *ngIf="applicantInfo?.currentSchoolName" fxLayout="column" fxFlex="50">
+          {{applicantInfo?.currentSchoolName?applicantInfo?.currentSchoolName:"-"}}
+        </mat-list-item>
+
+        <mat-list-item *ngIf="applicantInfo?.currentSchoolCity" fxLayout="column" fxFlex="50">
+          <span translate>currentSchoolCity</span>
+        </mat-list-item>
+        <mat-list-item *ngIf="applicantInfo?.currentSchoolCity" fxLayout="column" fxFlex="50">
+          {{applicantInfo?.currentSchoolCity?applicantInfo?.currentSchoolCity:"-"}}
+        </mat-list-item>
+
+        <mat-list-item *ngIf="applicantInfo?.currentClass" fxLayout="column" fxFlex="50">
+          <span translate>currentClass</span>
+        </mat-list-item>
+        <mat-list-item *ngIf="applicantInfo?.currentClass" fxLayout="column" fxFlex="50">
+          {{applicantInfo?.currentClass?applicantInfo?.currentClass:"-"}}
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>Year</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.academicSessionName?applicantInfo?.academicSessionName :"-"}}
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>School Board</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.schoolBoardName?applicantInfo?.schoolBoardName :"-"}}
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>Class</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.className?applicantInfo?.className :"-"}}
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>Section</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.sectionName?applicantInfo?.sectionName :"-"}}
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>Group Name</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.studentGroupName?applicantInfo?.studentGroupName :"-"}}
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>Roll Number</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.rollNumber?applicantInfo?.rollNumber :"-"}}
+        </mat-list-item>
+
+      </mat-list>
+    </div>
+  </mat-expansion-panel>
+
+  <mat-expansion-panel class="px-12" *ngIf="applicantInfo?.fatherDetails">
+    <mat-expansion-panel-header>
+      <mat-panel-title class="font-size-18 font-weight-600" translate>fatherDetails</mat-panel-title>
+    </mat-expansion-panel-header>
+
+    <div fxLayout="column" fxFlex.gt-sm="80" fxFlex="100" class="mx-auto mb-20">
+      <mat-list fxLayout="row wrap" fxFlex="100" class="institution-details pt-0 border confirm-table">
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>firstname</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.fatherDetails?.firstName?applicantInfo?.fatherDetails?.firstName:"-"}}
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>middlename</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.fatherDetails?.middleName?applicantInfo?.fatherDetails?.middleName:"-"}}
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>lastname</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.fatherDetails?.lastName?applicantInfo?.fatherDetails?.lastName:"-"}}
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>occupation</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.fatherDetails?.occupation?applicantInfo?.fatherDetails?.occupation:"-"}}
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>designation</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.fatherDetails?.designation?applicantInfo?.fatherDetails?.designation:"-"}}
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>organization</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.fatherDetails?.organization?applicantInfo?.fatherDetails?.organization:"-"}}
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>adhaarNumber</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.fatherDetails?.aadhaarNumber?applicantInfo?.fatherDetails?.aadhaarNumber:"-"}}
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>panNumber</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.fatherDetails?.panNumber?applicantInfo?.fatherDetails?.panNumber:"-"}}
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>email</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.fatherDetails?.email1?applicantInfo?.fatherDetails?.email1:"-"}}
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>mobilenumber</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.fatherDetails?.mobileTel?applicantInfo?.fatherDetails?.mobileTel:"-"}}
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>alternatenumber</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.fatherDetails?.otherTel?applicantInfo?.fatherDetails?.otherTel:"-"}}
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>landlinenumber</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.fatherDetails?.landTel?applicantInfo?.fatherDetails?.landTel:"-"}}
+        </mat-list-item>
+
+      </mat-list>
+    </div>
+  </mat-expansion-panel>
+
+  <mat-expansion-panel class="px-12" *ngIf="applicantInfo?.motherDetails">
+    <mat-expansion-panel-header>
+      <mat-panel-title class="font-size-18 font-weight-600" translate>motherDetails</mat-panel-title>
+    </mat-expansion-panel-header>
+
+    <div fxLayout="column" fxFlex.gt-sm="80" fxFlex="100" class="mx-auto mb-20">
+      <mat-list fxLayout="row wrap" fxFlex="100" class="institution-details pt-0 border confirm-table">
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>firstname</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.motherDetails?.firstName?applicantInfo?.motherDetails?.firstName:"-"}}
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>middlename</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.motherDetails?.middleName ? applicantInfo.motherDetails.middleName : "-"}}
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>lastname</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.motherDetails?.lastName?applicantInfo?.motherDetails?.lastName:"-"}}
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>occupation</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.motherDetails?.occupation?applicantInfo?.motherDetails?.occupation:"-"}}
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>designation</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.motherDetails?.designation?applicantInfo?.motherDetails?.designation:"-"}}
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>organization</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.motherDetails?.organization?applicantInfo?.motherDetails?.organization:"-"}}
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>adhaarNumber</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.motherDetails?.aadhaarNumber ? applicantInfo?.motherDetails?.aadhaarNumber:"-"}}
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>panNumber</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.motherDetails?.panNumber?applicantInfo?.motherDetails?.panNumber:"-"}}
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>email</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.motherDetails?.email1?applicantInfo?.motherDetails?.email1:"-"}}
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>mobilenumber</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.motherDetails?.mobileTel?applicantInfo?.motherDetails?.mobileTel:"-"}}
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>alternatenumber</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.motherDetails?.otherTel?applicantInfo?.motherDetails?.otherTel:"-"}}
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>landlinenumber</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.motherDetails?.landTel?applicantInfo?.motherDetails?.landTel:"-"}}
+        </mat-list-item>
+      </mat-list>
+    </div>
+  </mat-expansion-panel>
+
+  <mat-expansion-panel class="px-12" *ngIf="applicantInfo?.guardianDetails">
+    <mat-expansion-panel-header>
+      <mat-panel-title class="font-size-18 font-weight-600" translate>guardianDetails</mat-panel-title>
+    </mat-expansion-panel-header>
+
+    <div fxLayout="column" fxFlex.gt-sm="80" fxFlex="100" class="mx-auto mb-20">
+      <mat-list fxLayout="row wrap" fxFlex="100" class="institution-details pt-0 border confirm-table">
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>firstname</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.guardianDetails?.firstName?applicantInfo?.guardianDetails?.firstName:"-"}}
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>middlename</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.guardianDetails?.middleName ? applicantInfo?.guardianDetails?.middleName : "-"}}
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>lastname</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.guardianDetails?.lastName?applicantInfo?.guardianDetails?.lastName:"-"}}
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>gender</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.guardianDetails?.gender? applicantInfo?.guardianDetails?.gender:"-"}}
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>occupation</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.guardianDetails?.occupation?applicantInfo?.guardianDetails?.occupation:"-"}}
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>designation</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.guardianDetails?.designation?applicantInfo?.guardianDetails?.designation:"-"}}
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>organization</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.guardianDetails?.organization?applicantInfo?.guardianDetails?.organization:"-"}}
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>adhaarNumber</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.guardianDetails?.aadhaarNumber ? applicantInfo?.guardianDetails?.aadhaarNumber:"-"}}
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>panNumber</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.guardianDetails?.panNumber?applicantInfo?.guardianDetails?.panNumber:"-"}}
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>email</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.guardianDetails?.email1?applicantInfo?.guardianDetails?.email1:"-"}}
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>mobilenumber</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.guardianDetails?.mobileTel?applicantInfo?.guardianDetails?.mobileTel:"-"}}
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>alternatenumber</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.guardianDetails?.otherTel?applicantInfo?.guardianDetails?.otherTel:"-"}}
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>landlinenumber</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.guardianDetails?.landTel?applicantInfo?.guardianDetails?.landTel:"-"}}
+        </mat-list-item>
+      </mat-list>
+    </div>
+  </mat-expansion-panel>
+  <mat-expansion-panel id="emergencycontact" class="px-12" *ngIf="applicantInfo?.studentEmergencyContactDetails" (afterExpand)="onClickEmergency('emergencycontact')" (afterCollapse)="onClickEmergency('emergencycontact')">
+    <mat-expansion-panel-header>
+      <mat-panel-title class="font-size-18 font-weight-600" translate>studentEmergencyContactDetails</mat-panel-title>
+    </mat-expansion-panel-header>
+
+    <div fxLayout="column" fxFlex.gt-sm="80" fxFlex="100" class="mx-auto mb-20">
+      <mat-list fxLayout="row wrap" fxFlex="100" class="institution-details pt-0 border confirm-table">
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>emergencyContactName1</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.studentEmergencyContactDetails?.emergencyContactName1 ? applicantInfo?.studentEmergencyContactDetails?.emergencyContactName1:"-"}}
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>emergencyContactRelation1</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.studentEmergencyContactDetails?.emergencyContactRelation1 ? applicantInfo?.studentEmergencyContactDetails?.emergencyContactRelation1:"-"}}
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>emgergencyContactTelNumber1</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.studentEmergencyContactDetails?.emgergencyContactTelNumber1 ? applicantInfo?.studentEmergencyContactDetails?.emgergencyContactTelNumber1:"-"}}
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>emergencyContactName2</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.studentEmergencyContactDetails?.emergencyContactName2 ? applicantInfo?.studentEmergencyContactDetails?.emergencyContactName2:"-"}}
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>emergencyContactRelation2</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.studentEmergencyContactDetails?.emergencyContactRelation2 ? applicantInfo?.studentEmergencyContactDetails?.emergencyContactRelation2:"-"}}
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>emgergencyContactTelNumber2</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{applicantInfo?.studentEmergencyContactDetails?.emgergencyContactTelNumber2 ? applicantInfo?.studentEmergencyContactDetails?.emgergencyContactTelNumber2:"-"}}
+        </mat-list-item>
+      </mat-list>
+    </div>
+  </mat-expansion-panel>
+
+  <mat-expansion-panel class="px-12" *ngIf="applicantInfo?.studentApplicantSiblings?.length" id="siblingcontact" (afterExpand)="onClickEmergency('siblingcontact')" (afterCollapse)="onClickEmergency('siblingcontact')">
+    <mat-expansion-panel-header>
+      <mat-panel-title class="font-size-18 font-weight-600" translate>siblingsDetails</mat-panel-title>
+    </mat-expansion-panel-header>
+    <div *ngFor="let item of applicantInfo?.studentApplicantSiblings;let i = index;" fxLayout="column" fxFlex.gt-sm="80"
+      fxFlex="100" class="mx-12 mb-20">
+      <mat-list fxLayout="row wrap" fxFlex="100" class="institution-details pt-0 border confirm-table">
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>firstname</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{item?.firstName? item?.firstName:"-"}}
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>middlename</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{item?.middleName?item?.middleName:"-"}}
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>lastname</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{item?.lastName?item?.lastName:"-"}}
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>Class</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{item?.className?item?.className:"-"}}
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>Section</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{item?.sectionName?item?.sectionName:"-"}}
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" fxFlex="50">
+          <span translate>admissionNumber</span>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" fxFlex="50">
+          {{item?.siblingAdmissionNumber?item?.siblingAdmissionNumber:"-"}}
+        </mat-list-item>
+
+      </mat-list>
+    </div>
+  </mat-expansion-panel>
+

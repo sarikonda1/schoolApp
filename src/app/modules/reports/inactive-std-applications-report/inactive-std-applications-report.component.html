@@ -1,0 +1,72 @@
+<form [formGroup]="searchForm" #ngForm="ngForm">
+  <div fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="center center" class="px-24 pt-20 pb-12">
+    <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="33.3" class="pr-sm-20">
+      <mat-label translate #class>Class</mat-label>
+      <mat-select (selectionChange)="onSelectClass($event)" formControlName="classId">
+        <mat-option *ngIf="availableClasses?.length"></mat-option>
+        <mat-option *ngFor="let option of availableClasses" [value]="option?.value">
+          {{ option?.label }}</mat-option>
+      </mat-select>
+      <mat-error>
+        <app-validation [labelName]='class.innerText' [validationControl]="searchForm.controls.classId"
+          [doValidate]="true">
+        </app-validation>
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="33.3">
+      <mat-label translate #sections>Sections</mat-label>
+      <mat-select formControlName="sectionId">
+        <mat-option *ngIf="availableSections?.length"></mat-option>
+        <mat-option *ngFor="let option of availableSections" [value]="option?.value">
+          {{ option?.label }}</mat-option>
+      </mat-select>
+      <mat-error>
+        <app-validation [labelName]='sections.innerText' [validationControl]="searchForm.controls.sectionId"
+          [doValidate]="true">
+        </app-validation>
+      </mat-error>
+    </mat-form-field>
+  </div>
+  <div fxLayout="row" fxLayoutAlign="end center" class="mr-20 pb-20">
+    <button mat-raised-button translate color="primary" class="text-uppercase" (click)="reset()" type="reset">
+      Reset
+    </button>
+    <button type="submit" mat-raised-button translate color="accent" class="text-uppercase ml-12"
+      (click)="getInactiveStdApplicationsReport()">
+      Search
+    </button>
+  </div>
+</form>
+
+<app-custom-card *ngIf="!(resultApplicationReports?.inActiveStudentsDetailsView?.length) && ngForm.submitted"
+  [inputMessage]="'No Record Found'">
+</app-custom-card>
+
+<div fxLayout="row" fxLayoutAlign="end center" class="px-32 py-12"
+  *ngIf="resultApplicationReports?.inActiveStudentsDetailsView">
+  <button mat-stroked-button class="mr-12" (click)="generateReport('generatePdfReport')">
+    <mat-icon class="mr-4">save_alt</mat-icon>Download PDF
+  </button>
+  <button mat-stroked-button (click)="generateReport('generateExcelReport')">
+    <mat-icon class="mr-4">save_alt</mat-icon> Download EXCEL
+  </button>
+</div>
+<div class='invoice-container' id="admitted-std" *ngIf="resultApplicationReports?.inActiveStudentsDetailsView" style="padding: 25px; padding-top: 0px;">
+  <span class="dark-theme-color" style="color:#fff">A</span>
+  <div class='b flex-d-c invoice-body' style='overflow: hidden; '>
+    <h3 class="text-center text-uppercase">Inactive Students Summary Report</h3>
+    <div class="p-10 mb-20 main-title">
+      <div class="left-align">Report Generated On : {{ date }}</div>
+      <div class="right-align flex" *ngIf="acadmicSession">
+        {{acadmicSession?.name}} ({{acadmicSession?.startDate | date: 'MMM d, y'}} -
+        {{acadmicSession?.endDate | date: 'MMM d, y'}})
+      </div>
+    </div>
+    <div style="font-size: 18px;" class="px-20 pt-20">Inactive Students</div>
+    <div *ngIf="resultApplicationReports">
+      <app-af-report-table [inputData]="resultApplicationReports?.inActiveStudentsDetailsView"
+        [tableId]="'inactive-std-app'" [columns]="columns"></app-af-report-table>
+    </div>
+  </div>
+</div>

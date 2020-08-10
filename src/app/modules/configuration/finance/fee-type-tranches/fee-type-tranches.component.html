@@ -1,0 +1,62 @@
+<app-table [settings]="tabSettings" (getTableData)='getFeeTypeTrancheDetails($event)' (rowBasedAction)='rowActions($event)'
+   [templateRef]="addFeeTypeTrancheRef" [closeRowForm]='closeAddPanel' (openAddForm)="onAddFormClick()"></app-table>
+
+<ng-template #addFeeTypeTrancheRef>
+   <form [formGroup]="feeTypeTranchesForm" (ngSubmit)="onSubmit(feeTypeTranchesForm)" #trancheForm="ngForm">
+      <div fxFlexFill fxLayout="row" fxLayout.lt-sm="column" class="pt-24" fxLayoutAlign="center center">
+
+         <mat-form-field fxFlexFill appearance="outline" class="pr-sm-20" fxLayout="column" fxFlex="100">
+            <mat-label #feeTypeId translate>Fee Type</mat-label>
+            <mat-select formControlName="feeTypeId" required>
+               <mat-option *ngFor="let feeTypes of feeTypesList" [value]="feeTypes.id">
+                  {{feeTypes.name}}
+               </mat-option>
+            </mat-select>
+            <mat-error>
+               <app-validation [labelName]='feeTypeId.innerText' [validationControl]="feeTypeTranchesForm.controls.feeTypeId"
+                  [doValidate]="doValidate">
+               </app-validation>
+            </mat-error>
+         </mat-form-field>
+
+         <mat-form-field fxFlexFill appearance="outline" class="pl-sm-20" fxLayout="column" fxFlex="100">
+            <mat-label #name translate>Tranche Name</mat-label>
+            <input matInput formControlName="name" autocomplete="off" required (keyup)="preventSpace($event,'feeTypeTranchesForm','name')" (blur)="trimTextBoxSpaces('feeTypeTranchesForm','name')">
+            <mat-error>
+               <app-validation [labelName]='name.innerText' [validationControl]="feeTypeTranchesForm.controls.name"
+                  [doValidate]="doValidate">
+               </app-validation>
+            </mat-error>
+         </mat-form-field>
+      </div>
+      <div fxFlexFill fxLayout="row" fxLayout.lt-sm="column" fxLayoutAlign="center center">
+
+         <mat-form-field fxFlexFill appearance="outline" class="pr-sm-20" fxLayout="column" fxFlex="100" fxFlex.gt-sm="30">
+            <mat-label #code translate>Tranche Code</mat-label>
+            <input matInput formControlName="code" autocomplete="off" (keyup)="preventSpace($event,'feeTypeTranchesForm','code')" (blur)="trimTextBoxSpaces('feeTypeTranchesForm','code')">
+            <mat-error>
+               <app-validation [labelName]='code.innerText' [validationControl]="feeTypeTranchesForm.controls.code"
+                  [doValidate]="doValidate">
+               </app-validation>
+            </mat-error>
+         </mat-form-field>
+
+         <mat-form-field fxFlexFill appearance="outline" class="pl-sm-20" fxLayout="column" fxFlex="100" fxFlex.gt-sm="70">
+            <mat-label #description translate>Tranche Description</mat-label>
+            <textarea matInput formControlName="description" autocomplete="off" (keyup)="preventSpace($event,'feeTypeTranchesForm','description')" (blur)="trimTextBoxSpaces('feeTypeTranchesForm','description')"></textarea>
+            <mat-error>
+               <app-validation [labelName]='description.innerText' [validationControl]="feeTypeTranchesForm.controls.description"
+                  [doValidate]="doValidate">
+               </app-validation>
+            </mat-error>
+         </mat-form-field>
+      </div>
+
+
+      <div fxLayout="row" fxLayoutAlign="center center" fxLayoutAlign.gt-xs="end center" class="py-16">
+         <button class="mr-12 text-uppercase" type="button" mat-raised-button (click)="closeAddForm()">
+            {{'Cancel' | translate}}</button>
+            <button mat-raised-button type="submit" class="text-uppercase" color="accent" [disabled]="disableSubmitBtn">{{(updateButtonShow ? 'Update':'Create') | translate}}</button>
+      </div>
+   </form>
+</ng-template>

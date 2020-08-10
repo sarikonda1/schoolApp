@@ -1,0 +1,21 @@
+.serch-db{
+    width: 100%;
+    max-width: 640px;
+    height: 45px;
+    line-height: 45px;
+    border-radius: 28px;
+    overflow: hidden;  
+}
+.after{   
+    &::after{
+        content: "";
+        border-bottom: 1px solid #e0e0e0;
+        width: 100%;
+        overflow: hidden;
+        z-index: 0;
+    }
+    small{
+        z-index: 99;
+    }
+  
+}

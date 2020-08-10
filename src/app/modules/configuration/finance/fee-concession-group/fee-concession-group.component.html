@@ -1,0 +1,140 @@
+<app-table [settings]="tabSettings" (getTableData)='concessionGroupTableData($event)'
+  [templateRef]="feeConcessionGroupTemplate" (rowBasedAction)='rowActions($event)' [closeRowForm]='closeAddPanel'
+  (openAddForm)="openForm()">
+</app-table>
+
+<ng-template #feeConcessionGroupTemplate>
+  <form *ngIf="((dataLoaded && typeLoaded) || isUpdate)" fxLayout="column" [formGroup]="feeConcessionGroupForm" id="add-update-form"
+    (ngSubmit)="save(feeConcessionGroupForm)" #feeConcessionForm="ngForm">
+    <div formArrayName="feeConcessionGroupArray"
+      *ngFor="let itemrow of feeConcessionGroupForm?.get('feeConcessionGroupArray')?.controls; let i=index">
+      <div [formGroupName]="i">
+        <div fxFlexFill fxLayout="column" fxLayout.gt-xs="row" class="py-24" fxLayoutAlign="center center">
+          <mat-form-field appearance="outline" fxLayout="column"  fxFlex="100" fxFlex.gt-xs="25">
+            <mat-label #groupname translate>Concession Group</mat-label>
+            <input  (keyup)="preventSpaceForArray($event,feeConcessionGroupForm?.controls.feeConcessionGroupArray?.controls[i].controls.groupName)" (blur)="trimTextBoxSpaces('groupName','feeConcessionGroupForm')" id ="groupName"
+              matInput required autocomplete="off" formControlName="groupName">
+            <mat-error>
+              <app-validation [labelName]='groupname.innerText'
+                [validationControl]="feeConcessionGroupForm?.controls.feeConcessionGroupArray?.controls[i].controls.groupName"
+                [doValidate]="true">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field fxFlexFill appearance="outline" fxLayout="column" class="px-sm-20" fxFlex="100"
+            fxFlex.gt-xs="25">
+            <mat-label #code translate>Code</mat-label>
+            <input matInput (keyup)="preventSpaceForArray($event,feeConcessionGroupForm?.controls.feeConcessionGroupArray?.controls[i].controls.code)"  (blur)="trimTextBoxSpaces('code','feeConcessionGroupForm')"
+              autocomplete="off" formControlName="code">
+            <mat-error>
+              <app-validation [labelName]='code.innerText'
+                [validationControl]="feeConcessionGroupForm?.controls.feeConcessionGroupArray?.controls[i].controls.code"
+                [doValidate]="true">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline" fxLayout="column" fxFlexFill fxFlex="100" fxFlex.gt-xs="50">
+            <mat-label #description translate>Description</mat-label>
+            <input matInput (keyup)="preventSpaceForArray($event,feeConcessionGroupForm?.controls.feeConcessionGroupArray?.controls[i].controls.description)" 
+              (blur)="trimTextBoxSpaces('description','feeConcessionGroupForm')" autocomplete="off"
+              formControlName="description">
+            <mat-error>
+              <app-validation [labelName]='description.innerText'
+                [validationControl]="feeConcessionGroupForm?.controls.feeConcessionGroupArray?.controls[i].controls.description"
+                [doValidate]="true">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div fxFlexFill fxLayout="row" fxLayoutAlign="center start" class="mb-24">
+          <div fxLayout="column" fxFlexFill fxFlex="20" translate>Fee Type</div>
+          <div fxLayout="column" fxFlexFill fxFlex="20" class="px-20" translate>Concession Type</div>
+          <div fxLayout="column" fxFlexFill fxFlex="20" translate>Term</div>
+          <div fxLayout="column" fxFlexFill fxFlex="40" class="pl-20" translate>Concession</div>
+        </div>
+
+
+        <div formArrayName="feeConcessionFeeType" *ngFor="let itemrow1 of feeConcession(itemrow).controls; let j=index">
+          <div [formGroupName]="j" fxFlexFill fxLayout="row" fxLayoutAlign="start start">
+            <div fxLayout="column" fxFlexFill fxFlex="20" id="feeTypeId">
+              {{itemrow1?.controls['feeTypeName']?.value}}</div>
+
+            <mat-form-field appearance="outline" fxLayout="column" fxFlexFill fxFlex="20" class="px-20">
+              <mat-label #concessiontypetext translate>Concession Type</mat-label>
+              <mat-select name="concessiontypeId" formControlName="concessionTypeId"
+                (selectionChange)="onSelectConcessionType($event,itemrow1?.controls['feeTypeId'],j,itemrow)">
+                <mat-option *ngIf="concessionTypes?.length"></mat-option>
+                <mat-option *ngFor="let concessiontype of concessionTypes" [value]="concessiontype.value">
+                  {{concessiontype.label}}
+                </mat-option>
+              </mat-select>
+
+            </mat-form-field>
+            <div *ngIf="getValue(itemrow,j)==true && feeConcessionGroupForm?.controls.feeConcessionGroupArray?.controls[i].controls.feeConcessionFeeType?.controls[j].controls.dropDownData.value == null">The selected Fee Type does not have Fee Terms to offer Discount By Term.</div>
+
+            <div *ngIf="getValue(itemrow,j)==false" fxLayout="column" fxFlexFill fxFlex.gt-xs="20">
+              <p #each translate>Each</p>
+            </div>
+
+            <div *ngIf="getValue(itemrow,j)==false" fxLayout="column" fxFlexFill fxFlex="40">
+              <mat-form-field form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="40"
+                class="w-148 formfield-pb-0">
+                <mat-label #discount translate>Discount</mat-label>
+                <input (keyup)="preventSpaceForArray($event,itemrow1.controls.discount)" matInput autocomplete="off" numbersOnly
+                  formControlName="discount">
+              </mat-form-field>
+              <mat-error>
+                <app-validation [isTollTip] = "true" [labelName]='discount.innerText'
+                  [validationControl]="feeConcessionGroupForm?.controls.feeConcessionGroupArray?.controls[i].controls.feeConcessionFeeType?.controls[j].controls.discount"
+                  [doValidate]="true">
+                </app-validation>
+              </mat-error>
+            </div>
+
+            <div *ngIf="getValue(itemrow,j)==true && dropDownLoaded | async" fxLayout="column" fxFlexFill
+              fxFlex.gt-xs="20">
+              <app-custom-dropdown
+                *ngIf="feeConcessionGroupForm?.controls.feeConcessionGroupArray?.controls[i].controls.feeConcessionFeeType?.controls[j].controls.dropDownData.value"
+                formControlName="feeTypeForFeeTermIdMulti" class="pr-20"
+                (selectedData)="onSelectFeeTerm($event,j,itemrow1)" (change)="ontestSeclect()"
+                [dropDownConf]="feeConcessionGroupForm?.controls.feeConcessionGroupArray?.controls[i].controls.feeConcessionFeeType?.controls[j].controls.dropDownData.value"
+                ngDefaultControl [disable]="disabled">
+              </app-custom-dropdown>
+            </div>
+
+            <div
+              *ngIf="getValue(itemrow,j)==true && feeConcessionGroupForm?.controls.feeConcessionGroupArray?.controls[i].controls.feeConcessionFeeType?.controls[j].controls.feeTypeForFeeTermIdMulti.value.length>0"
+              fxLayout=" column" fxFlexFill fxFlex="40">
+              <div #terms fxLayout="row wrap" fxFlex="100">
+                <div formArrayName="feeConcessionFeeTerm"
+                  *ngFor="let feeTerm of itemrow1.get('feeConcessionFeeTerm').controls; let h=index">
+                  <div [formGroupName]="h" class="pb-12">
+                    <mat-form-field form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="30"
+                      class="w-148  pr-12 formfield-pb-0">
+                      <mat-label #termConcessionAmt translate>{{feeTerm?.controls['feeTermName']?.value}}</mat-label>
+                      <input (keyup)="preventSpaceForArray($event,feeTerm.controls.termConcessionAmt)" matInput autocomplete="off" numbersOnly
+                        formControlName="termConcessionAmt">
+                      <mat-error class="pt-8 text-center">
+                        <app-validation  [isTollTip] = "true"  [labelName]='termConcessionAmt.innerText'
+                          [validationControl]="feeTerm.controls.termConcessionAmt"
+                          [doValidate]="true">
+                        </app-validation>
+                      </mat-error>
+                    </mat-form-field>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div fxLayout="row" fxLayoutAlign="end center" class="mt-20">
+      <button mat-raised-button type="reset" (click)="onCancelClick()"
+        class="text-uppercase mr-12">{{'Cancel' | translate}}</button>
+      <button [disabled]="disbleSubmitBtn" mat-raised-button type="submit" color="accent" class="text-uppercase"
+        mat-button>{{(isUpdate ? 'Update':'Submit') | translate}}</button>
+    </div>
+  </form>
+</ng-template>

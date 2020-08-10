@@ -1,0 +1,170 @@
+<div class="p-sm-40">
+  <div class="mat-elevation-z3 simple-table-container radius-t-20">
+    <div fxLayout="row" fxLayoutAlign="space-between center" class="p-20 border-bottom">
+      <div class="font-size-18 text-uppercase" translate>New Transportation Schedule</div>
+      <div>
+        <button mat-raised-button color="primary" type='button' (click)="onAction(true)"
+          class="mr-4 text-uppercase">{{'Back' | translate}}</button>
+        <button mat-button type='button' (click)="getHelpText('Schedules')">
+          <mat-icon class="grey-600-fg">info</mat-icon>
+        </button>
+      </div>
+    </div>
+    <form [formGroup]="scheduleForm" #scheduleform="ngForm" class="px-28 pt-28">
+      <div fxLayout="column" fxLayout.gt-sm="row">
+        <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="30">
+          <mat-label translate #scheduleName>Schedule Name</mat-label>
+          <input matInput (blur)="trimTextBoxSpaces('scheduleForm','name')" formControlName="name" required autofocus id="focusField">
+          <mat-error>
+            <app-validation [labelName]='scheduleName.innerText' [validationControl]="scheduleForm.controls.name"
+              [doValidate]="validate">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="30"
+          class="pl-sm-16">
+          <mat-label translate #typeId>Type</mat-label>
+          <mat-select required formControlName="inboundOrOutbound" (selectionChange)="onTypeChange($event)">
+            <mat-option *ngFor="let type of routeTypeList" [value]="type.code">
+              {{ type.name }}</mat-option>
+          </mat-select>
+          <mat-error>
+            <app-validation [labelName]='typeId.innerText' [validationControl]="scheduleForm.controls.inboundOrOutbound"
+              [doValidate]="validate">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+
+        <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="20" class="formfield-pb-0 pl-sm-16">
+          <app-custom-timepicker [label]="'Start Time'" appearance="outline" formControlName="startTime"
+            [is24HoursFormat]="true" [showLabel]="true" [isRequired]="true" [errorClass]="'pt-20'" [requiredValidator]=true></app-custom-timepicker>
+          <!-- <mat-error *ngIf="scheduleForm.controls.startTime.dirty">
+            <app-validation [labelName]="'Start Time'" [validationControl]="scheduleForm.controls.startTime"
+              [doValidate]="validate">
+            </app-validation>
+          </mat-error> -->
+        </div>
+        <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="20" class="formfield-pb-0 pl-sm-16">
+          <app-custom-timepicker [label]="'End Time'" appearance="outline" formControlName="endTime"
+            [is24HoursFormat]="true" [showLabel]="true" timeValidator=true [errorClass]="'pt-20'" ngDefaultControl></app-custom-timepicker>
+          <!-- <mat-error *ngIf="scheduleForm.controls.endTime.dirty">
+            <app-validation [labelName]="'End Time'" [validationControl]="scheduleForm.controls.endTime"
+              [doValidate]="validate">
+            </app-validation>
+          </mat-error> -->
+        </div>
+      </div>
+      <div *ngIf="!isShowRoutesForm && !routeListForm.value?.routesList?.length" fxLayout="row" class="py-20">
+        <button mat-raised-button color="accent" class="text-uppercase" (click)="isShowRoutesForm = true"><span translate>Add Routes</span></button>
+      </div>
+    </form>
+    <form *ngIf="isShowRoutesForm || routeListForm.value?.routesList?.length" [formGroup]="routeSelectionForm" #form="ngForm" fxLayout="row" class="px-28 pt-12">
+      <div (click)="onClickForm()" fxLayout="column" fxLayout.gt-sm="row" fxFlex="100">
+        <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="30">
+          <mat-label translate #routeId>Route Name</mat-label>
+          <mat-select (selectionChange)="onRouteChange($event)" required formControlName="transportRouteId">
+            <mat-option [disabled]="route.disable" *ngFor="let route of routesList" [value]="route.id">
+              {{route.name}}</mat-option>
+          </mat-select>
+          <mat-error>
+            <app-validation [labelName]='routeId.innerText'
+              [validationControl]="routeSelectionForm.controls.transportRouteId" [doValidate]="validate">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="20"
+          class="pl-sm-16">
+          <mat-label translate #vehicleId>Vehicle</mat-label>
+          <mat-select formControlName="vehicleId" required>
+            <mat-option [disabled]="vehicle.disable" *ngFor="let vehicle of vehiclesList" [value]="vehicle.id">
+              {{vehicle.name}}</mat-option>
+          </mat-select>
+          <mat-error>
+            <app-validation [labelName]='vehicleId.innerText'
+              [validationControl]="routeSelectionForm.controls.vehicleId" [doValidate]="validate">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="22" class="pl-sm-16">
+          <mat-label translate #driverId>Driver</mat-label>
+          <mat-select formControlName="driverStaffId" required>
+            <mat-option [disabled]="driver.disable" *ngFor="let driver of driversList" [value]="driver.id">
+              {{driver.name}}</mat-option>
+          </mat-select>
+          <mat-error>
+            <app-validation [labelName]='driverId.innerText'
+              [validationControl]="routeSelectionForm.controls.driverStaffId" [doValidate]="validate">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="20"
+          class="pl-sm-16">
+          <mat-label translate #assistantId>Assistant</mat-label>
+          <mat-select formControlName="assistantStaffId" required>
+            <mat-option [disabled]="driverAssistant.disable" *ngFor="let driverAssistant of driversAssistantsList"
+              [value]="driverAssistant.id">
+              {{driverAssistant.name}}</mat-option>
+          </mat-select>
+          <mat-error>
+            <app-validation [labelName]='assistantId.innerText'
+              [validationControl]="routeSelectionForm.controls.assistantStaffId" [doValidate]="validate">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+        <div fxLayout="column" class="mt-12 pl-sm-16">
+          <button class mat-raised-button (click)="onSelectRoute()" type="submit" color="accent">
+            {{'Select' | translate}}
+          </button>
+        </div>
+      </div>
+    </form>
+    <div class="simple-table-container" fxLayout="column" *ngIf="routeListForm.value?.routesList?.length">
+      <div class="font-size-20 p-20 border-bottom" translate>Selected Routes</div>
+      <table class="simple">
+        <thead>
+          <tr>
+            <th translate>Route No</th>
+            <th translate>Route Name</th>
+            <th translate>Route Description</th>
+            <th translate>Vehicle</th>
+            <th translate>Driver</th>
+            <th translate>Assistant</th>
+            <th translate>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let route of routeListForm.get('routesList')?.controls; let i = index">
+            <td><span class="p-4 "> {{route.value.routeNumber}} </span>
+            </td>
+            <td><span class="p-4 text-bold"> {{getLabelById('routesList', route.value.transportRouteId)}} </span>
+            </td>
+            <td>
+              <p>{{route.value.routeDescription}}</p>
+            </td>
+            <td>
+              <p> {{getLabelById('vehiclesList', route.value.vehicleId)}} </p>
+            </td>
+            <td>
+              <p> {{getLabelById('driversList', route.value.driverStaffId)}} </p>
+            </td>
+            <td>
+              <p>{{getLabelById('driversAssistantsList', route.value.assistantStaffId)}} </p>
+            </td>
+            <td> <button mat-icon-button type="button">
+                <mat-icon class="red-300-fg" (click)="removeRoute(route,i)">delete</mat-icon>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div fxLayout="row" fxLayoutAlign="end center" class="px-24 py-16">
+      <button (click)="onAction(true)" mat-raised-button type="button" class="text-uppercase mr-12">
+        {{'cancel' | translate}}</button>
+      <button mat-raised-button type="submit" class="text-uppercase" color="accent" (click)="onAction()">
+        {{(updateRouteId ? 'update' : 'submit') | translate}}
+      </button>
+    </div>
+  </div>
+</div>

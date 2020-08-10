@@ -1,0 +1,31 @@
+// .confirm-table{
+//     ::ng-deep .mat-list-item-content{
+//     width:100%;
+//     }
+//     .break-word{
+//     word-break: break-all;
+//     }
+//     .mat-list-item:nth-of-type(odd) {
+//     border-right: none !important;
+//     }
+//     .mat-list-item:last-child{
+//     border-bottom: none;
+//     }
+//     }
+
+// .manage-institue-edit {
+//     position: absolute;
+//     right: 71px;
+//     top: 55px;
+//     z-index: 99;
+// }
+
+.manage-institue {
+    ::ng-deep .mat-table {
+        // background: transparent;
+
+        .mat-row:last-child {
+            border-bottom: none;
+        }
+    }
+}

@@ -1,0 +1,104 @@
+<div class="px-sm-40 pt-sm-24">
+  <div class="py-8 px-20 font-size-18 text-uppercase" translate>Search Students</div>
+  <div class="mat-elevation-z3 simple-table-container radius-t-20">
+    <form [formGroup]="searchForm" (ngSubmit)="searchStudent(searchForm.value)">
+    <!-- <fieldset  class="border p-20 mx-12">
+      <legend>Search by student name</legend>
+     
+    </fieldset> -->
+    <div fxLayout="column" fxLayout.gt-sm="row" class="p-24"> 
+      <div fxLayout="column" fxFlex="100" fxLayoutAlign="center center">
+        <div class="serch-db border px-16">
+          <input #studentName matInput placeholder="{{ 'Search Students' | translate}}" onkeydown="return(event.keyCode!=13);" formControlName="studentNames"
+            aria-label="StudentName" matInput [matAutocomplete]="studentNameSearch">
+          <mat-autocomplete #studentNameSearch="matAutocomplete" [displayWith]="displayFn"
+            (optionSelected)='getSelectedStudent($event.option.value)'>
+            <mat-option *ngFor="let option of filterdStudents" [value]="option">
+              {{option.studentName}}
+              <span class="grey-400-fg"> {{option.currentClassName}} {{option.currentSectionName}} </span>
+            </mat-option>
+          </mat-autocomplete>
+        </div>
+      </div>
+      <button mat-button type='button' (click)="getHelpText('Student Database')">
+          <mat-icon class="grey-600-fg">info</mat-icon>
+      </button>
+    </div>
+    <div fxLayout="row" fxLayoutAlign="center center" class="after position-relative">
+     <small class="position-absolute custom-white">(OR)</small> 
+    </div>
+      <div class="p-20">
+        <div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign="start center">
+          <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="22" class="pr-sm-20">
+            <mat-label translate #parentName>Parent Name</mat-label>
+            <input matInput formControlName="parentNames" (keyup)="preventSpace($event,'searchForm','parentNames')" (blur)="trimTextBoxSpaces('searchForm','parentNames')">
+          </mat-form-field>
+
+            <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="28"
+            class="pr-sm-20">
+            <mat-label translate #class>Academic Session</mat-label>
+            <mat-select formControlName="academicSessions">
+              <mat-option></mat-option>
+              <mat-option *ngFor="let academicSession of academicSessions" [value]="academicSession.value">
+                {{ academicSession.label }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="28"
+            class="pr-sm-20">
+            <mat-label translate #class>Class</mat-label>
+            <mat-select formControlName="classIds">
+              <mat-option></mat-option>
+              <mat-option *ngFor="let class of classes" [value]="class.value">
+                {{ class.label }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="28">
+            <mat-label translate #studentStatus>Status</mat-label>
+            <mat-select formControlName="statusIds">
+              <mat-option></mat-option>
+              <mat-option *ngFor="let studentStatus of studentStatuses" [value]="studentStatus.value">
+                {{ studentStatus.label }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign="start center">
+          <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50"
+            class="pr-sm-20">
+            <mat-label translate #admissionNumber>Admission Number</mat-label>
+            <input matInput formControlName="admissionNumbers" (keyup)="preventSpace($event,'searchForm','admissionNumbers')"
+              (blur)="trimTextBoxSpaces('searchForm','admissionNumbers')">
+          </mat-form-field>
+          <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+            <input matInput formControlName="dateOfBirth" [satDatepicker]="picker" placeholder="Choose a date">
+            <sat-datepicker #picker [rangeMode]="true"> </sat-datepicker>
+            <sat-datepicker-toggle matSuffix [for]="picker"></sat-datepicker-toggle>
+            <mat-label translate #dob>Date of Birth</mat-label>
+            <mat-error >
+              <app-validation [labelName]='dob.innerText'
+                [validationControl]="searchForm.controls.dateOfBirth" [doValidate]="true">
+              </app-validation>
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="end center" class="my-12">
+          <button type="button" mat-raised-button
+            [routerLink]="['/academics/student-information-system/student-database/add-edit-student-admission']"
+            routerLinkActive="router-link-active" color="accent" class="text-uppercase">{{'New Student' | translate}}
+          </button>
+          <button mat-raised-button type="reset" class="text-uppercase mx-12" (click)="onClear()">
+            {{'Reset' | translate}}
+          </button>
+          <button mat-raised-button type="submit" color="primary" class="text-uppercase">
+            {{'Search' | translate}}
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<app-table id="student-database-table" *ngIf="!showCustomCard" [settings]='tableSettings' (getTableData)='tableData($event)'
+  (rowBasedAction)='actions($event)' (openAddForm)='openForm()' (resetFilter)='onClear()'>
+</app-table>
+<app-custom-card *ngIf="showCustomCard" [title]=customCardDetails.title [inputMessage]=customCardDetails.message>
+</app-custom-card>

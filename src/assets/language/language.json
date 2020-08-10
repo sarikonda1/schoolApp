@@ -1,0 +1,19 @@
+{
+    "languages": [
+        {
+            "id": "te",
+            "title": "Telugu",
+            "flag": "te"
+        },
+        {
+            "id": "en",
+            "title": "English",
+            "flag": "us"
+        }
+    ],
+    "defaultLaunguage": {
+        "id": "en",
+        "title": "English",
+        "flag": "us"
+    }
+}

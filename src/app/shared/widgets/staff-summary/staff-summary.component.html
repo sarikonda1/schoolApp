@@ -1,0 +1,31 @@
+<div *ngIf="(staffSummaryInfo === null || staffSummaryInfo === undefined) && !isLoading">
+  <p class="text-center text-uppercase font-size-16 secondary-text" translate>No Data To Display</p>
+</div>
+<ng-container *ngIf="!(staffSummaryInfo === null || staffSummaryInfo === undefined) && !isLoading" >
+  <mat-grid-list cols="2" rowHeight="100" [gutterSize]="'8px'" fxLayout="column" fxFlex="100" class="m-12">
+    <mat-grid-tile class="mat-elevation-z2 radius-5 mr-12" [@animate]="{value:'*',params:{y:'100%'}}">
+      <div fxLayout="column" fxLayoutAlign="center center">
+        <div class="indigo-400-fg font-size-46">{{staffSummaryInfo.students}}</div>
+        <div class="secondary-text text-uppercase font-size-12" translate>students</div>
+      </div>
+    </mat-grid-tile>
+    <mat-grid-tile class="mat-elevation-z2 radius-5 mr-12" [@animate]="{value:'*',params:{y:'100%'}}">
+      <div fxLayout="column" fxLayoutAlign="center center">
+        <div class="accent-fg font-size-46">{{staffSummaryInfo.teachingStaff}}</div>
+        <div class="secondary-text text-uppercase font-size-12" translate>teachersScheduled</div>
+      </div>
+    </mat-grid-tile>
+
+    <mat-grid-tile colspan="2" class="mat-elevation-z2 radius-5 mr-12" [@animate]="{value:'*',params:{y:'100%'}}">
+      <div fxLayout="column" fxLayoutAlign="center center">
+        <div class="light-green-800-fg font-size-46">{{staffSummaryInfo.ratioOfStudentsToTeacher}}</div>
+        <div class="secondary-text text-uppercase font-size-12" translate>ratioOfStudentsToTeacher</div>
+      </div>
+    </mat-grid-tile>
+  </mat-grid-list>
+</ng-container>
+
+<div *ngIf="isLoading" fxFlexFill fxLayoutAlign="center center" >
+  <app-af-loader></app-af-loader>
+</div>
+

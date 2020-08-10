@@ -1,0 +1,42 @@
+<app-table [settings]="settingTableData" (getTableData)='tableData($event)'
+   (rowBasedAction)='onRowActions($event)' (openAddForm)='openInvoiceAdjTypeForm()' [closeRowForm]='isInvoiceAdjTypeFormClosed'
+   [templateRef]="newTemplate">
+</app-table>
+
+<ng-template #newTemplate>
+   <form [formGroup]="invoiceAdjustmentTypeForm"
+      (ngSubmit)="createOrUpdateInvoiceAdjustmentType(invoiceAdjustmentTypeForm.value)" #invoiceAdjustmentType="ngForm">
+      <div fxFlexFill fxLayout="row" class="pt-24" fxLayoutAlign="center center">
+         <mat-form-field appearance="outline" class="example-full-width" fxLayout="column" fxFlex.gt-xs="50"
+            fxFlex="100">
+            <mat-label #invoiceAdjTypeName translate>Invoice Adjustment Type Name</mat-label>
+            <input matInput formControlName="name"  (blur)="trimTextBoxSpaces('invoiceAdjustmentTypeForm','name')" (keyup)="preventSpace($event,'invoiceAdjustmentTypeForm','name')" required>
+            <mat-error>
+               <app-validation [labelName]="invoiceAdjTypeName.innerText"
+                  [validationControl]="invoiceAdjustmentTypeForm.controls.name" [doValidate]="invoiceAdjTypeFormSubmitted">
+               </app-validation>
+            </mat-error>
+         </mat-form-field>
+
+      </div>
+      <div fxFlexFill fxLayout="column" class="pt-16">
+         <div fxFlexFill fxLayout="row" fxLayoutAlign="center center" class="mb-12 fuse-black-500-fg"><span #isPositiveAdj translate>Is Positive Adjustment</span> <span>*</span>
+            </div>
+         <mat-radio-group class="grey-500-fg text-semibold" aria-label="Select an option" fxFlexFill fxLayout="row"
+            fxLayoutAlign="center center" formControlName="isPositiveAdjustment">
+            <mat-radio-button class="ml-24" *ngFor="let radio of YesOrNo" [value]="radio.value">{{radio.label | translate}}</mat-radio-button>
+         </mat-radio-group>
+         <mat-error fxFlexFill fxLayout="row" fxLayoutAlign="center center">
+            <app-validation [labelName]="isPositiveAdj.innerText"
+               [validationControl]="invoiceAdjustmentTypeForm.controls.isPositiveAdjustment"
+               [doValidate]="invoiceAdjTypeFormSubmitted">
+            </app-validation>
+         </mat-error>
+      </div>
+      <div fxLayout="row"  fxLayoutAlign.gt-xs="end center" class="pb-8">
+         <button class="mr-12 text-uppercase" mat-raised-button type="reset" (click)="closeForm()">{{'Cancel' | translate}}</button>
+            <button class="text-uppercase" mat-raised-button type="submit" color="accent" [disabled] = "disbleSubmitBtn">
+               {{(isSubmitButtonEnabled ? 'Create':'Update') | translate}}</button>
+      </div>
+   </form>
+</ng-template>

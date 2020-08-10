@@ -1,0 +1,13 @@
+<div fxLayout="row" fxLayoutAlign="space-between center" class="fuse-white-fg">
+  <div fxLayoutAlign="center center" *ngIf="getType(data?.message) == 'string'">
+    <mat-icon class="mr-12 font-size-26">{{data.isError ? 'error_outline' : 'check_circle'}}</mat-icon>
+    <span class="font-size-16 break-word" translate>{{data.message}}</span>
+  </div>
+
+  <div  *ngIf="getType(data?.message) == 'object'">
+    <span class="font-size-16 break-word" *ngFor="let item of data?.message" translate>
+    <span>  {{item.line}}<br/> </span>
+     </span>
+  </div>
+  <button mat-icon-button (click)="closeSnackBar()"><mat-icon>clear</mat-icon></button>
+</div>

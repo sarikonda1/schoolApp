@@ -1,0 +1,43 @@
+<div class="text-uppercase font-size-20 px-60 pt-40" *ngIf="header" translate>{{header}}</div>
+<div [ngClass]="!isElevation ? 'px-sm-40 py-12' : ''" >
+  <div [ngClass]=" !isElevation ? 'mat-elevation-z2 simple-table-container radius-t-20' : ''"  fxLayout="column">
+    <div  *ngIf="title || actions?.length || isBackButtonRequired" fxLayout="row" fxLayoutAlign="space-between center" class="border-bottom p-20">
+      <div class="text-uppercase font-size-18" translate>{{title}}</div>
+      <div>
+        <button mat-icon-button aria-label="More" [disabled]="!expand" [matMenuTriggerFor]="menu" *ngIf="actions?.length">
+          <mat-icon class="secondary-text">more_vert</mat-icon>
+        </button>
+        <button mat-raised-button color="primary" class="mr-4" class="text-uppercase" *ngIf="isBackButtonRequired"
+          (click)="onSelectBack()"><span translate>Back</span></button>
+          <button mat-raised-button color="accent" class="mr-4" class="text-uppercase" *ngIf="payOnline"
+          (click)="onSelectPay()">Pay Online</button>
+        <button mat-button *ngIf="infoKey" (click)="getHelpText(infoKey)">
+          <mat-icon class="grey-600-fg">info</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <mat-accordian class="filter-accordian-invoice" *ngIf="!expand">
+        <mat-expansion-panel [expanded]="!expand" [@animate]="{value:'*',params:{delay:'100ms',y:'-25px'}}" [ngClass]="{'remove-overlay' : showOverLay == 'show'}">
+            <ng-template [ngTemplateOutlet]="templateRef"></ng-template> 
+        </mat-expansion-panel>
+    </mat-accordian>
+
+    <div fxLayout="row wrap" fxFlex="100" class="p-24">
+      <ng-container *ngFor="let item of keyValues">
+        <div fxLayout="column" fxFlex.gt-sm="50" fxFlex="100" class="px-12" *ngIf="item.Value != null|| item.Value == 0">
+          <div fxLayout="row" fxFlex="100" class="py-8 font-size-16"  [ngClass]="(item.Label === 'balanceAmount' || item.Label ==='excessAmount') ? 'font-weight-800 light-blue-fg' : '' ">
+            <div class="w-200 break-word" translate>{{item.Label}}</div>
+            :&nbsp;&nbsp;<div fxFlex="100" class="break-word font-weight-600">{{item.Value?item.Value:'---'}}</div>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</div>
+
+<mat-menu #menu="matMenu">
+  <ng-container *ngFor="let item of actions">
+    <button mat-menu-item (click)="onSelectAction(item)" translate>{{item}}</button>
+  </ng-container>
+</mat-menu>

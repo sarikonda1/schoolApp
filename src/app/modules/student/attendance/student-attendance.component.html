@@ -1,0 +1,69 @@
+<div class="p-28" fxLayout="row">
+    <div fxLayout="column" fxFlex.gt-sm="60" fxFlex="100">
+        <div class="mat-elevation-z4 radius-10 mb-28" *ngIf="isResLoaded | async">
+            <af-calendar [addNewEvent]="false" [events]="attendance" [title]="title"
+                [customCellTemplate]="attendanceTemplate"
+                  [selectedCalenderDay]="selectedDay" [viewCalenderDate]="viewDate" [startDate]="startDate" [endDate]="endDate"></af-calendar>
+        </div>
+    </div>
+    <div fxLayout="column" fxFlex.gt-sm="40" fxFlex="100" class="p-24">
+        <mat-list class="confirm-table border pt-0" *ngIf="studentAttendanceStatus" fxLayout="row wrap">
+            <mat-list-item fxFlex="80" fxLayout="column" translate>{{'Total Number of Working Days' | translate}}
+            </mat-list-item>
+            <mat-list-item fxFlex="20" fxLayout="column">
+                {{studentAttendanceStatus.totalNumberOfWorkingDays}}
+            </mat-list-item>
+            <mat-list-item fxFlex="80" fxLayout="column" translate>{{'Total Number of Days Present' | translate}}
+            </mat-list-item>
+            <mat-list-item fxFlex="20" fxLayout="column">
+                {{studentAttendanceStatus.totalNumberOfDaysPresent}}
+            </mat-list-item>
+            <mat-list-item fxFlex="80" fxLayout="column" translate>{{'Total Number of Days Absent' | translate}}
+            </mat-list-item>
+            <mat-list-item fxFlex="20" fxLayout="column">
+                {{studentAttendanceStatus.totalNumberOfDaysAbsent}}
+            </mat-list-item>
+        </mat-list>
+        <!-- <div *ngIf="studentAttendanceStatus" fxLayout="row" fxLayoutAlign="space-between center"
+            class="font-size-16 p-24">
+            <div translate>Total Number of Working Days :
+                <strong>{{studentAttendanceStatus.totalNumberOfWorkingDays}}</strong></div>
+            <div translate>Total Number of Days Present :
+                <strong>{{studentAttendanceStatus.totalNumberOfDaysPresent}}</strong></div>
+            <div translate>Total Number of Days Absent :
+                <strong>{{studentAttendanceStatus.totalNumberOfDaysAbsent}}</strong></div>
+        </div> -->
+        <div fxLayout="row" class="my-20 ml-20" *ngIf="attendance?.length">
+            <div fxLayoutAlign="start center" class="w-160" *ngFor="let calenderColor of calenderColors">
+                <span class="p-12 mr-12 border-radius-100"
+                    [style.background]="calenderColor.code"></span>{{calenderColor.name}}</div>
+
+        </div>
+    </div>
+
+
+
+</div>
+
+<ng-template #attendanceTemplate let-day="day" let-openDay="openDay" let-locale="locale"
+    let-tooltipPlacement="tooltipPlacement" let-highlightDay="highlightDay" let-unhighlightDay="unhighlightDay"
+    let-eventClicked="eventClicked" let-tooltipTemplate="tooltipTemplate" let-tooltipAppendToBody="tooltipAppendToBody"
+    let-tooltipDelay="tooltipDelay" let-trackByEventId="trackByEventId" let-validateDrag="validateDrag">
+    <div class="cal-cell-top">
+        <span class="cal-day-number">{{
+            day.date | calendarDate: 'monthViewDayNumber':locale
+            }}</span>
+    </div>
+    <div class="cal-events" *ngIf="day.events.length > 0">
+        <div class="cal-event" *ngFor="let event of day.events; trackBy: trackByEventId"
+            [ngStyle]="{ backgroundColor: event.color?.primary }" [ngClass]="event?.cssClass"
+            (mouseenter)="highlightDay.emit({ event: event })" (mouseleave)="unhighlightDay.emit({ event: event })"
+            [mwlCalendarTooltip]="
+            event.title | calendarEventTitle: 'monthTooltip':event
+          " [tooltipPlacement]="tooltipPlacement" [tooltipEvent]="event" [tooltipTemplate]="tooltipTemplate"
+            [tooltipAppendToBody]="tooltipAppendToBody" [tooltipDelay]="tooltipDelay" mwlDraggable
+            [class.cal-draggable]="event.draggable" dragActiveClass="cal-drag-active"
+            [dropData]="{ event: event, draggedFrom: day }" [dragAxis]="{ x: event.draggable, y: event.draggable }"
+            [validateDrag]="validateDrag" (mwlClick)="eventClicked.emit({ event: event })"></div>
+    </div>
+</ng-template>

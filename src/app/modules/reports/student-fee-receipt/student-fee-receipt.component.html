@@ -1,0 +1,140 @@
+<div fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="center center" class="px-24 pt-20 pb-12">
+  <mat-form-field appearance="outline" fxLayout="column" fxFlex.gt-sm="50" fxFlex="100" class="pr-sm-20">
+    <mat-label #studentId translate>Student</mat-label>
+    <input required #studentName matInput placeholder="Search Student" [formControl]="studentSearch"
+      aria-label="StudentName" matInput [matAutocomplete]="studentNameSearch">
+    <mat-icon class="grey-400-fg" matSuffix>search</mat-icon>
+    <mat-autocomplete #studentNameSearch="matAutocomplete" (optionSelected)='getSelectedStudent($event.option.value)'
+      [displayWith]="displayFn">
+      <mat-option *ngFor="let option of filterdStudents" [value]="option">
+        {{option.studentName}}
+        <span class="grey-400-fg"> {{option.currentClassName}} {{option.currentSectionName}} </span>
+      </mat-option>
+    </mat-autocomplete>
+    <mat-error>
+      <app-validation [labelName]='studentId.innerText' [validationControl]="studentSearch" [doValidate]="true">
+      </app-validation>
+    </mat-error>
+  </mat-form-field>
+  <div fxLayout="row" fxLayoutAlign="end center" class="mr-20 pb-20">
+    <button mat-raised-button translate color="primary" class="text-uppercase" (click)="reset()" type="reset">
+      Reset
+    </button>
+  </div>
+</div>
+
+<div fxLayout="row" fxLayoutAlign="end center" class="px-32 py-12" *ngIf="resultApplicationReports">
+  <button mat-stroked-button class="mr-12" (click)="generateReport('generatePdfReport')">
+    <mat-icon class="mr-4">save_alt</mat-icon>Download PDF
+  </button>
+</div>
+<div class='invoice-container' *ngIf="resultApplicationReports" id="admitted-std" style="padding: 25px; padding-top: 0px;">
+  <span class="dark-theme-color" style="color:#fff">A</span>
+  <div class='b flex-d-c invoice-body' style='overflow: hidden; '>
+    <h3 class="text-center text-uppercase">Fee Receipt</h3>
+    <div class="px-20 mb-20" style="display: flow-root;">
+      <div class="left-align">
+        <div>Student Name : {{resultApplicationReports.studentName}}</div>
+        <div class="py-4">Admission Number : {{resultApplicationReports.admissionNumber}}</div>
+        <div>Class - Section : {{resultApplicationReports.classSection}}</div>
+      </div>
+      <div class="right-align">
+        <div> Parent Name : {{resultApplicationReports.parentName}}</div>
+        <div class="py-4" *ngIf="resultApplicationReports?.studentCategory">Student Category :
+          {{resultApplicationReports.studentCategory}}</div>
+        <div> Date Generated : {{ date }}</div>
+      </div>
+    </div>
+    <div class="px-20 b-t" style="clear: both;">
+      <h3 class="text-center text-uppercase">Fee Receipt</h3>
+    </div>
+    <div class="px-10 scroll-table">
+      <table class="attendance fee-recipt b table-border">
+        <thead>
+          <tr>
+            <th>Invoice No</th>
+            <th>Fee Term</th>
+            <th>fee Item</th>
+            <th>Fee Amount</th>
+            <th>Discounts </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of resultApplicationReports?.invoiceDetails">
+            <td>{{item.invoiceInformation.invoiceNumber}} </td>
+            <td>{{item.invoiceInformation.feeTerm}}</td>
+            <td>
+              <div *ngFor="let invPerticular of item.invoiceParticulars; let odd = odd">
+                <div [ngClass]="(odd) ? 'py-4': '' ">{{invPerticular.feeType}}</div>
+              </div>
+            </td>
+            <td>
+              <div *ngFor="let invPerticular of item.invoiceParticulars; let odd = odd">
+                <div [ngClass]=" (odd) ? 'py-4': '' ">{{invPerticular.feeAmount}}</div>
+              </div>
+            </td>
+            <td>
+              <div *ngFor="let invPerticular of item.invoiceParticulars; let odd = odd">
+                <div [ngClass]=" (odd) ? 'py-4': ''">{{invPerticular.discount}}</div>
+              </div>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="text-align: left;" class="text-left b-t" colspan="3">Total</td>
+            <td class="text-left b-t">
+              <div>
+                <div>{{resultApplicationReports.studentTotalInvoiceAmount}}</div>
+              </div>
+            </td>
+            <td>
+              <div>-</div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="px-20">
+      <h3 class="text-center text-uppercase">Payment Details</h3>
+    </div>
+    <div class="px-10 scroll-table">
+      <table class="attendance b">
+        <thead>
+          <tr>
+            <th>Payment Date</th>
+            <th>Mode</th>
+            <th>Payment details</th>
+            <th>Payment Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let payment of resultApplicationReports?.invoicePayments">
+            <td>{{payment.expiryDate}}</td>
+            <td>{{payment.paymentMode}}</td>
+            <td>{{payment.paymentDetails}}</td>
+            <td>{{payment.paymentAmount}}</td>
+          </tr>
+          <tr>
+            <td style="text-align: left;" class="text-left b-t" colspan="3">Total</td>
+            <td class="text-left b-t">
+              <div>
+                <div>{{resultApplicationReports.studentTotalPaymentAmount}} </div>
+              </div>
+            </td>
+
+          </tr>
+          <tr>
+            <td style="text-align: left;" class="text-left b-t" colspan="3">Balance</td>
+            <td class="text-left b-t">
+              <div>
+                {{resultApplicationReports.studentTotalBalanceAmount}}
+              </div>
+            </td>
+
+          </tr>
+        </tbody>
+
+      </table>
+    </div>
+  </div>
+</div>

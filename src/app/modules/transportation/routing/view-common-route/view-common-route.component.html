@@ -1,0 +1,100 @@
+
+     
+     <div fxLayout="row" class="text-right border-bottom mb-20 pb-12" fxLayoutAlign="space-between center">
+        <div class="font-size-20" translate>Select the Route Point <small translate>or</small> Add new Point</div>
+        <div fxLayout="row">
+            <div fxLayout="row" fxLayoutAlign="center center" *ngIf="duration">
+                <mat-icon class="mr-4 grey-600-fg">access_time</mat-icon>
+                <div fxLayout="column" fxLayoutAlign="center center">
+                  <span class="grey-500-fg" translate>Travel Time</span>
+                  <span>{{duration}}</span>
+                </div>
+              </div>
+              <div fxLayout="row" fxLayoutAlign="center center" class="px-24" *ngIf="distance">
+                <mat-icon class="mr-4 grey-600-fg">place</mat-icon>
+                <div fxLayout="column" fxLayoutAlign="center center">
+                  <span class="grey-500-fg" translate>Total Distance</span>
+                  <span>{{distance}} km</span>
+                </div>
+              </div>
+        </div>
+       
+      </div>
+
+     <mat-dialog-content class="mat-typography"> 
+      <div class="mat-elevation-z6 radius-5">
+      <agm-map  class="h-540" appDirectionsMap [showDirection]="true" (mapClick)="mapClicked($event)" ravelMode="DRIVING"
+       [clickableIcons]="false"  [streetViewControl]="false" (dblclick)="mapDoubleClicked($event)"
+       [disableDefaultUI]="true" [markers]="markers"
+       [zoom]="markers?.length ? 10 : 4"  [fitBounds]="markers?.length ? true : false"
+       (getDirections)="getDirections($event)">
+        <agm-marker *ngFor="let m of markers;let i = index;"
+        [latitude]="m.latitude" [markerDraggable]="false" [label]="m.studentIcon ? {color: 'blue', text: (m?.position)?.toString()} : (m.position)?.toString()"
+        [longitude]="m.longitude"  [agmFitBounds]="true">
+          <agm-info-window [isOpen]="m.openInfoWindow || m.studentIcon"> 
+            <div class="font-size-14 pr-20">{{m.pointAddres}} </div> 
+            <div fxLayoutAlign="end center" class="pt-8"> 
+            <button *ngIf="!m.studentIcon" (click)="onClickRouteMarker(m,i)"  mat-stroked-button color="accent">
+                {{'Select Stop' | translate}}
+              </button>
+            </div>    
+          </agm-info-window>
+        </agm-marker>
+
+        <agm-marker *ngIf="selectedPoint?.latitude" [latitude]="selectedPoint?.latitude" 
+         [label]="{color: 'blue', text: selectedPoint?.position?.toString() ? selectedPoint?.position?.toString() : ' '}"
+        [longitude]="selectedPoint?.longitude" [agmFitBounds]="true" [markerDraggable]="true" (dragEnd)="addMarker($event,true)">
+          <agm-info-window [isOpen]="true"  (infoWindowClose)="selectedPoint = null" >
+            <div class="font-size-14 pr-20">{{selectedPoint.pointAddres}} </div> 
+            <div fxLayoutAlign="end center" class="pt-8"> 
+                <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="32" class="formfield-pb-0">
+                    <mat-label translate #infoWindo>Add At Stop</mat-label>
+                    <input [formControl]="infoWindow" (keyup)="preventSpace($event)" matInput required>  
+                    
+                  </mat-form-field>
+            <button (click)="addSelectedPoint()" mat-raised-button color="accent" [disabled]="infoWindow?.invalid" class="ml-8">
+              {{'Add Stop & Select' | translate}}
+            </button>
+            </div>
+          </agm-info-window>
+        </agm-marker>
+
+        <agm-marker [agmFitBounds]="markers?.length ? false : true" *ngIf="currentLocation"
+        [latitude]="currentLocation?.latitude" [markerDraggable]="currentLocation?.draggable"
+        [longitude]="currentLocation?.longitude" [label]="currentLocation?.label" [agmFitBounds]="true" [iconUrl]="'assets/images/custom-icons/currentlocation.png'" > 
+        </agm-marker>
+
+      </agm-map> 
+    </div>
+      <div class="simple-table-container mat-elevation-z6 my-20 radius-t-20" *ngIf="markers.length>0">
+        <table class="simple" cdkDropList (cdkDropListDropped)="onListDrop($event)">
+          <thead>
+            <tr>
+              <th translate>Stop No.</th>
+              <th translate>Name</th>
+              <th translate>Students Count</th>
+              <th translate>Latitute</th>
+              <th translate>Longitude</th>
+              <th translate>Position Address</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr  cdkDrag *ngFor="let column of markers" class="cursor-drag">
+              <td>{{column.position}}</td>
+              <td>{{column.name}}</td>
+              <td>{{column.studentCount ? column.studentCount : 0}}</td>
+              <td>{{column.latitude}}</td>
+              <td>{{column.longitude}}</td>
+              <td>{{column.pointAddres}}</td>           
+            </tr>
+          </tbody>
+        </table>
+      </div>   
+    
+  </mat-dialog-content>
+     <mat-dialog-actions align="end" class="pb-20 border-top">
+        <button mat-raised-button color="primary" translate [mat-dialog-close]="true" class="text-uppercase">{{'cancel' | translate}}</button>
+       <button (click)="onBackButtonClick()"  mat-raised-button [mat-dialog-close]="true" cdkFocusInitial color="accent" class="text-uppercase">
+          {{'Ok' | translate}}
+        </button>
+     </mat-dialog-actions>

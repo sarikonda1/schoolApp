@@ -1,0 +1,89 @@
+<div class="px-sm-40 pt-sm-40">
+  <div class="py-8 px-20 font-size-18 text-uppercase" translate>Staff Attendance</div>
+  <div class="mat-elevation-z8 simple-table-container radius-t-20">
+    <form [formGroup]="staffAttendanceForm">
+        <div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign="start center">
+          <div fxLayout="row" fxLayoutAlign="center center" fxFlex="100">
+              <mat-form-field fxFlexFill appearance="outline" fxFlex.gt-sm="30" fxFlex="100" class="py-20 icon-center">
+                  <mat-label translate #attendanceDate translate>Attendance Date</mat-label>
+                  <input matInput (keyup)="forceValidation('attendanceDate',staffAttendanceForm)"
+                    formControlName="attendanceDate" [matDatepicker]="picker" required placeholder="Choose a start date" #staffAttendanceInput>
+                  <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                  <mat-datepicker #picker></mat-datepicker>
+                  <mat-error>
+                    <app-validation [labelName]='attendanceDate.innerText'
+                      [validationControl]="staffAttendanceForm.controls.attendanceDate" [doValidate]="validate">
+                    </app-validation>
+                  </mat-error>
+                </mat-form-field>
+          </div>
+        
+          <div fxLayout="row" fxLayoutAlign="center end" class="mr-8">
+              <button mat-button type='button' (click)="getHelpText('Staff Attendance')">
+                  <mat-icon class="grey-600-fg">info</mat-icon>
+                </button>
+          </div>
+          
+        </div>
+    </form>
+  </div>
+</div>
+
+<app-table *ngIf="staffAttendanceForm.valid" [massActionTemplateRef]="staffAttendenceActions" [settings]="tableSettings" (getTableData)='tableData($event)' (selectedRows)='selectedRows($event)'  (rowBasedAction)='staffAttendenceAction($event, null)' (anchorDialogClick)="showLeaveInfo($event)" (radioSection)='staffAttendenceAction($event, null)'></app-table>
+
+<app-custom-card *ngIf="!staffAttendanceForm.valid" [title]="'Staff Attendance Details'" [inputMessage]="'Please Select Date'">
+</app-custom-card>
+<ng-template #staffAttendenceActions>
+  <form [formGroup]="massActionForm" (ngSubmit)="staffAttendenceAction(massActionForm.value,massActionForm.valid)">
+    <div fxLayout="row" fxFlex="100">
+      <mat-form-field class="px-20 pt-8" fxLayout="column">
+        <mat-label translate>Select Action</mat-label>
+        <mat-select formControlName="massOption"  (selectionChange)="onSelect($event)" placeholder="Select Action">
+          <mat-option *ngFor="let attendenceData of attendenceAction" [value]="attendenceData.value">
+            {{ attendenceData.label}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <div fxLayout="column">
+        <app-custom-timepicker *ngIf="massActionForm.controls.massOption.value == 1 || massActionForm.controls.massOption.value == 2" formControlName="time" [is24HoursFormat]="true" [showLabel]="false"  class="w-120 mr-12" [requiredValidator]=true [formClass]="'pt-8'"></app-custom-timepicker>
+      </div>
+
+      <div fxLayout="column">
+        <button [disabled]= "buttonEnable" (click)="onAction()" type="submit" mat-raised-button class="text-uppercase mr-8 mt-20 " translate color="accent">
+          {{'Apply' | translate}}
+        </button>
+      </div>
+
+    </div>
+  </form>
+</ng-template>
+<ng-template #leaveInfoDialog>
+  <div fxLayout="column">
+  <h2 mat-dialog-title translate>Leave Request</h2>
+  <div fxLayout="column" fxFlex="100">
+    <div fxLayout="row" class="pb-8">
+      <div class="w-68">Date</div>
+      <div><span class="px-4">:</span>{{ leaveInfo.from + ' - ' + leaveInfo.to }}</div>
+    </div>
+    <div fxLayout="row" class="pb-8">
+      <div class="w-68">Reason</div>
+      <div><span class="px-4">:</span><span class="break-word">{{leaveInfo.reason}}</span></div>
+    </div>
+    <div fxLayout="row" class="pb-8">
+      <div class="w-68">Status</div>
+      <div><span class="px-4">:</span><span class="break-word">{{leaveInfo.status}}</span></div>
+    </div>
+    <div fxLayout="row">
+      <button mat-button color="accent" type="button"  (click)="leaveRequest()" *ngIf="this.leaveInfo.attachment" translate><mat-icon class="mr-4">attachment</mat-icon>View Request Letter</button>
+    </div>
+  </div>
+</div>
+  <!-- <div mat-dialog-content>
+    <p>{{'Date: ' + leaveInfo.from + ' - ' + leaveInfo.to }}</p>
+    <p>{{'Reason:'}}</p>
+    <div> {{leaveInfo.reason}}</div>
+  </div> -->
+  <div fxLayout="row" fxLayoutAlign="end center"  mat-dialog-actions class="pb-16">
+      <button mat-raised-button color="primary" (click)="closeLeaveRequest()">{{'Close' | translate}}</button>
+    </div>
+</ng-template>

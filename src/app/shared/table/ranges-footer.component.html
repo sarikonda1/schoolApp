@@ -1,0 +1,6 @@
+<div class="mat-calendar-footer fuse-white p-8 border-top mat-elevation-z2" fxFlexLayout="row" fxLayoutAlign="space-between center">
+
+    <button mat-stroked-button
+            *ngFor="let range of ranges"
+            (click)="setRange(range.key)">{{range.label}}</button>
+</div>

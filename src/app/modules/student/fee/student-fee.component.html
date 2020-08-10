@@ -1,0 +1,35 @@
+
+    <div class="text-uppercase font-size-20 pl-52 pt-28" translate>Fee</div>
+    <ng-container *ngFor="let feeItem of feeList;let i = index">
+        <div class="px-sm-40 py-12">
+            <div class="mat-elevation-z2 simple-table-container radius-t-20" fxLayout="column">
+                <div fxLayout="row" fxLayoutAlign="space-between center" class="border-bottom p-20">
+                    <div class="text-uppercase font-size-18">#{{feeItem.data.invoiceNumber}}</div>
+                    <div>
+                        <button mat-icon-button aria-label="More" [matMenuTriggerFor]="menu" *ngIf="actions?.length">
+                            <mat-icon class="secondary-text">more_vert</mat-icon>
+                        </button>
+                    </div>
+                </div>
+
+                <div fxLayout="row wrap" fxFlex="100" class="p-24">
+                    <ng-container *ngFor="let item of feeItem.keyValues">
+                        <div fxLayout="column" fxFlex.gt-sm="50" fxFlex="100" class="px-12">
+                            <div fxLayout="row" fxFlex="100" class="py-8 font-size-16">
+                                <div class="w-200 break-word" translate>{{item.Label}}</div>
+                                :&nbsp;&nbsp;<div fxFlex="100" class="break-word font-weight-600">
+                                    {{ getItemValue(item) }}</div>
+                            </div>
+                        </div>
+                    </ng-container>
+                </div>
+            </div>
+        </div>
+        <mat-menu #menu="matMenu">
+            <ng-container *ngFor="let action of actions">
+                <button *ngIf="displayButton(action, feeItem.data, i) " (click)="onSelectAction(action, i)"
+                    mat-menu-item translate>{{action}}</button>
+            </ng-container>
+        </mat-menu>
+    </ng-container>
+    <h2 class="text-center pt-60" *ngIf="!feeList?.length && onLoadApi" translate>No Invoice Found for this Student</h2>

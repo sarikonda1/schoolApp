@@ -1,0 +1,367 @@
+<div class="content p-40">
+  <div class="pl-24 text-uppercase font-size-18 pb-4"><span translate>{{isAddData ?'Class Timetable':title}}</span></div>
+  <!-- Get details of class section dropdowns-->
+  <div class="w-100-p mat-elevation-z8 simple-table-container radius-20" fxLayout="column">
+    <form [formGroup]="classTimetableForm" (ngSubmit)="onSelectClassTimetable()" #ClassTimeTableForm="ngForm"
+      fxLayout="column">
+      <div *ngIf="isAddData" fxLayout.gt-sm="row" fxLayout="column" class="pt-20 px-20">
+        <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="35">
+          <mat-label #classId translate>Class</mat-label>
+          <mat-select (selectionChange)="onClassSelect($event)" formControlName="classId" required>
+            <mat-option *ngFor="let class of classNames" [value]="class.value">
+              {{class.label}}
+            </mat-option>
+          </mat-select>
+          <mat-error>
+            <app-validation [labelName]="classId.innerText" [validationControl]="classTimetableForm.controls.classId"
+              [doValidate]="isClassSectionValid">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="px-sm-24" fxLayout="column" fxFlex="100" fxFlex.gt-sm="35">
+          <mat-label #sectionId translate>Section</mat-label>
+          <mat-select formControlName="sectionId" (selectionChange)="onSelect()" required>
+            <mat-option [style.display]="classTimetableForm.value.classId ? '' : 'none'" *ngFor="let section of sectionNamesList" [value]="section.value">
+              {{section.label}}
+              <span *ngIf="section.boardName!=null">({{section.boardName}})</span>
+            </mat-option>
+          </mat-select>
+          <mat-error>
+            <app-validation [labelName]="sectionId.innerText"
+              [validationControl]="classTimetableForm.controls.sectionId" [doValidate]="isClassSectionValid">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+        <!--  End -->
+
+        <!-- Edit,Delete actions if class section has template details -->
+        <div fxFlex="100" fxFlex.gt-sm="30" fxLayout="column" class="pt-12 pr-12">
+          <div fxLayout="row" fxLayoutAlign="end center">
+            <button *ngIf="classSectionTempList.length >0" type="button" mat-icon-button class="red-400-fg" (click)="deleteClassTimetable()">
+              <mat-icon>delete</mat-icon>
+            </button>
+            <button *ngIf="isTemplateValid" mat-raised-button type="button" class="text-uppercase mx-20" color="accent"
+              (click)="addClassTimetable()"><span translate>Add</span></button>
+            <button mat-button type="button" (click)="getHelpText('Class Timetables')">
+              <mat-icon class="grey-600-fg">info</mat-icon>
+            </button>
+          </div>
+        </div>
+        <!-- End -->
+      </div>
+
+      <!-- Get Template details with respect to class section and board Id's-->
+      <mat-divider *ngIf="isTemplateValid"></mat-divider>
+      <div *ngIf="isTemplateValid" fxLayout.gt-sm="row" fxLayout="column" class="pt-24 px-20">
+        <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+          <mat-label #classTempId translate>Timetables</mat-label>
+          <mat-select (selectionChange)="onTemplateSelect($event)" formControlName="scheduleTemplateId">
+            <mat-option *ngFor="let classTemp of classTimetableTempList" [value]="classTemp.value">
+              {{classTemp.label}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <div class="pt-16"><button *ngIf="classSectionTempList.length >0" mat-raised-button type="button"
+            class="text-uppercase mx-20 mb-20" color="primary" (click)="updateClassTimetable()" translate><span translate>Edit</span></button> </div>
+      </div>
+      <!-- End -->
+
+      <!-- Get Details of schedule template based on class section and board after save-->
+      <mat-divider *ngIf="classSectionTempList.length >0" class="mt-20"></mat-divider>
+      <div *ngIf="classSectionTempList.length >0" class="m-20 border school-period">
+        <div fxLayout="row inline" *ngFor="let item of classSectionTempList; let in = index" class="mw-100-p">
+          <div class="border-bottom">
+          <div fxLayout="column" fxFlex="20"
+            class="border-right p-20 w-120 weekDay custom-white accent-fg font-weight-600 text-uppercase" translate>
+            {{item.weekDayName | translate}}</div>
+          <div fxLayout="column" fxFlex="20" class="border-right w-200 p-12 break-word"
+            *ngFor="let child of item.periodsView;let i=index" [ngClass]="item.periodsView?.length > classSectionTempList[in-1]?.periodsView?.length ? (i > ( classSectionTempList[in-1]?.periodsView?.length-1) && in  ? 'border-top' : ''): ''">
+            <div fxLayout="row">{{child.periodName}}</div>
+            <div fxLayout="row" class="grey-500-fg" *ngIf="child.startTime!= null">{{child.startTime | slice:0:5}} to
+              {{child.endTime | slice:0:5}}
+            </div>
+            <div fxLayout="row">{{child.periodTypeName}}</div>
+            <div fxLayout="row" *ngFor="let childs of child.courseAndStaffViewModel;" ><span
+                *ngIf="childs.courseName!=null" class="text-truncate" matTooltipClass="matTool-tip"
+                matTooltipPosition="above" [matTooltip]="childs.staffName">{{childs.courseName}} - {{childs.staffName}}</span></div>
+          </div>
+        </div>
+        </div>
+      </div>
+      <!-- End -->
+    </form>
+
+    <!-- Add Class Timetable -->
+    <form [formGroup]="classTimetableForm" (ngSubmit)="onSelectClassTimetable()" #ClassTimeTableForm="ngForm">
+      <div *ngIf="isAddTimetable" fxlayout="row" fxLayoutAlign="end center" class="p-16">
+        <button mat-raised-button translate type="button" color="primary" class="text-uppercase"
+          (click)="clearBack()">{{'Back' | translate}}</button>
+        <button mat-button type="button" (click)="getHelpText('Class Timetables')">
+          <mat-icon class="grey-600-fg">info</mat-icon>
+        </button>
+      </div>
+      <mat-divider *ngIf="isAddTimetable"></mat-divider>
+      <div *ngIf="isAddTimetable" fxLayoutAlign="center center" fxLayout.gt-sm="row" fxLayout="column"
+        class="pt-24 px-20">
+        <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="32">
+          <mat-label #classId translate>Class</mat-label>
+          <mat-select formControlName="classId" [disabled]="isAddTimetable" required>
+            <mat-option *ngFor="let class of classNames" [value]="class.value">
+              {{class.label}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field fxFlexFill appearance="outline" class="px-sm-24" fxLayout="column" fxFlex="100"
+          fxFlex.gt-sm="35">
+          <mat-label #sectionId translate>Section</mat-label>
+          <mat-select formControlName="sectionId" [disabled]="isAddTimetable" required>
+            <mat-option *ngFor="let section of sectionNamesList" [value]="section.value">
+              {{section.label}}
+              <span *ngIf="section.boardName!=null">({{section.boardName}})</span>
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="32">
+          <mat-label #scheduleTempId translate>Schedule Template</mat-label>
+          <mat-select formControlName="scheduleTemplateId" (selectionChange)="onScheduleTemplateSelect()"
+            [disabled]="isScheduleTemp" required>
+            <mat-option *ngFor="let scheduleTemp of scheduleTempList" [value]="scheduleTemp.value">
+              {{scheduleTemp.label}}
+            </mat-option>
+          </mat-select>
+          <mat-error>
+            <app-validation [labelName]='scheduleTempId.innerText'
+              [validationControl]="classTimetableForm.controls.scheduleTemplateId"
+              [doValidate]="true">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+      </div>
+      <div *ngIf="isAddTimetable" fxLayoutAlign="start center" fxLayout.gt-sm="row" fxLayout="column"
+        class="py-16 px-20">
+        <mat-form-field appearance="outline" fxFlexFill fxFlex.gt-xs="32" fxFlex="100" fxLayout="column" class="icon-center">
+          <mat-label #startDate translate>Start Date</mat-label>
+          <input matInput (keyup)="forceValidation('startDate',classTimetableForm)" [matDatepicker]="startDatePicker"
+          (dateChange)="validateData()" formControlName="startDate" [required]="isValidDate">
+          <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
+          <mat-datepicker #startDatePicker></mat-datepicker>
+          <mat-error>
+            <app-validation [labelName]='startDate.innerText'
+              [validationControl]="classTimetableForm.controls.startDate" [doValidate]="true">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="px-sm-24 icon-center" fxLayout="column" fxFlex="100"
+          fxFlex.gt-sm="36">
+          <mat-label #endDate translate>End Date</mat-label>
+          <input matInput (keyup)="forceValidation('endDate',classTimetableForm)" [matDatepicker]="endDatePicker"
+          (dateChange)="validateData()" [min]="classTimetableForm.controls.startDate.value" 
+            formControlName="endDate" [required]="isValidDate">
+          <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
+          <mat-datepicker #endDatePicker [startAt]="classTimetableForm.value.startDate"></mat-datepicker>
+          <mat-error>
+            <app-validation [labelName]='endDate.innerText'
+              [validationControl]="classTimetableForm.controls.endDate"
+              [doValidate]="true">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+        <button mat-raised-button type="submit" class="text-uppercase mr-12 mb-20" color="accent">{{'submit' | translate}}</button>
+      </div>
+    </form>
+    <mat-divider *ngIf="classTimetableForm.valid && addClassSectionTempList?.length>0" class="mt-20"></mat-divider>
+    <div *ngIf="classTimetableForm.valid && addClassSectionTempList?.length>0" class="m-20 border school-period">
+      <div fxLayout="row inline" *ngFor="let item of addClassSectionTempList; let i=index"
+        class="mw-100-p border-bottom">
+        <div fxLayout="column" fxFlex="20"
+          class="border-right p-20 w-120 weekDay custom-white accent-fg font-weight-600 text-uppercase" translate>
+          {{item.name}}</div>
+        <div fxLayout="column" fxFlex="20" fxLayoutAlign="start start" class="w-232 p-20"
+          *ngFor="let child of item.value;let i=index">
+          <div fxLayout="row">{{child.periodName}}</div>
+          <div fxLayout="row" class="grey-500-fg" *ngIf="child.startTime!= null">{{child.startTime | slice:0:5}} to
+            {{child.endTime | slice:0:5}}
+          </div>
+          <mat-form-field appearance="outline" class="w-100-p">
+            <mat-label #periodTypeId translate>Period Type</mat-label>
+            <mat-select (selectionChange)="onPeriodTypeSelect($event,child,i)" #periodTypeId="ngModel" ngModel [(ngModel)]="child.periodTypeId"
+             name="periodTypeId" required>
+                <mat-option *ngFor="let periodType of periodTypeList" [value]="periodType.value">
+                  {{periodType.label}}
+                </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <ng-container *ngIf="child && child?.isEdit && child?.isEdit?.length">
+            <div fxLayout="row" *ngFor="let courseStaff of child.isEdit;">
+              <span class="pr-4">{{courseStaff.courseName}} :</span><span class="break-word">{{courseStaff.staffName}}</span></div>
+            <div fxLayout="row" *ngIf="child.isEdit.length>0"><button mat-raised-button
+                (click)=editMultiAssignments(child,periodTypeId.value); class="accent-fg">Edit</button></div>
+          </ng-container> 
+          <mat-form-field appearance="outline" *ngIf="child.hasAssignments" class="w-100-p">
+            <mat-label #courseId translate>Course</mat-label>
+            <mat-select #coursesId="ngModel" ngModel name="coursesId"
+              (selectionChange)="onSubmitStaffCourseDetails(child,coursesId.value,courseId,i)" required>
+              <mat-option *ngFor="let course of courseList" [value]="course.value">
+                {{course.label}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="outline" *ngIf="child.hasAssignments" class="w-100-p">
+            <mat-label #staffId translate>Staff</mat-label>
+            <mat-select #staffsId="ngModel" ngModel name="staffsId"
+              (selectionChange)="onSubmitStaffCourseDetails(child,staffsId.value,staffId,i)" required>
+              <mat-option *ngFor="let staff of staffList" [value]="staff.value">
+                {{staff.label}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+    </div>
+    <!-- End -->
+
+    <!-- Edit Class Timetable -->
+    <div *ngIf="classTimetableForm.valid &&  updateClassTimetableDetails?.length>0" class="m-20 border school-period">
+      <div fxLayout="row inline" *ngFor="let item of updateClassTimetableDetails; let ind = index" class="mw-100-p">
+        <div class="border-bottom">
+        <div fxLayout="column" fxFlex="20"
+          class="border-right p-12 w-120 weekDay custom-white accent-fg font-weight-600 text-uppercase" translate>
+          {{item.weekDayName | translate}}</div>
+        <div fxLayout="column" fxFlex="20" fxLayoutAlign="start" class="border-right w-200 p-12"
+          *ngFor="let child of item.periodsView;let i=index" [ngClass]="item.periodsView?.length > updateClassTimetableDetails[ind-1]?.periodsView?.length ? (i > ( updateClassTimetableDetails[ind-1]?.periodsView?.length-1) && ind  ? 'border-top' : ''): ''">
+          <div fxLayout="row">{{child.periodName}}</div>
+          <div fxLayout="row" class="grey-500-fg" *ngIf="child.startTime!= null">{{child.startTime | slice:0:5}} to
+            {{child.endTime | slice:0:5}}
+          </div>
+          <mat-form-field appearance="outline" class="w-100-p">
+            <mat-label #periodTypeId translate>Period Type</mat-label>
+            <mat-select #ptId="ngModel" [(ngModel)]="child.periodTypeId" ngModel name="ptId"
+              (selectionChange)="onPeriodTypeSelect($event,child,item.weekDayName)" required>
+              <mat-option *ngFor="let periodType of periodTypeList" [value]="periodType.value">
+                {{periodType.label}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <div fxLayout="row" *ngFor="let cs of child.courseAndStaffViewModel"><span
+              *ngIf="cs.courseName!==null && child.hasMultipleAssignments === 1" class="text-truncate" matTooltipClass="matTool-tip"
+              matTooltipPosition="above" [matTooltip]="cs.staffName">{{cs.courseName}}&nbsp;-&nbsp;{{cs.staffName}}</span>
+        </div>
+          <div fxLayout="row" *ngIf="child.hasMultipleAssignments == 1" class="pt-8"><button mat-raised-button
+              (click)=editMultiAssignments(child,ptId.value); class="accent-fg" translate>Edit</button></div>
+          <div *ngIf="child.hasAssignments == 1" class="w-100-p">
+            <div *ngFor="let cs of child.courseAndStaffViewModel">
+              <mat-form-field appearance="outline" class="w-100-p">
+                <mat-label #courseId translate>Course</mat-label>
+                <mat-select #cId="ngModel" [(ngModel)]="cs.courseId" ngModel name="cId"
+                  (selectionChange)="onSubmitStaffCourseDetails(child,cId.value,courseId,cs)" required>
+                  <mat-option *ngFor="let course of courseList" [value]="course.value">
+                    {{course.label}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="w-100-p">
+                <mat-label #staffId translate>Staff</mat-label>
+                <mat-select #sId="ngModel" [(ngModel)]="cs.staffId" ngModel name="sId"
+                  (selectionChange)="onSubmitStaffCourseDetails(child,sId.value,staffId,cs)" required>
+                  <mat-option *ngFor="let staff of staffList" [value]="staff.value">
+                    {{staff.label}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+      </div>
+      </div>
+    </div>
+    <!-- End -->
+
+    <!-- Add options for Class Timetable -->
+    <div *ngIf="isHasTemp" class="text-center font-size-16 mt-48" translate>No Class Time Table Has Been
+      Defined For The
+      Selected Class And Section</div>
+    <div *ngIf="isHasTemp" class="text-center font-size-16 pt-4" translate>Please Click On Add To Create A
+      New Time Table</div>
+    <div *ngIf="isHasTemp" fxLayout="row" class="p-20" fxLayoutAlign="center center">
+      <button mat-raised-button type="button" (click)="addClassTimetable()" class="text-uppercase px-36" color="accent"
+        translate>Add</button>
+    </div>
+    <mat-divider class="mb-20" *ngIf="isHasTemp"></mat-divider>
+    <!-- End -->
+  </div>
+</div>
+
+<!-- Coustom Dialog for Has_Multiple_Assignments -->
+<ng-template #myTemplate>
+  <div [@animate]="{value:'*',params:{y:'100%'}}">
+    <div fxLayoutAlign="space-between center" class="font-size-20"><span translate>Select Course & Staff</span> <button
+        mat-icon-button (click)="closeDialog()">
+        <mat-icon>close</mat-icon>
+      </button></div>
+    <form [formGroup]="courseStaffMultAssgnForm" (ngSubmit)="onSelectCourseStaffDetails()"
+      #CourseStaffMultiAssignForm="ngForm">
+      <div fxFlexFill fxLayout="column" class="pt-24" fxLayoutAlign="center center">
+        <mat-form-field appearance="outline" fxFlexFill>
+          <mat-label #courseId translate>Course</mat-label>
+          <mat-select formControlName="courseId" required>
+            <mat-option *ngFor="let course of courseList" [value]="course.value">
+              {{course.label}}
+            </mat-option>
+          </mat-select>
+          <mat-error>
+            <app-validation [labelName]='courseId.innerText'
+              [validationControl]="courseStaffMultAssgnForm.controls.courseId" [doValidate]="isCourseStaffAssgnValid">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline" fxFlexFill>
+          <mat-label #staffId translate>Staff</mat-label>
+          <mat-select formControlName="staffId" required>
+            <mat-option *ngFor="let staff of staffList" [value]="staff.value">
+              {{staff.label}}
+            </mat-option>
+          </mat-select>
+          <mat-error>
+            <app-validation [labelName]='staffId.innerText'
+              [validationControl]="courseStaffMultAssgnForm.controls.staffId" [doValidate]="isCourseStaffAssgnValid">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+      </div>
+      <div fxFlexFill fxLayoutAlign="end center" fxLayout="row" class="pb-20">
+        <button mat-raised-button type="submit" class="text-uppercase accent-fg">{{'Select' | translate}}</button>
+      </div>
+    </form>
+  </div>
+  <div *ngIf="gridDataList?.length>0" fxLayout="column">
+    <mat-list fxLayout="row wrap" class="pt-0 confirm-table border-top border-horizontal class-timetable">
+      <mat-list-item fxLayout="column" fxFlex="50" class="secondary-text"><span translate>Course</span></mat-list-item>
+      <mat-list-item fxLayout="column" fxFlex="50" class="secondary-text"><span translate>Staff</span></mat-list-item>
+    </mat-list>
+    <mat-list fxLayout="row wrap" class="pt-0 confirm-table border class-timetable">
+      <ng-container *ngFor="let column of gridDataList;let i=index">
+      <mat-list-item fxLayout="column" fxFlex="50">{{column.courseName}}</mat-list-item>
+      <mat-list-item fxLayout="column" fxFlex="50">
+        <span>{{column.staffName}}</span> 
+        <button [disabled]="!(gridDataList?.length>1)"  mat-icon-button (click)="deleteItem(i)">
+          <mat-icon>cancel</mat-icon>
+        </button>
+      </mat-list-item>
+    </ng-container>
+    </mat-list>
+  </div>
+
+ 
+  <div fxLayout="row" fxLayoutAlign="end center" class="pt-12">
+    
+
+    <button *ngIf="gridDataList?.length===1"  type="button"  mat-raised-button class="mr-16 text-uppercase" (click)="clearStaff()">{{'Clear' | translate}}</button>
+    <button *ngIf="gridDataList?.length>0"  type="button" mat-raised-button color="accent" [disabled]="isSaveDetails"
+      (click)="onSubmitMultiAssignmentsDetails()" translate>{{'Save' | translate}}</button>
+
+      <!-- <button *ngIf="gridDataList.length>0"  type="button" mat-raised-button class="mr-16" (click)="clearStaff()">{{'Close' | translate}}</button> -->
+  </div>
+
+</ng-template>
+<!-- End Coustom Dialog  -->

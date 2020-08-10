@@ -1,0 +1,41 @@
+<div class="px-sm-40 py-sm-24">
+  <div class="py-8 px-20 font-size-18 text-uppercase" translate>New Payment</div>
+  <div class="mat-elevation-z2 simple-table-container radius-t-20" fxLayout="column" *ngIf="searchStudent">
+    <div fxLayout="row" fxLayoutAlign="space-between center" class="p-20">
+      <div class="font-size-18" translate>Select Student to Process the Payment</div>
+      <div>
+        <button mat-raised-button color="primary" class="text-uppercase mr-4" (click)="backButtonClick()"><span translate>Back</span></button>
+        <button mat-button (click)="getHelpText('Payments')">
+          <mat-icon>info</mat-icon>
+        </button>
+      </div>
+    </div>
+    <mat-divider></mat-divider>
+    <form [formGroup]="paymentForm">
+      <div fxLayout="row" fxLayoutAlign="center center" class="p-sm-20">
+        <mat-form-field appearance="outline" fxLayout="column" fxFlex.gt-xs="50" fxFlex="100">
+          <mat-label #studentId translate>Search Student Name</mat-label>
+          <input #studentName matInput placeholder="Search Students" formControlName="studentName"
+            aria-label="StudentName" matInput [matAutocomplete]="studentNameSearch">
+          <mat-icon class="grey-400-fg" matSuffix>search</mat-icon>
+          <mat-autocomplete #studentNameSearch="matAutocomplete" [displayWith]="displayFn"
+            (optionSelected)='getSelectedStudent($event.option.value.id)'>
+            <mat-option *ngFor="let option of filterdStudents" [value]="option">
+              <!-- {{option.studentName}}
+              <span class="grey-400-fg"> {{option.currentClassName}} {{option.currentSectionName}} {{option.admissionNumber}}</span> -->
+              {{option.studentName}}
+              <span class="grey-400-fg"> {{option.currentClassName}} {{option.currentSectionName}} {{option.admissionNumber}}</span>
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+      </div>
+    </form>
+  </div>
+</div>
+<app-custom-card *ngIf="paymentForm.value.studentName && notFound" [inputMessage]="'No Records Found'">
+</app-custom-card>
+<div *ngIf="paymentView">
+  <app-af-details [keyValues]="studentDetails" [title]="'Student Information'" [isBackButtonRequired]= 'isBackButtonRequired'>
+  </app-af-details>
+  <app-af-payments (outPutValue)='savePayment($event)' [isRefNumberRequired]="true"></app-af-payments>
+</div>

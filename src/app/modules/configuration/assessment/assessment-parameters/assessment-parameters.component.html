@@ -1,0 +1,27 @@
+<app-table [settings]="tabSettings" (rowBasedAction)='rowActions($event)' (getTableData)='tableData($event)'
+    (openAddForm)="onAddFormClick()" [closeRowForm]='closeAddPanel' [templateRef]="addParameterTemplate"
+    (selectedRows)='selectedRows($event)' (deleteAllRows)="deleteWarning()"></app-table>
+<ng-template #addParameterTemplate>
+    <form [formGroup]="userForm" (ngSubmit)="onSubmit(userForm)" #assessment="ngForm">
+        <div fxFlexFill fxLayout="row" class="pt-24">
+            <mat-form-field appearance="outline" class="example-full-width" fxLayout="column" fxFlex="100">
+                <mat-label #assessmentparameters translate>assessmentparameter</mat-label>
+                <input matInput formControlName="name" autocomplete="off" (keyup)="preventSpace($event,'userForm','name')"
+                    (blur)="trimTextBoxSpaces('userForm','name')" required>
+                <mat-error>
+                    <app-validation [labelName]='assessmentparameters.innerText'
+                        [validationControl]="userForm.controls.name" [doValidate]="userFormSubmitted">
+                    </app-validation>
+                </mat-error>
+            </mat-form-field>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="end center" class="pt-16 pb-8">
+            <button class="mr-12 text-uppercase" mat-raised-button type="button" (click)="cancel()">
+                {{'cancel' | translate}}</button>
+            <button class="text-uppercase" mat-raised-button type="submit" color="accent" *ngIf="!updateBtn">{{'submit' | translate}}</button>
+            <button class="text-uppercase" mat-raised-button type="submit" color="accent" *ngIf="updateBtn">{{'update' | translate}}</button>
+        </div>
+        </form>
+        <div>
+    </div>
+</ng-template>

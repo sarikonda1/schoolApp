@@ -1,0 +1,59 @@
+<div class="content px-sm-40 pt-sm-40">
+  <div class="w-100-p mat-elevation-z2 simple-table-container radius-10">
+    <div fxLayout="row" fxLayoutAlign="start center" class="p-20">
+      <div fxlayout="column" fxFlex="40">
+        <div class="h3 secondary-text" translate><span translate>Application Reference Number :</span>
+          <strong>{{applicantInfo?.applicationReferenceNo}}</strong></div>
+      </div>
+      <div fxLayout="column" fxFlex="40" class="accent-fg" fxLayoutAlign="center end" translate>Please Verify the Student Details for approving the application</div>
+      <div fxLayout="column" fxFlex="20">
+        <div fxLayout="row" fxLayoutAlign="end center">
+          <button mat-raised-button color="primary" translate (click)="back()">{{'Back' | translate}}</button>
+        </div>
+      </div>
+    </div>
+    <mat-divider></mat-divider>
+    <div fxLayout="row" fxLayoutAlign="start center" class="ml-24">
+      <div class="profile-image border m-24 radius-10">
+        <img *ngIf="profileImage" [src]="profileImage ? profileImage : ''" class="w-200 h-200 radius-10" />
+        <div *ngIf="!profileImage" fxLayoutAlign="center center" class="w-200 h-200" translate>No Image</div>
+      </div>
+      <div fxLayout="column" fxFlex="60">
+        <div class="h2 primary-900-fg-custom mb-16">{{getFormatedName(applicantInfo?.studentDetails)}}</div>
+        <div fxLayout="row" fxLayoutAlign="start center">
+          <div class="w-68 py-4 primary-300-fg" translate>Phone</div> : <div class="ml-24">
+            {{applicantInfo?.studentDetails?.mobileTel ? applicantInfo?.studentDetails?.mobileTel : "-"}}</div>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="start center">
+          <div class="w-68 py-4 primary-300-fg" translate>email</div> : <div class="ml-24">
+            {{applicantInfo?.studentDetails?.email1 ? applicantInfo?.studentDetails?.email1 : "-"}}</div>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="start center">
+          <div class="w-68 py-4 primary-300-fg" translate>Class</div> : <div class="ml-24">
+            {{applicantInfo?.className ? applicantInfo?.className : "-"}}</div>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="start center">
+          <div class="w-68 py-4 primary-300-fg" translate>status</div> : <div class="ml-24">
+            {{applicantInfo?.statusName ? applicantInfo?.statusName : "-"}}</div>
+        </div>
+      </div>
+
+      <form [formGroup]="approveForm" fxLayout="column" fxFlex="40" class="pr-36">
+        <label class="font-weight-800 pb-12"><span translate>Admission Comments</span></label>
+        <mat-form-field appearance="outline" class="example-full-width">
+          <mat-label #comments translate>Comments</mat-label>
+          <textarea (keyup)="preventSpace($event,'approveForm','processedComments')" (blur)="trimTextBoxSpaces('approveForm','processedComments')" id="comment-field" formControlName="processedComments" matInput placeholder="Leave a comment"
+            [(ngModel)]='approveComments' required></textarea>
+          <mat-error>
+            <app-validation [labelName]='comments.innerText'
+              [validationControl]="approveForm.controls.processedComments" [doValidate]="validate">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+        <small class="text-right max-caters pt-12" translate>max 180 Characters</small>
+      </form>
+    </div>
+  </div>
+</div>
+<app-add-edit-student-admission [inputStudentDetails]="applicantInfo" [comments]="approveComments">
+</app-add-edit-student-admission>

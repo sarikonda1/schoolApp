@@ -1,0 +1,36 @@
+<app-table [settings]="tableSettings" (getTableData)='tableData($event)' (rowBasedAction)='actions($event)' [matExpansioncustomClass]="true">
+</app-table>
+<ng-template #myTemplate>
+  <div translate class="font-size-18 text-center pb-12">Homework Information</div>
+          <mat-list fxLayout="row wrap" class="pt-0 confirm-table border mx-24">
+              <mat-list-item fxLayout="column" fxFlex="50"><strong translate>Board</strong>: {{homeWorkData?.boardName}}</mat-list-item>
+              <mat-list-item fxLayout="column" fxFlex="50"><strong translate>Class </strong>:  {{homeWorkData?.classSections[0]?.className}} </mat-list-item>
+              <mat-list-item fxLayout="column" fxFlex="50"><strong translate>Sections</strong> :<span *ngFor="let section of homeWorkData?.classSections;let l = last;">{{section.sectionName}} {{l ? '' :', '}}</span></mat-list-item>
+              <mat-list-item fxLayout="column" fxFlex="50"><strong translate>Type  </strong> : 
+                {{homeWorkData?.typeName}}</mat-list-item>
+              <mat-list-item fxLayout="column" fxFlex="50"><strong translate>Course </strong>:   {{homeWorkData?.courseName}}</mat-list-item>
+      
+              <mat-list-item fxLayout="column" fxFlex="50"><strong translate>Name  </strong>: {{homeWorkData?.homeworkName}}</mat-list-item>
+              <mat-list-item *ngIf="homeWorkData?.attachment?.fileName" fxLayout="column" fxFlex="50"><strong translate>Attachment  </strong> : 
+                <a *ngIf="homeWorkData?.attachment?.attachmentUrl" [href]="homeWorkData?.attachment?.attachmentUrl" target="_blank" >View/Download</a></mat-list-item>
+      
+              <mat-list-item *ngIf="homeWorkData?.homeworkDescription" fxLayout="column" fxFlex="50"><strong translate>Description  </strong> : {{homeWorkData?.homeworkDescription}}</mat-list-item>
+              <!-- <mat-list-item fxLayout="column" fxFlex="50"><strong translate>Post to Student calendar</strong> :  {{homeWorkData?.isPostToCalendar ? "Yes" : "No"}}</mat-list-item> -->
+      
+              <mat-list-item *ngIf="homeWorkData?.issueDate" fxLayout="column" fxFlex="50"><strong translate>Issue Date  </strong> :  {{getSchoolDate(homeWorkData?.issueDate)}}</mat-list-item>
+              <mat-list-item *ngIf="homeWorkData?.dueDate" fxLayout="column" fxFlex="50"><strong translate>Due Date  </strong> : {{getSchoolDate(homeWorkData?.dueDate)}}</mat-list-item>
+      
+              <!-- <mat-list-item fxLayout="column" fxFlex="50"><strong translate>Gradeded As Test  </strong> : {{homeWorkData?.isGraded ? "Yes" : "No"}}</mat-list-item> -->
+              <mat-list-item *ngIf="homeWorkData?.testTypeName"  fxLayout="column" fxFlex="50"><strong translate>Test Type  </strong> 
+               : {{homeWorkData?.testTypeName}}</mat-list-item>
+              <mat-list-item *ngIf="homeWorkData?.gradeTermName"  fxLayout="column" fxFlex="50"><strong translate>Grading Term </strong> : {{homeWorkData?.gradeTermName}}</mat-list-item>
+              <mat-list-item *ngIf="homeWorkData?.maxMarks"  fxLayout="column" fxFlex="50"><strong translate>Marks </strong> :{{homeWorkData?.maxMarks}}</mat-list-item>
+              <mat-list-item *ngIf="homeWorkData?.testName" fxLayout="column" fxFlex="50"><strong translate>Test </strong> : {{homeWorkData?.testName}}</mat-list-item>
+            </mat-list>
+            <div fxLayout="row" fxLayoutAlign="center center" class="pt-24">
+                <button mat-raised-button type="submit" class="text-uppercase" color="accent" (click)="closeView()">
+                  {{'Close' | translate}}
+                </button>
+            </div> 
+</ng-template>
+

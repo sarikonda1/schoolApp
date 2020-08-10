@@ -1,0 +1,54 @@
+<app-table [settings]="tableSettings" [closeRowForm]=closeForm [templateRef]="addPageInfo"
+  (getTableData)='tableData($event)' (openAddForm)='openForm()' (rowBasedAction)='actions($event)'>
+</app-table>
+
+<ng-template #addPageInfo>
+  <form [formGroup]="pageInfoForm" (ngSubmit)="savePageInfoForm(pageInfoForm.value)" #pageInfo="ngForm">
+    
+    <div fxFlexFill fxLayout="column" fxLayout.gt-xs="row" fxLayoutAlign="center center" class="pt-24">
+      <mat-form-field appearance="outline" class=" mr-sm-20" fxLayout="column" fxFlex.gt-xs="35" fxFlex="100">
+        <mat-label translate #key>Key</mat-label>
+        <input matInput formControlName="key" autocomplete="off" (keyup)="preventSpace($event,'pageInfoForm','key')" (blur)="trimTextBoxSpaces('pageInfoForm','key')" required>
+        <mat-error>
+          <app-validation [labelName]="key.innerText" [validationControl]="pageInfoForm.controls.key"
+            [doValidate]="isFormSubmitted">
+          </app-validation>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class=" mr-sm-20" fxLayout="column" fxFlex.gt-xs="35" fxFlex="100">
+        <mat-label translate #culture>Calture/Language</mat-label>
+        <mat-select required formControlName="culture" >
+          <mat-option *ngFor="let language of languages" [value]="language.value" >
+            {{language.label}}
+          </mat-option>
+        </mat-select>
+        <mat-error>
+          <app-validation [labelName]="culture.innerText" [validationControl]="pageInfoForm.controls.culture"
+            [doValidate]="isFormSubmitted">
+          </app-validation>
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div fxFlexFill fxLayout="column" fxLayout.gt-xs="row" fxLayoutAlign="center center">
+      
+      
+      <ckeditor required formControlName="value"
+      [(ngModel)]="value"
+      [readonly]="false"
+      (change)="onChange($event)"
+      (editorChange)="onEditorChange($event)"
+      debounce="500">
+  </ckeditor>
+    </div>
+
+    <div fxLayout="row" fxLayoutAlign="end center" class="mt-32 pt-24">
+      <button class="mr-12 text-uppercase" mat-raised-button type="reset" (click)="onCancel()">Cancel</button>
+      <button *ngIf="showCreateBtn" mat-raised-button type="submit" class="text-uppercase"
+        color="accent">Create</button>
+      <button *ngIf="!showCreateBtn" mat-raised-button type="submit" class="text-uppercase"
+        color="accent">Update</button>
+    </div>
+  </form>
+</ng-template>

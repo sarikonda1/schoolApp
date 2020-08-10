@@ -1,0 +1,46 @@
+<div fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="center center" class="px-24 pt-20 pb-12">
+  <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="32" class="pr-sm-12">
+    <mat-label translate #class>Class</mat-label>
+    <mat-select [formControl]="classId">
+      <mat-option *ngFor="let class of availableClasses" [value]="class.value">
+        {{ class.label }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+  <button mat-raised-button translate color="primary" class="text-uppercase ml-12 mb-20" (click)="reset()" type="reset">
+    Reset
+  </button>
+  <button mat-raised-button translate color="accent" class="text-uppercase ml-12 mb-20"
+    (click)="getAdmittedStudentSummary()">
+    {{'Search' | translate}}
+  </button>
+</div>
+
+<app-custom-card *ngIf="((resultApplicationReports) && !(resultApplicationReports?.students?.length))"
+  [inputMessage]="'No Record Found'">
+</app-custom-card>
+<div fxLayout="row" fxLayoutAlign="end center" class="px-32 py-12" *ngIf="resultApplicationReports && (resultApplicationReports?.students?.length)">
+  <button mat-stroked-button class="mr-12" (click)="generateReport('generatePdfReport')">
+    <mat-icon class="mr-4">save_alt</mat-icon>Download PDF
+  </button>
+  <button mat-stroked-button (click)="generateReport('generateExcelReport')">
+    <mat-icon class="mr-4">save_alt</mat-icon> Download EXCEL
+  </button>
+</div>
+<div class='invoice-container' id="admitted-std" *ngIf="resultApplicationReports && (resultApplicationReports?.students?.length)" style="padding: 25px; padding-top: 0px;">
+  <span class="dark-theme-color" style="color:#fff">A</span>
+  <div class='b flex-d-c invoice-body' style='overflow: hidden; '>
+    <h3 class="text-center text-uppercase">Admitted student Applicatons Report</h3>
+    <div class="p-10 mb-20 main-title">
+      <div class="left-align">Report Generated On : {{ date }}</div>
+      <div class="right-align flex" *ngIf="acadmicSession">
+        {{acadmicSession?.name}} ({{acadmicSession?.startDate | date: 'MMM d, y'}} -
+        {{acadmicSession?.endDate | date: 'MMM d, y'}})
+      </div>
+    </div>
+    <div style="font-size: 18px;" class="px-20 pt-20">Admitted Students</div>
+    <div *ngIf="resultApplicationReports">
+      <app-af-report-table [inputData]="resultApplicationReports?.students" [tableId]="'adm-report'"
+        [columns]="columns"></app-af-report-table>
+    </div>
+  </div>
+</div>

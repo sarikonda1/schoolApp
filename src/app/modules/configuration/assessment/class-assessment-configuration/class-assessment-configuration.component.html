@@ -1,0 +1,104 @@
+<app-table [settings]="tabSettings" [templateRef]="addClassAssessmentParametersTemplate"
+  (getTableData)='classAssesmentTableData($event)' (rowBasedAction)='rowActions($event)' [closeRowForm]='closeAddPanel'
+  (openAddForm)="openForm()" >
+</app-table>
+
+<ng-template #addClassAssessmentParametersTemplate>
+  <form [formGroup]="classAssessmentParmsFormGroup" 
+    #classAssessmentParametersConfiguration="ngForm">
+    <div fxFlexFill fxLayout="column" fxLayout.gt-xs="row wrap" class="pt-24">
+      <mat-form-field *ngIf="isSchoolBoards" appearance="outline" class="pr-sm-20" fxLayout="column" fxFlex="100" fxFlex.gt-sm="33"
+        fxFlexFill>
+        <mat-label #schoolBoard translate>School Board</mat-label>
+        <mat-select required formControlName="schoolBoardId" (selectionChange)="onSelectSchoolBoard($event)">
+          <mat-option *ngFor="let schoolBoard of schoolBoardsList" [value]="schoolBoard.value">
+            {{schoolBoard.label}}
+          </mat-option>
+        </mat-select>
+        <mat-error>
+          <app-validation [labelName]='schoolBoard.innerText'
+            [validationControl]="classAssessmentParmsFormGroup.controls.schoolBoardId"
+            [doValidate]="classAssmentparmsFormSubmitted">
+          </app-validation>
+        </mat-error>
+      </mat-form-field>
+      <app-custom-dropdown *ngIf="classDropDownAsync | async" class="pr-sm-20" formControlName="classId" appearance="outline" fxFlexFill
+        fxLayout="column" fxFlex="100" fxFlex.gt-sm="34" [dropDownConf]="classDropDown"
+        (selectedData)="onSelectClass($event)" [errorCheck]="classAssessmentParmsFormGroup.controls.classId"
+        ngDefaultControl>
+      </app-custom-dropdown>
+      <app-custom-dropdown *ngIf="sectionDropDown" formControlName="sectionId" appearance="outline" fxFlexFill
+        fxLayout="column" fxFlex="100" fxFlex.gt-sm="33" [dropDownConf]="sectionDropDown"
+        (selectedData)="onSelectSection($event)" [errorCheck]="classAssessmentParmsFormGroup.controls.sectionId"
+        ngDefaultControl>
+      </app-custom-dropdown>
+      <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="33" [ngClass]="sectionDropDown ? 'pr-sm-20':''">
+        <mat-label #assessmentgroups translate>assessmentgroups</mat-label>
+        <mat-select formControlName="assessmentGroupId" required (selectionChange)="onSelectAssessmentGroup($event)">
+          <mat-option *ngFor="let assessmentGroup of assessmentGroupsList" [value]="assessmentGroup.id"
+            ngDefaultControl>
+            {{assessmentGroup.name}}
+          </mat-option>
+        </mat-select>
+        <mat-error>
+          <app-validation [labelName]='assessmentgroups.innerText'
+            [validationControl]="classAssessmentParmsFormGroup.controls.assessmentGroupId"
+            [doValidate]="classAssmentparmsFormSubmitted">
+          </app-validation>
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" [fxFlex.gt-sm]="!sectionDropDown ? '33' : '34'" class="pr-sm-20">
+        <mat-label #assessmentcategory translate>assessmentcategory</mat-label>
+        <mat-select formControlName="assessmentCategoryId"
+          (selectionChange)="onSelectAssessmentCategory($event)">
+          <mat-option *ngIf="assessmentCategoriesList?.length"></mat-option>
+          <mat-option *ngFor="let assessmentCategory of assessmentCategoriesList" [value]="assessmentCategory.id"
+            ngDefaultControl>
+            {{assessmentCategory.name}}
+          </mat-option>
+        </mat-select>
+        <mat-error>
+          <app-validation [labelName]='assessmentcategory.innerText'
+            [validationControl]="classAssessmentParmsFormGroup.controls.assessmentCategoryId"
+            [doValidate]="classAssmentparmsFormSubmitted">
+          </app-validation>
+        </mat-error>
+        <div #assessmentsubcategory translate class="subCat">{{assessmentSubCategory}}</div>
+      </mat-form-field>
+      <mat-form-field appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="33">
+        <mat-label #assessmentparam translate>Assessment Parameters</mat-label>
+        <mat-select #paramDropdownSelect formControlName="assessmentParameterId"
+          (selectionChange)="onSelectAssessmentCategory($event)" [multiple]="true" required>
+          <mat-option *ngFor="let optionvalue of optionsvalue" [value]="optionvalue.value">
+            {{optionvalue.label}}
+          </mat-option>
+        </mat-select>
+        <mat-error>
+          <app-validation [labelName]='assessmentparam.innerText'
+            [validationControl]="classAssessmentParmsFormGroup.controls.assessmentParameterId"
+            [doValidate]="classAssmentparmsFormSubmitted">
+          </app-validation>
+        </mat-error>
+      </mat-form-field> 
+
+    </div>
+    <!-- <div fxFlexFill fxLayout="column" fxLayout.gt-xs="row"> -->
+     
+     
+           
+
+      <!-- <div *ngIf="dropDownLoaded | async" fxLayout="column" fxFlex="100">
+        <app-custom-dropdown formControlName="assessmentParameterId" (selectedData)="onSelect($event)"
+          [dropDownConf]="dropDownData" [errorCheck]="classAssessmentParmsFormGroup.controls.assessmentParameterId">
+        </app-custom-dropdown>
+      </div> -->
+    <!-- </div> -->
+    <div fxLayout="row" fxLayoutAlign="end center" class="pt-12 pb-8">
+      <button mat-raised-button type="button" class="text-uppercase mr-12" (click)="onCancelClick()">{{'cancel' | translate}}</button>
+      <button [disabled]="disbleSubmitBtn" mat-raised-button type="submit" color="accent" class="mr-12 text-uppercase" (click)="save(classAssessmentParmsFormGroup)"
+        mat-button>{{buttonName | translate}}</button>
+
+      <button mat-raised-button (click)="save(classAssessmentParmsFormGroup, true)" type="submit" class="text-uppercase" color="primary" [disabled]="isdisableBtn">{{'Create and Continue' | translate}}</button>
+    </div>
+  </form>
+</ng-template>

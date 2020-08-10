@@ -1,0 +1,28 @@
+<app-table  [settings]="tableSettings" [closeRowForm]=closeForm 
+[templateRef]="newRole" (getTableData)='tableData($event)'
+(openAddForm)='openForm()' (rowBasedAction)='actions($event)'>
+</app-table>
+
+<ng-template #newRole>
+  <form [formGroup]="roleForm" (ngSubmit)="createOrUpdateClass(roleForm.value)" #role="ngForm">
+
+    <div fxFlexFill fxLayout="column" fxLayout.gt-xs="row" class="pt-24" fxLayoutAlign="center center">
+      <mat-form-field appearance="outline"  class=" mr-sm-20" fxLayout="column" fxFlex.gt-xs="35"
+        fxFlex="100">
+        <mat-label #roleName translate>Role Name</mat-label>
+        <input required matInput autocomplete="off" (keyup)="preventSpace($event,'roleForm','roleName')" (blur)="trimTextBoxSpaces('roleForm','roleName')" formControlName="roleName">
+        <mat-error>
+          <app-validation [labelName]="roleName.innerText" [validationControl]="roleForm.controls.roleName"
+            [doValidate]="isFormSubmitted">
+          </app-validation>
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div fxLayout="row" fxLayoutAlign="end center">
+      <button class="mr-12 text-uppercase" mat-raised-button type="button"  (click)="onCancel()">Cancel</button>
+      <button *ngIf="showCreateBtn" mat-raised-button type="submit" class="text-uppercase" color="accent">Create</button>
+      <button *ngIf="!showCreateBtn" mat-raised-button type="submit" class="text-uppercase" color="accent">Update</button>
+    </div>
+  </form>
+</ng-template>

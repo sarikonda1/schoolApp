@@ -1,0 +1,31 @@
+
+  <form  [formGroup]="siblingSearchForm"  (ngSubmit)="siblingSearch(siblingSearchForm)" >
+  <div fxLayout="column" fxLayout.gt-sm="row" class="p-20 border-bottom" fxFlex="100" fxLayoutAlign="center center">
+      <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="40">
+        <mat-label #studentName translate>Student Name</mat-label>
+        <input (keyup)="preventSpace($event,'siblingSearchForm','studentName')" matInput  #studentName formControlName="studentName" autocomplete="off">
+        <mat-error>
+          <app-validation [labelName]='studentName.innerText' [validationControl]="siblingSearchForm.controls.studentName"
+            [doValidate]="validate">
+          </app-validation>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" fxFlexFill fxLayout="column" fxFlex="100" fxFlex.gt-sm="40"
+        class="px-sm-24">
+        <mat-label translate #admissionNumber>admissionNumber</mat-label>
+        <input matInput #studentName (keyup)="preventSpace($event,'siblingSearchForm','admissionNumber')"  formControlName="admissionNumber">
+      </mat-form-field>
+      <div fxLayout="row" class="mb-20">
+        <button mat-raised-button
+      type="submit" color="accent" class="text-uppercase my-16">
+      {{'search' | translate}}
+    </button>
+      </div>
+      
+    </div>
+  </form>
+<app-table [settings]="tabSettings" (getTableData)='tableData($event)' 
+    (selectedRows)='selectedRows($event)'>
+  </app-table>
+

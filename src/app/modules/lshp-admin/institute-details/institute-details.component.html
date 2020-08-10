@@ -1,0 +1,104 @@
+
+  <div class="px-sm-40 pb-20">
+    <div class="mat-elevation-z8 simple-table-container radius-t-20" fxLayout="column">
+      <div fxLayout="row" fxLayoutAlign="space-between center" class="p-20 border-bottom">
+            <div><strong class="pr-12 font-size-16"><span translate>Institution Status</span>:</strong>{{institutionDetails.statusName}}</div>
+            
+        <div *ngIf="editShow" class="text-right gridRightBtn" fxLayout="column" fxFlex="60" fxLayoutAlign="end">
+          <div class="example-button-row" fxLayout="row" fxLayoutAlign="end center">
+            <button (click)="editInstitute()" mat-raised-button color="accent" translate class="text-uppercase">
+              {{'edit' | translate}}</button>
+            <button (click)="getHelpText('Institution Details')" mat-button>
+              <mat-icon class="font-size-28 grey-600-fg" >info</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+      <mat-list fxLayout.gt-xs="row wrap"  fxLayout.lt-sm="column"
+        class="institution-details pt-0 confirm-table">
+        <mat-list-item fxLayout="column" *ngIf="institutionDetails.name!='' && institutionDetails.name!=null" fxFlex.gt-xs="50">
+          <div fxLayout="row" fxFlex="50"><strong><span translate>institutionname</span></strong></div>
+          <div fxLayout="row" fxFlex="50"><span class="pr-4">:</span>{{institutionDetails.name}}</div>
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" *ngIf="institutionDetails.code!='' && institutionDetails.code!=null" fxFlex.gt-xs="50">
+          <div fxLayout="row" fxFlex="50"><strong><span translate>code</span></strong></div>
+          <div fxLayout="row" fxFlex="50"><span class="pr-4">:</span>{{institutionDetails.code}}</div>
+        </mat-list-item>
+        
+        <mat-list-item fxLayout="column" *ngIf="institutionDetails.website!='' && institutionDetails.website!=null" fxFlex.gt-xs="50">
+          <div fxLayout="row" fxFlex="50"><strong><span translate>website</span></strong></div>
+          <div fxLayout="row" fxFlex="50"><span class="pr-4">:</span>{{institutionDetails.website}}</div>
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" *ngIf="institutionDetails.email1!='' && institutionDetails.email1!=null" fxFlex.gt-xs="50">
+          <div fxLayout="row" fxFlex="50"><strong><span translate>Email 1</span></strong></div>
+          <div fxLayout="row" fxflex="50"><span class="pr-4">:</span>{{institutionDetails.email1}}</div>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" *ngIf="institutionDetails.email2!='' && institutionDetails.email2!=null" fxFlex.gt-xs="50">
+          <div fxLayout="row" fxFlex="50"><strong><span translate>Email 2</span></strong></div>
+          <div fxLayout="row" fxflex="50"><span class="pr-4">:</span>{{institutionDetails.email2}}</div>
+        </mat-list-item>
+
+        <mat-list-item *ngIf="institutionDetails.line1!='' && institutionDetails.line1!=null" fxLayout="column" fxFlex.gt-xs="50">
+          <div fxLayout="row" fxFlexFill fxFlex="50" fxLayoutAlign="start"><strong><span
+                translate>address</span></strong></div>
+          <div fxLayout="row" fxFlex="50"><span class="pr-4">:</span>{{institutionDetails.line1}}</div>
+        </mat-list-item>
+        <!--Two fields-->
+        <mat-list-item  fxLayout="column" fxFlex.gt-xs="50" class="two-rows">
+          <div fxLayout="row wrap" fxFlexFill fxFlex="100">
+            <mat-list-item *ngIf="institutionDetails.mobileTel!='' && institutionDetails.mobileTel!=null" fxLayout="column" fxFlex.gt-xs="100" class="px-16">
+              <div fxLayout="row" fxFlex="50"><strong><span translate>Mobile Number</span></strong></div>
+              <div fxLayout="row" fxflex="50"><span class="pr-4">:</span>{{institutionDetails.mobileTel}}</div>
+            </mat-list-item>
+            <mat-list-item *ngIf="institutionDetails.landTel!='' && institutionDetails.landTel!=null" fxLayout="column" fxFlex.gt-xs="100" class="px-16" >
+              <div fxLayout="row" fxFlex="50"><strong><span translate>Landline Number</span></strong></div>
+              <div fxLayout="row" fxflex="50"><span class="pr-4">:</span>{{institutionDetails.landTel}}</div>
+            </mat-list-item>
+            <mat-list-item *ngIf="institutionDetails.otherTel!='' && institutionDetails.otherTel!=null" fxLayout="column" fxFlex.gt-xs="100" class="px-16" >
+              <div fxLayout="row" fxFlex="50"><strong><span translate>Alternate Number</span></strong></div>
+              <div fxLayout="row" fxflex="50"><span class="pr-4">:</span>{{institutionDetails.otherTel}}</div>
+            </mat-list-item>
+          </div>
+        </mat-list-item>
+
+        <mat-list-item *ngIf="institutionDetails.city!='' && institutionDetails.city!=null" fxLayout="column" fxFlex.gt-xs="50">
+          <div fxLayout="row" fxFlex="50"><strong><span translate>city</span></strong></div>
+          <div fxLayout="row" fxflex="50"><span class="pr-4">:</span>{{institutionDetails.city}}</div>
+        </mat-list-item>
+        <mat-list-item fxLayout="column"   *ngIf="institutionDetails.state!='' && institutionDetails.state!=null" fxFlex.gt-xs="50">
+          <div fxLayout="row" fxFlex="50"><strong><span translate>state</span></strong></div>
+          <div fxLayout="row" fxFlex="50"><span class="pr-4">:</span>{{institutionDetails.state}}</div>
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" *ngIf="institutionDetails.country!='' && institutionDetails.country!=null"  fxFlex.gt-xs="50">
+          <div fxLayout="row" fxFlex="50"><strong><span translate>country</span></strong></div>
+          <div fxLayout="row" fxFlex="50"><span class="pr-4">:</span>{{institutionDetails.country}}</div>
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" *ngIf="institutionDetails.pincode!='' && institutionDetails.pincode!=null" fxFlex.gt-xs="50">
+          <div fxLayout="row" fxFlex="50"><strong><span translate>pincode</span></strong></div>
+          <div fxLayout="row" fxFlex="50"><span class="pr-4">:</span>{{institutionDetails.pincode}}</div>
+        </mat-list-item>
+
+        <mat-list-item *ngIf="institutionDetails.uiThemeName!='' && institutionDetails.uiThemeName!=null" fxLayout="column" fxFlex.gt-xs="50">
+          <div fxLayout="row" fxFlex="50"><strong><span translate>Theme</span></strong></div>
+          <div fxLayout="row" fxflex="50"><span class="pr-4">:</span>{{institutionDetails.uiThemeName}}</div>
+        </mat-list-item>
+
+        <mat-list-item fxLayout="column" *ngIf="institutionDetails.brandingSymbolLogo!='' && institutionDetails.brandingSymbolLogo!=null"  fxFlex.gt-xs="50" class="py-8">
+          <div fxLayout="row" fxFlex="50"><strong><span translate>symbollogo:</span></strong></div>
+          <div fxLayout="row" fxflex="50">
+            <img class="w-60 h-60 obj-fit-img" [src]="logoImgProp?.src" *ngIf="logoImgProp?.src" alt="Launchship" />
+          </div>
+        </mat-list-item>
+        <mat-list-item fxLayout="column" *ngIf="institutionDetails.brandingNameLogo!='' && institutionDetails.brandingNameLogo!=null" fxFlex.gt-xs="50" class="py-8">
+            <div fxLayout="row" fxFlex="50"><strong><span translate>namelogo:</span></strong></div>
+            <div fxLayout="row" fxflex="50">
+              <img class="w-180 h-60 obj-fit-img" [src]="nameImgProp?.src" *ngIf="nameImgProp?.src" alt="Launchship" />
+            </div>
+          </mat-list-item>
+      </mat-list>
+    </div>
+  </div>

@@ -1,0 +1,53 @@
+<app-custom-card *ngIf="((resultData) && !(resultData?.length))" [inputMessage]="'No Record Found'">
+</app-custom-card>
+
+<div fxLayout="row" fxLayoutAlign="end center" class="px-32 py-12" *ngIf="resultData?.length">
+  <button mat-stroked-button class="mr-12" (click)="generateReport('generatePdfReport')">
+    <mat-icon class="mr-4">save_alt</mat-icon>Download PDF
+  </button>
+  <!-- <button mat-stroked-button (click)="generateReport('generateExcelReport')">
+    <mat-icon class="mr-4">save_alt</mat-icon> Download EXCEL
+  </button> -->
+</div>
+<div class='invoice-container' id="admitted-std" *ngIf="resultData?.length" style="padding: 25px; padding-top: 0px;">
+  <span class="dark-theme-color" style="color:#fff">A</span>
+  <div class='b flex-d-c invoice-body' style='overflow: hidden; '>
+    <h3 class="text-center text-uppercase">Payments Due Report</h3>
+    <div class="p-10 mb-20 main-title">
+      <div class="left-align">Report Generated On : {{ date }}</div>
+      <div class="right-align flex" *ngIf="acadmicSession">
+        {{acadmicSession?.name}} ({{acadmicSession?.startDate | date: 'MMM d, y'}} -
+        {{acadmicSession?.endDate | date: 'MMM d, y'}})
+      </div>
+    </div>
+    <div class="px-20 pt-20">Payments Due Details</div>
+    <div class="px-10 scroll-table" *ngIf="resultData">
+      <table class="attendance b table-border" id="payment_due_report">
+        <thead>
+          <tr>
+            <th class="space" style="text-transform:capitalize;" *ngFor="let column of columns">{{column.header}}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of resultData">
+            <ng-container *ngFor="let column of columns">
+              <td *ngIf="column?.field != 'invoiceDetails'">{{item[column.field]}} </td>
+              <td *ngIf="column?.field == 'invoiceDetails'">
+                <table class="attendance b">
+                  <tr *ngFor="let details of item.invoiceDetails">
+                    <td>
+                      {{details.feeType}}
+                    </td>
+                    <td>
+                      {{details.amount}}
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </ng-container>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

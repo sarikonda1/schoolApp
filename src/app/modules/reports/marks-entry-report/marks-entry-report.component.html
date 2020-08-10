@@ -1,0 +1,199 @@
+<div class="px-sm-32 pt-sm-24" #search>
+  <div>
+    <form [formGroup]="searchForm">
+      <div fxLayout="column" fxLayout.gt-sm="row" class="pb-4">
+        <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="36"
+          class="icon-center pr-sm-12">
+          <mat-label translate #class>Class</mat-label>
+          <mat-select formControlName="classId" (selectionChange)="onSelectClass($event)">
+            <mat-option *ngFor="let class of availableClasses" [value]="class.value">
+              {{ class.label }}</mat-option>
+          </mat-select>
+          <mat-error>
+            <app-validation [labelName]='class.innerText' [validationControl]="searchForm.controls.classId"
+              [doValidate]="true">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="32"
+          class="pr-sm-12">
+          <mat-label translate #section>Section</mat-label>
+          <mat-select formControlName="sectionId">
+            <mat-option *ngFor="let section of availableSections" [value]="section.value">
+              {{ section.label }}</mat-option>
+          </mat-select>
+          <mat-error>
+            <app-validation [labelName]='section.innerText' [validationControl]="searchForm.controls.sectionId"
+              [doValidate]="true">
+            </app-validation>
+          </mat-error>
+        </mat-form-field>
+        <!-- <mat-form-field fxFlexFill appearance="outline" class="pr-sm-12" fxLayout="column" fxFlex="100"
+          fxFlex.gt-sm="32">
+          <mat-label #section translate>Term</mat-label>
+          <mat-select placeholder="Payment Status" formControlName="termId">
+            <mat-option *ngIf="paymentStatus?.length"></mat-option>
+            <mat-option *ngFor="let status of paymentStatus" [value]="status.value">
+              {{ status.label }}</mat-option>
+          </mat-select>
+        </mat-form-field> -->
+      </div>
+
+      <div fxLayout="column" fxLayout.gt-sm="row">
+        <!-- <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="30"
+          class="pr-sm-12">
+          <mat-label #paymentTypeId translate>Course Category</mat-label>
+          <mat-select formControlName="courseCategoryId" (selectionChange)="paymentTypeSelection($event.value)">
+            <mat-option *ngFor="let paymentTypes of paymentTypesList" [value]="paymentTypes.code">
+              {{ paymentTypes.name }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field> -->
+
+        <!-- <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" class="pr-sm-12"
+          fxFlex.gt-sm="30">
+          <mat-label #paymentTypeId translate>Course</mat-label>
+          <mat-select formControlName="courseId" (selectionChange)="paymentTypeSelection($event.value)">
+            <mat-option *ngFor="let paymentTypes of paymentTypesList" [value]="paymentTypes.code">
+              {{ paymentTypes.name }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field> -->
+
+        <!-- <mat-form-field fxFlexFill appearance="outline" fxLayout="column" fxFlex="100" fxFlex.gt-sm="25">
+          <input matInput formControlName="inputDate" [satDatepicker]="picker" placeholder="Choose a date">
+          <sat-datepicker #picker [rangeMode]="true"> </sat-datepicker>
+          <sat-datepicker-toggle matSuffix [for]="picker"></sat-datepicker-toggle>
+          <mat-label translate #dob>Date</mat-label>
+          <mat-error>
+            <app-validation [labelName]='dob.innerText' [validationControl]="searchForm.controls.dateOfBirth"
+              [doValidate]="true">
+            </app-validation>
+          </mat-error>
+        </mat-form-field> -->
+        <div fxLayoutAlign="end center">
+          <button mat-raised-button translate color="accent" class="text-uppercase ml-12 mb-20"
+            (click)="getMarksEntryReport()">
+            {{'Search' | translate}}
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class='invoice-container'>
+  <span style="color:#fff">A</span>
+  <div class='b flex-d-c invoice-body' style='overflow: hidden; '>
+      <div class='p-20 flex flex-d-r b-b'>
+        <div class='mr-20 flex flex-d-c flex-a b' *ngIf="schoolDetails?.brandingSymbolLogo">
+          <img class="logo-img" [src]="schoolDetails?.brandingSymbolLogo" />
+        </div>
+        <div class='flex-d-c text-center pr-4rem' style='-webkit-flex:1 1 auto; flex:1 1 auto;'>
+          <div class='py-4 text-uppercase'>{{schoolDetails?.name}}</div>
+          <div class='py-4'>{{schoolDetails?.line1}}</div>
+          <div class='py-4'>{{schoolDetails?.city}}</div>
+        </div>
+      </div>
+      <h3 class="text-center text-uppercase">Marks Entry Report</h3>
+      <div class="p-10 mb-20 flex" style=" place-content: space-between;">
+          <div style="width: 30%; padding-top: 40px;">Report Generated On : {{ date }}</div>
+          <div style="width: 40%; padding: 40px 30px 0px;"> {{acadmicSession?.name}} ({{acadmicSession?.startDate | date: 'MMM d, y'}} -
+            {{acadmicSession?.endDate | date: 'MMM d, y'}})</div>
+          <!-- <div class=" box-bg p-10 b" style="width: 40%;">
+             <div><small>Report Parameters</small></div>
+             <div><small>Class 1</small></div>
+             <div><small>Section A</small></div>
+             <div><small>Term - Term 1, Term II</small></div>
+             <div><small>Course Category : Mandatory Subjects, Optional II Language, Optional III</small></div>
+             <div><small>Language</small></div>
+          </div> -->
+      </div>
+      <h4 class="text-center text-uppercase">Class : 1    Section A </h4>         
+      <div class="px-10 scroll-table">
+          <table class="attendance b table-border marks-table">                 
+              <thead>
+                  <tr class="header2">
+                      <th>Term I </th>
+                      <th colspan="4">English</th>
+                      <th colspan="4">Social</th>
+                      <th colspan="4">Maths</th>
+                      <th colspan="4">Science</th>
+                      <th colspan="4">II Language - Hindi</th>
+                      <th colspan="4">III Language - Telugu</th>                           
+                  </tr>
+                  <tr>
+                      <th>
+                          <div>
+                              <div>Student Info</div>
+                              <div><small>(Roll#,Admission#,Name)</small></div>
+                          </div>
+                      </th>
+                      <th>TTYP 1</th>
+                      <th>TTYP 2</th>
+                      <th>TTYP 3</th>
+                      <th>Total</th> 
+                      <th>TTYP 1</th>
+                      <th>TTYP 2</th>
+                      <th>TTYP 3</th>
+                      <th>Total</th>
+                      <th>TTYP 1</th>
+                      <th>TTYP 2</th>
+                      <th>TTYP 3</th>
+                      <th>Total</th>
+                      <th>TTYP 1</th>
+                      <th>TTYP 2</th>
+                      <th>TTYP 3</th>
+                      <th>Total</th>
+                      <th>TTYP 1</th>
+                      <th>TTYP 2</th>
+                      <th>TTYP 3</th>
+                      <th>Total</th>
+                      <th>TTYP 1</th>
+                      <th>TTYP 2</th>
+                      <th>TTYP 3</th>
+                      <th>Total</th>                         
+                  </tr>
+              </thead>
+              <tbody>
+                  <tr>
+                      <td>1 ADM01 XXXXXXXXXXX </td>
+                      <td>2 </td>
+                      <td>2 </td>
+                      <td>2 </td>
+                      <td>2 </td>
+                      <td>2 </td>
+                      <td>2 </td>
+                      <td>2 </td>
+                      <td>2 </td>
+                      <td>2 </td>
+                      <td>2 </td>
+                      <td>2 </td>
+                      <td>2 </td>
+                      <td>2 </td>
+                      <td>2 </td>
+                      <td>2 </td>
+                      <td>2 </td>
+                      <td>2 </td>
+                      <td>2 </td>
+                      <td>2 </td>
+                      <td>2 </td>
+                      <td>2 </td>
+                      <td>2 </td>
+                      <td>2 </td>
+                      <td>2 </td>
+                      
+                  </tr>
+                  <!-- <tr>
+                      <td class="text-right b-t" colspan="9">Total : 5 Admitted Students</td>
+                  </tr> -->
+              </tbody>
+          </table>
+      </div>
+      <div class="flex px-20" style=" place-content: space-between;">
+          <p class="top-space" style="width: 40%;">Principal</p>
+          <p class="top-space" style="width: 45%;">teacher</p>  
+          <p class="top-space" style="width: 120">Date Signed</p>
+      </div>
+  </div>
+</div>
