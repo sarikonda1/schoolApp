@@ -1,0 +1,489 @@
+// -----------------------------------------------------------------------------------------------------
+// @ Custom color maps for Fuse
+// -----------------------------------------------------------------------------------------------------
+$fuse-white: (500: white,
+    contrast: (500: $dark-primary-text));
+
+$fuse-black: (500: black,
+    contrast: (500: $light-primary-text,
+    ));
+
+$fuse-navy: (50: #ECECEE,
+    100: #C5C6CB,
+    200: #9EA1A9,
+    300: #7D818C,
+    400: #5C616F,
+    500: #3C4252,
+    600: #353A48,
+    700: #2D323E,
+    800: #262933,
+    900: #1E2129,
+    A100: #C5C6CB,
+    A200: #9EA1A9,
+    A400: #5C616F,
+    A700: #2D323E,
+    contrast: (50: $dark-primary-text,
+        100: $dark-primary-text,
+        200: $dark-primary-text,
+        300: $light-primary-text,
+        400: $light-primary-text,
+        500: $light-primary-text,
+        600: $light-primary-text,
+        700: $light-primary-text,
+        800: $light-primary-text,
+        900: $light-primary-text,
+        A100: $dark-primary-text,
+        A200: $light-primary-text,
+        A400: $light-primary-text,
+        A700: $light-primary-text,
+    ));
+
+// Generate Fuse color classes for custom palettes
+$custom_palettes: (fuse-white: $fuse-white,
+    fuse-black: $fuse-black,
+    fuse-navy: $fuse-navy);
+
+@include fuse-color-classes($custom_palettes);
+
+// -----------------------------------------------------------------------------------------------------
+// @ Typography
+// -----------------------------------------------------------------------------------------------------
+
+// Angular Material typography
+$typography: mat-typography-config($font-family: 'Muli, Helvetica Neue, Arial, sans-serif',
+    $title: mat-typography-level(20px, 32px, 600),
+    $body-2: mat-typography-level(14px, 24px, 600),
+    $button: mat-typography-level(14px, 14px, 600),
+    $input: mat-typography-level(16px, 1.125, 400) // line-height must be unitless !!!
+);
+
+// Setup the typography
+@include angular-material-typography($typography);
+
+// -----------------------------------------------------------------------------------------------------
+// @ Component theming
+// -----------------------------------------------------------------------------------------------------
+
+// Import app and page component themes here to enable theming for them
+@import "src/app/layout/components/chat-panel/chat-panel.theme";
+@import "src/app/layout/components/toolbar/toolbar.theme";
+@import "src/app/shared/login/login.theme";
+
+@mixin gt-style($theme) {
+    $is-dark: map-get($theme, is-dark);
+
+    @if($is-dark) {
+        .dark-theme-color{color:#424242 !important}
+        $accent: mat-color($mat-light-blue, 600);
+        .red-100-cs{
+            background-color: #c62828 !important;         
+        }
+        .green-100-custom{
+            background-color:#40b538 !important;
+        }
+            .gm-style .gm-style-iw-c{
+            color:#000;      
+            input{
+                color:#000 ;
+            }
+            .mat-form-field-appearance-outline{
+                .mat-form-field-outline{
+                    color:#000 ;
+                }
+            }
+            .mat-form-field-label{
+            color:#000
+            }
+            }          
+        .even-color{
+            border-bottom: 1px dashed #727272;
+            &:nth-child(odd){
+                background-color: #303030;
+            }
+        }
+        .custom-blue{
+            color:#11de5a;
+        }
+        .accent-900-fg-custom{color: #0891fd;}
+      
+        .primary-900-fg-custom{color: #fff ; }
+        .even-grey-bg .mat-cell {
+            background-color: #3e3e3e;
+        }
+        .even-blue-bg .mat-cell {
+            background-color: #235c86;
+        }
+        .row-class.mat-table {
+            .mat-row:last-child {
+                .mat-cell {
+                    background-color: #05aaf4;
+                    color: #fff;
+                }
+            }
+        }
+        .ngx-charts text {
+            fill: #fff;
+        }
+        .cal-month-view {
+            .cal-day-cell.cal-weekend{
+                .cal-day-number{
+                    color: #ef6c00;
+                    opacity: 1;
+                }
+            }
+            .cal-cell-row:hover, .cal-day-cell.cal-today{
+                color: #000;
+            }      
+        }       
+        .add-building{
+            .theme-color{
+                // background: #424242 !important;
+                // color: #fff !important;
+                border: 1px solid rgba(255,255,255,.12);
+            }
+        }
+        .mat-table{
+            .mat-header-row{
+                .mat-header-cell.mat-table-sticky{                 
+                        background-color: #424242;
+                        border-top-left-radius: 20px;
+                }
+            }
+        }
+        .custom-white{
+            background-color: #424242 ;
+        }
+        .intl-tel-input .country-list{
+            background-color: #303030;
+        }
+        .stickyx {        
+            background-color: #424242;          
+        }
+        .grey-200-bg {
+            background-color: #303030 !important;
+        }
+        input {
+            color:#fff;
+        }
+        .tabs-to-spteps .mat-tab-label-container{
+            .mat-tab-label {
+                .tab-title{
+                    color: #fff;
+                }
+                &:after,
+                &:before {
+                    border-top: 1px solid rgb(132, 132, 132);
+                }
+            }
+        }
+        .custom-table {
+            tr {             
+                &:nth-child(odd) {
+                    background-color: #303030;
+                }
+            }
+        }  
+        #previewHtml{
+            .dotted-br{
+                .title{
+                    background: #303030 !important;
+                }
+                .place-holders{
+                    input{background-color: #303030 !important;}
+                }
+            }
+        }   
+    }
+   
+    @else {
+        .grey-600-custom{
+            color: #757575;
+        }
+        .red-100-cs{
+            background-color: #ffcdd2 !important;
+            .red-800-cs{
+                color:#c62828;
+            }
+        }
+        .green-100-custom{
+            background-color:#c8e6c9 !important;
+            .green-800-cs{
+                color:#2e7d32;
+            }
+        }
+        .even-color{
+            border-bottom: 1px dashed #cacaca;
+            &:nth-child(odd){
+                background-color: #f3f3f3;
+            }
+        }
+        .custom-blue{
+            color:#0808fd;
+        }
+        .accent-900-fg-custom{color: #01579b;}
+        .custom-table {
+            tr {             
+                &:nth-child(odd) {
+                  background-color: #ececee;
+                }
+            }
+        }
+        .primary-900-fg-custom{color: #1a237e;}
+        .tabs-to-spteps .mat-tab-label-container{
+            .mat-tab-label {
+                .tab-title{
+                    color: #424242;
+                }
+                &:after,
+                &:before {
+                    border-top: 1px solid rgba(0, 0, 0, 0.12)
+                }
+            }
+        }     
+        .stickyx {        
+            background-color: #fff;          
+        }
+       
+
+        .row-class.mat-table {
+            .mat-row:last-child {
+                .mat-cell {
+                    background-color: #2d323e;
+                    color: #fff;
+                }
+            }
+        }
+        .news-events {
+            .even:nth-child(odd) {
+                background-color: #f5f5f5;
+            }
+        }
+        .ngx-charts text {
+            fill: rgba(0, 0, 0, 0.87);
+        }
+        .advanced-pie-legend {
+            .total-value{
+                color: rgba(0, 0, 0, .54);
+                font-weight: 800;
+            }
+            .total-label {
+                color: rgba(0, 0, 0, .54);
+                font-size: 14px;
+                text-transform: uppercase;
+            }
+            .legend-items-container .legend-items .legend-item {
+                text-align: center;
+                .item-value {
+                    color: rgba(0, 0, 0, .54);
+                    font-weight: 800;
+                }   
+                .item-label{
+                    font-size: 11px;
+                    text-transform: uppercase;
+                }        
+                .item-label, .item-percent{
+                    color:#000; 
+                    margin-top: -2px;             
+                }
+            }
+        }
+      .add-building{
+            .theme-color{
+                background: #f5f5f5 ;
+                color: rgba(0, 0, 0, 0.87);
+            }
+        }
+        .mat-table{
+            .mat-header-row{
+                .mat-header-cell.mat-table-sticky{
+                        background-color: #fff;
+                        border-top-left-radius: 20px;
+                }
+            }
+        }
+        .custom-white{
+            background-color: #fff ;
+        }
+
+    }
+   
+}
+
+// Define a mixin for easier access
+@mixin components-theme($theme) {
+
+    // Layout components
+    @include chat-panel-theme($theme);
+    @include toolbar-theme($theme);
+    @include login-theme($theme);
+    @include gt-style($theme);
+}
+
+// -----------------------------------------------------------------------------------------------------
+// @ Define the default theme
+// -----------------------------------------------------------------------------------------------------
+
+// Define the primary, accent and warn palettes
+$default-primary-palette: mat-palette($fuse-navy);
+$default-accent-palette: mat-palette($mat-light-blue, 600, 400, 700);
+$default-warn-palette: mat-palette($mat-red);
+
+// Create the Material theme object
+$theme: mat-light-theme($default-primary-palette, $default-accent-palette, $default-warn-palette);
+// Add ".theme-default" class to the body to activate this theme.
+// Class name must start with "theme-" !!!
+body.theme-default {  
+    .even-blue-bg .mat-cell {
+        background-color: #e3f2fd;
+    }
+    .even-grey-bg .mat-cell {
+        background-color: #f5f5f5
+    }
+    .check-point-bg .mat-cell{
+        background-color: #039be5;
+        color: white ;
+    }
+    .grey-500-custom{
+        color:#9e9e9e;
+    }
+    // Create an Angular Material theme from the $theme map
+    @include angular-material-theme($theme);
+
+    // Apply the theme to the Fuse Core
+    @include fuse-core-theme($theme);
+
+    // Apply the theme to the user components
+    @include components-theme($theme);
+
+    // Generate Fuse color classes for primary, accent and warn colors
+    $palettes: (primary: $default-primary-palette,
+            accent: $default-accent-palette,
+            warn: $default-warn-palette);
+
+    @include fuse-color-classes($palettes);
+}
+
+// -----------------------------------------------------------------------------------------------------
+// @ Define a yellow light theme
+// -----------------------------------------------------------------------------------------------------
+//Purple theme
+
+
+body.theme-mat-purple{
+    .mat-toolbar .mat-select-placeholder{
+        color:#fff !important;
+    }
+    .grey-600-custom{
+        color: inherit !important;
+    }
+    .mat-toolbar{
+        background: #9c27b0 !important;
+    color: #fff !important;
+    }
+    .even-blue-bg .mat-cell {
+        background-color: #e3f2fd;
+    }
+    .even-grey-bg .mat-cell {
+        background-color: #f5f5f5
+    }
+    .check-point-bg .mat-cell{
+        background-color: #9c27b0 ;
+        color: #fff ;
+    }
+   
+}
+// Define the primary, accent and warn palettes
+$yellow-light-theme-primary-palette: mat-palette($fuse-navy, 600, 400, 700);
+$yellow-light-theme-accent-palette: mat-palette($mat-yellow, 600, 400, 700);
+$yellow-light-theme-warn-palette: mat-palette($mat-red);
+
+// Create the Material theme object
+$yellow-light-theme: mat-light-theme($yellow-light-theme-primary-palette, $yellow-light-theme-accent-palette, $yellow-light-theme-warn-palette);
+
+
+// Add ".theme-yellow-light" class to the body to activate this theme.
+// Class name must start with "theme-" !!!
+body.theme-yellow-light {
+    $mat-light-blue: mat-color($mat-yellow, 600);
+     .mat-toolbar{
+        background: #fdd835 !important;
+     }
+     .even-blue-bg .mat-cell {
+        background-color: rgba(253, 216, 53, 0.43) ;
+    }
+    .even-grey-bg .mat-cell {
+        background-color: rgb(253, 250, 240);
+
+    }
+    .check-point-bg .mat-cell{
+        background-color: #fdd835 ;
+    }
+ .mat-paginator,  .mat-paginator-page-size .mat-select-trigger{
+    color: rgba(0, 0, 0, 0.92) !important;
+    background-color: #fdd835 !important;
+    border-top-right-radius: unset;
+    border-top-left-radius: unset;
+    }
+    // Generate the Angular Material theme
+    @include angular-material-theme($yellow-light-theme);
+
+    // Apply the theme to the Fuse Core
+    @include fuse-core-theme($yellow-light-theme);
+
+    // Apply the theme to the user components
+    @include components-theme($yellow-light-theme);
+
+    // Generate Fuse color classes for primary, accent and warn colors
+    $palettes: (primary: $yellow-light-theme-primary-palette,
+            accent: $yellow-light-theme-accent-palette,
+            warn: $yellow-light-theme-warn-palette);
+    @include fuse-color-classes($palettes);
+}
+
+//dynamic theme
+@mixin set-theme($primary, $accent, $warn, $theme, $lightColor) {
+    // -----------------------------------------------------------------------------------------------------
+    // @ Define a theme
+    // -----------------------------------------------------------------------------------------------------
+
+    // Define the primary, accent and warn palettes
+    $mat-theme-primary-palette: mat-palette($primary);
+    $mat-theme-accent-palette: mat-palette($accent);
+    $mat-theme-warn-palette: mat-palette($warn);
+    $mat-theme: '';
+
+    @if $lightColor==1 {
+        $mat-theme: mat-light-theme($mat-theme-primary-palette, $mat-theme-accent-palette, $mat-theme-warn-palette);
+    }
+
+    @else {
+        $mat-theme: mat-dark-theme($mat-theme-primary-palette, $mat-theme-accent-palette, $mat-theme-warn-palette);
+    }
+
+    // Create the Material theme object
+    // Add ".theme-mat-purple" class to the body to activate this theme.
+    // Class name must start with "theme-" !!!
+    body.#{$theme} {
+
+        // Generate the Angular Material theme
+        @include angular-material-theme($mat-theme);
+
+        // Apply the theme to the Fuse Core
+        @include fuse-core-theme($mat-theme);
+
+        // Apply the theme to the user components
+        @include components-theme($mat-theme);
+
+        // Generate Fuse color classes for primary, accent and warn colors
+        $palettes: (primary: $mat-theme-primary-palette,
+                accent: $mat-theme-accent-palette,
+                warn: $mat-theme-warn-palette);
+
+        @include fuse-color-classes($palettes);
+    }
+};
+
+@include set-theme($mat-blue, $mat-blue-gray, $mat-red, 'theme-blue-gray-dark', 0);
+@include set-theme($fuse-navy, $mat-purple, $mat-red, 'theme-mat-purple', 1);
+@include set-theme($mat-indigo, $mat-light-blue, $mat-red, 'theme-mat-indigo', 0);
+// @include set-theme($mat-orange,$mat-orange,$mat-red,'theme-mat-indigo',0);

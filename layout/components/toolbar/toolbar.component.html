@@ -1,0 +1,176 @@
+<mat-toolbar class="p-0 mat-elevation-z1">
+
+    <div fxFlex fxFill fxLayout="row" fxLayoutAlign="start center">
+
+        <div fxFlex="60" fxLayout="row" fxLayoutAlign="start center" class="pl-12">
+
+            <button mat-icon-button class="navbar-toggle-button" *ngIf="!hiddenNavbar && !rightNavbar"
+                (click)="toggleSidebarOpen('navbar')" fxHide.gt-md>
+                <mat-icon class="secondary-text">menu</mat-icon>
+            </button>
+
+            <div class="toolbar-separator" *ngIf="!hiddenNavbar && !rightNavbar" fxHide.gt-md></div>
+
+
+            <div fxLayout="row" fxLayoutAlign="start center" *ngIf="horizontalNavbar">
+                <div class="logo ml-16">
+                    <img class="logo-icon" src="assets/images/logos/academy-front-logo.png">
+                </div>
+            </div>
+            <!--############### School name for Mobile ###################### -->
+            <div class="shortcuts-mobile-toggle" fxLayout="row" fxFlex="80" fxLayoutAlign="start center" fxHide
+                fxShow.lt-sm [matMenuTriggerFor]="mobileMenu" *ngIf="showAcademicSectionSelection && showSchoolSelection">
+                <button mat-button class="user-button">
+                    <div fxLayout="row" fxLayoutAlign="start center">
+                        <span class="username mr-12 font-size-12 grey-400-fg">{{displayAcademicSessionName}}</span>
+                    </div>
+                    <div fxLayout="row" fxLayoutAlign="center center">
+                        <!-- <span class="username mr-12">Launchship School</span> -->
+                        <span class="username mr-12 text-truncate">{{currentSchoolName}}</span>
+                        <mat-icon class="s-16">keyboard_arrow_down</mat-icon>
+                    </div>
+                </button>
+            </div>
+
+            <mat-menu #mobileMenu="matMenu" class="p-12 w-240">
+                <div *ngIf="(testEmitter$ | async) && showSchoolSelection" class="select-school grey-600-custom" fxFlexFill fxLayout="row"
+                    fxFlex="100">
+                    <mat-form-field appearance="outline" class="w-100-p" (click)="$event.stopPropagation()">
+                        <mat-label>School</mat-label>
+                        <mat-select [(ngModel)]="currentSchoolId" (selectionChange)="changeCurrentSchool($event)">
+                            <mat-option *ngFor="let school of schools" [value]="school.value" [disabled]="school.isDisabled"> {{school.label}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div *ngIf="(testEmitter$ | async) && showAcademicSectionSelection" class="select-school grey-500-custom" fxFlexFill fxLayout="row"
+                    fxFlex="100">
+                    <mat-form-field appearance="outline" class="w-100-p" (click)="$event.stopPropagation()">
+                        <mat-label>Academic Session</mat-label>
+                        <mat-select placeholder="Academic Session" [(value)]="currentAcademicSessionId"
+                            [(ngModel)]="currentAcademicSessionId"
+                            (selectionChange)="changeCurrentAcademicSession($event)">
+                            <mat-optgroup *ngFor="let academicSession of academicSessions"
+                                [label]="academicSession.name" [disabled]="academicSession.disabled">
+                                <mat-option *ngFor="let academic of academicSession.academics" [value]="academic.id">
+                                    {{academic.name}}
+                                </mat-option>
+                            </mat-optgroup>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+            </mat-menu>
+
+            <!--############### End School name for Mobile ###################### -->
+
+            <div *ngIf="(testEmitter$ | async) && showSchoolSelection" class="select-school grey-600-custom" fxLayout="column"
+                fxLayoutAlign="center center" fxHide.lt-sm>
+                <mat-select placeholder="School" [(ngModel)]="currentSchoolId"
+                    (selectionChange)="changeCurrentSchool($event)">
+                    <mat-option *ngFor="let school of schools" [value]="school.value" [disabled]="school.isDisabled">
+                       {{school.label}}
+                    </mat-option>
+                </mat-select>
+            </div>
+            <div *ngIf="(testEmitter$ | async) && showStudentSelection" class="select-school grey-600-custom" fxLayout="column"
+                fxLayoutAlign="center center" fxHide.lt-sm>
+                <mat-select placeholder="Students" [(ngModel)]="currentStudentId"
+                (selectionChange)="changeCurrentStudent($event)">
+                    <mat-option *ngFor="let student of students" [value]="student.value">
+                        {{student.label}}
+                    </mat-option>
+                </mat-select>
+            </div>
+            <div *ngIf="(testEmitter$ | async) && showAcademicSectionSelection" class="select-school ml-24 font-size-14 grey-500-custom"
+                fxLayout="column" fxLayoutAlign="center center" fxHide.lt-sm>
+                <mat-select placeholder="Academic Session" [(value)]="currentAcademicSessionId"
+                    [(ngModel)]="currentAcademicSessionId" (selectionChange)="changeCurrentAcademicSession($event)">
+                    <mat-optgroup *ngFor="let academicSession of academicSessions" [label]="academicSession.name"
+                        [disabled]="academicSession.disabled">
+                        <mat-option *ngFor="let academic of academicSession.academics" [value]="academic.id">
+                            {{academic.name}}
+                        </mat-option>
+                    </mat-optgroup>
+                </mat-select>
+            </div>
+        </div>
+
+        <div fxFlex="40" fxLayout="row" fxLayoutAlign="end center">
+            <ng-container *ngIf="selectedLanguage">
+                <button mat-button fxShow.gt-xs class="language-button" [matMenuTriggerFor]="languageMenu">
+                <div fxLayout="row" fxLayoutAlign="center center" >
+                        <img class="flag mr-8" [src]="'assets/icons/flags/'+selectedLanguage?.flag+'.png'">
+                        <span class="iso text-uppercase pr-8" fxHide fxShow.gt-sm>{{selectedLanguage?.id}}</span>
+                        <mat-icon class="s-16">keyboard_arrow_down</mat-icon>
+                    </div>
+                </button>
+            </ng-container>
+            <div class="toolbar-separator"></div>
+            <button mat-button [matMenuTriggerFor]="userMenu" class="user-button">
+                <div fxLayout="row" fxLayoutAlign="center center">
+                    <img class="avatar mr-0 mr-sm-12" src="assets/images/profile/profile.jpg">
+                    <span class="username pr-8 mw-400 text-truncate" matTooltipClass="matTool-tip"
+                    matTooltipPosition="above" [matTooltip]="name" fxHide fxShow.gt-sm>{{name}}</span>
+                    <mat-icon class="s-16" fxHide.xs>keyboard_arrow_down</mat-icon>
+                </div>
+            </button>
+
+            <mat-menu #userMenu="matMenu" [overlapTrigger]="false">
+                <button mat-menu-item *ngIf="stafLoginShow && currentUserType && currentUserType != 'STF'"
+                    (click)="setUserLogin('Staff')">
+                    <mat-icon>arrow_right_alt</mat-icon>
+                    <span translate>Switch to Staff</span>
+                </button>
+
+                <button mat-menu-item *ngIf="parentLoginShow && currentUserType && currentUserType != 'PRT'"
+                    (click)="setUserLogin('Parent')">
+                    <mat-icon>arrow_right_alt</mat-icon>
+                    <span translate>Switch to Parent</span>
+                </button>
+
+                <button mat-menu-item *ngIf="adminLoginShow && currentUserType && currentUserType != 'SCH'"
+                    (click)="setUserLogin('School Admin')">
+                    <mat-icon>arrow_right_alt</mat-icon>
+                    <span translate>Switch to School Admin</span>
+                </button>
+
+                <button mat-menu-item
+                    *ngIf="instituteLoginShow && currentUserType && currentUserType != 'INS'"
+                    (click)="setUserLogin('Institute Admin')">
+                    <mat-icon>arrow_right_alt</mat-icon>
+                    <span translate>Switch to Institute Admin</span>
+                </button>
+                <mat-divider></mat-divider>
+                <button mat-menu-item class="" (click)="logout()">
+                    <mat-icon>exit_to_app</mat-icon>
+                    <span translate>Logout</span>
+                </button>
+
+            </mat-menu>
+
+
+            <!--<fuse-search-bar (input)="search($event)"></fuse-search-bar>-->
+
+
+
+            <mat-menu #languageMenu="matMenu" [overlapTrigger]="false">
+
+                <button mat-menu-item *ngFor="let lang of languages" (click)="setLanguage(lang)">
+                    <span fxLayout="row" fxLayoutAlign="start center">
+                        <img class="flag mr-16" [src]="'assets/icons/flags/'+lang.flag+'.png'">
+                        <span class="iso">{{lang.title}}</span>
+                    </span>
+                </button>
+
+                <!-- <button mat-menu-item [routerLink]="'/components/multi-language'">
+                    <div fxLayout="row" fxLayoutAlign="start center">
+                        <span>Learn more</span>
+                    </div>
+                </button> -->
+
+            </mat-menu>
+        </div>
+
+    </div>
+
+</mat-toolbar>
